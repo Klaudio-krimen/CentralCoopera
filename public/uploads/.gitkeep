@@ -1,0 +1,3 @@
+# Esta carpeta almacena las fotos y firmas subidas por los usuarios.
+# El contenido de esta carpeta NO debe subirse al repositorio.
+# Agregar /public/uploads/* al .gitignore

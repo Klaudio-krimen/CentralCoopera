@@ -1,0 +1,190 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ── Enums ────────────────────────────────────────────────────────────────────
+
+enum UserRole {
+  CHOFER
+  RECEPCION
+  ADMIN
+}
+
+enum PickupOrderStatus {
+  BORRADOR
+  EN_RETIRO
+  EN_TRANSITO
+  RECIBIDA
+  DISCREPANCIA
+  CERRADA
+}
+
+enum EvidenceStage {
+  RETIRO
+  RECEPCION
+}
+
+enum DiscrepancySeverity {
+  MENOR
+  MODERADA
+  GRAVE
+}
+
+enum DiscrepancyStatus {
+  PENDIENTE
+  EN_INVESTIGACION
+  RESUELTA
+}
+
+// ── Models ───────────────────────────────────────────────────────────────────
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      UserRole
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  ordersAsDriver    PickupOrder[] @relation("Driver")
+  evidencesUploaded Evidence[]   @relation("Uploader")
+  discrepanciesFound Discrepancy[] @relation("DetectedBy")
+  discrepanciesResolved Discrepancy[] @relation("ResolvedBy")
+
+  @@index([email])
+  @@index([role, isActive])
+}
+
+model Company {
+  id           String   @id @default(cuid())
+  name         String
+  address      String?
+  contactName  String?
+  contactPhone String?
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  orders PickupOrder[]
+
+  @@index([isActive])
+}
+
+model MaterialType {
+  id       String  @id @default(cuid())
+  name     String
+  unit     String  @default("kg")
+  isActive Boolean @default(true)
+
+  items OrderItem[]
+
+  @@index([isActive])
+}
+
+model PickupOrder {
+  id                String            @id @default(cuid())
+  orderCode         String            @unique
+  status            PickupOrderStatus @default(BORRADOR)
+
+  driverId  String
+  driver    User    @relation("Driver", fields: [driverId], references: [id])
+
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id])
+
+  pickupAt            DateTime?
+  deliveredAt         DateTime?
+  pickupLat           Float?
+  pickupLng           Float?
+  clientSignerName    String?
+  signatureImagePath  String?
+  notes               String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  items         OrderItem[]
+  evidences     Evidence[]
+  discrepancies Discrepancy[]
+
+  @@index([driverId, status])
+  @@index([status])
+  @@index([orderCode])
+  @@index([createdAt])
+}
+
+model OrderItem {
+  id               String  @id @default(cuid())
+  orderId          String
+  order            PickupOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  materialTypeId   String
+  materialType     MaterialType @relation(fields: [materialTypeId], references: [id])
+
+  materialName     String  // snapshot del nombre al momento del retiro
+  declaredQuantity Float
+  receivedQuantity Float?
+  unit             String
+
+  @@index([orderId])
+}
+
+model Evidence {
+  id           String        @id @default(cuid())
+  orderId      String
+  order        PickupOrder   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  stage        EvidenceStage
+  imagePath    String
+  takenAt      DateTime      @default(now())
+  lat          Float?
+  lng          Float?
+
+  uploadedById String
+  uploadedBy   User          @relation("Uploader", fields: [uploadedById], references: [id])
+
+  @@index([orderId])
+}
+
+model Discrepancy {
+  id          String              @id @default(cuid())
+  orderId     String
+  order       PickupOrder         @relation(fields: [orderId], references: [id])
+
+  orderItemId    String?
+  materialType   String?
+  declaredQuantity Float?
+  receivedQuantity Float?
+  differencePercent Float?
+
+  severity    DiscrepancySeverity
+  status      DiscrepancyStatus   @default(PENDIENTE)
+  description String?
+
+  detectedById String
+  detectedBy   User    @relation("DetectedBy", fields: [detectedById], references: [id])
+
+  resolvedAt      DateTime?
+  resolvedById    String?
+  resolvedBy      User?   @relation("ResolvedBy", fields: [resolvedById], references: [id])
+  resolutionNote  String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([orderId])
+}
+
+// Counter for auto-incrementing order codes
+model OrderCounter {
+  id    String @id @default("singleton")
+  count Int    @default(0)
+}

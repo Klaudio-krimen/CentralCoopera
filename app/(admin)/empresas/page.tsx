@@ -1,0 +1,132 @@
+import { prisma } from '@/lib/db'
+import { formatDate } from '@/lib/utils'
+import EmpresaActions from '@/components/ui/EmpresaActions'
+import NuevaEmpresaModal from '@/components/ui/NuevaEmpresaModal'
+import {
+  Buildings,
+  Phone,
+  User,
+  CheckCircle,
+  XCircle,
+  Package,
+} from '@phosphor-icons/react/dist/ssr'
+
+async function getEmpresas() {
+  return prisma.company.findMany({
+    include: {
+      _count: { select: { orders: true } },
+    },
+    orderBy: { name: 'asc' },
+  })
+}
+
+export default async function EmpresasPage() {
+  const empresas = await getEmpresas()
+  const activas   = empresas.filter((e) => e.isActive)
+  const inactivas = empresas.filter((e) => !e.isActive)
+
+  return (
+    <div className="space-y-8 max-w-4xl">
+      {/* Header */}
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900">Empresas cliente</h1>
+          <p className="text-zinc-500 text-sm mt-1">
+            {activas.length} activa{activas.length !== 1 ? 's' : ''} · {inactivas.length} inactiva{inactivas.length !== 1 ? 's' : ''}
+          </p>
+        </div>
+        <NuevaEmpresaModal />
+      </div>
+
+      {/* Active */}
+      {activas.length === 0 ? (
+        <div className="text-center py-16 border-2 border-dashed border-zinc-200 rounded-2xl">
+          <Buildings size={36} className="text-zinc-300 mx-auto mb-3" />
+          <p className="text-zinc-600 font-medium">Sin empresas registradas</p>
+          <p className="text-zinc-400 text-sm mt-1">Agrega la primera empresa cliente</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {activas.map((empresa) => (
+            <EmpresaCard key={empresa.id} empresa={empresa as any} />
+          ))}
+        </div>
+      )}
+
+      {/* Inactive */}
+      {inactivas.length > 0 && (
+        <div className="space-y-3">
+          <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Inactivas</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {inactivas.map((empresa) => (
+              <EmpresaCard key={empresa.id} empresa={empresa as any} muted />
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function EmpresaCard({
+  empresa,
+  muted = false,
+}: {
+  empresa: {
+    id: string
+    name: string
+    address: string | null
+    contactName: string | null
+    contactPhone: string | null
+    isActive: boolean
+    createdAt: Date
+    _count: { orders: number }
+  }
+  muted?: boolean
+}) {
+  return (
+    <div className={`card p-5 space-y-3 ${muted ? 'opacity-60' : ''}`}>
+      {/* Name + status */}
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0">
+          <p className="text-sm font-semibold text-zinc-900 leading-tight">{empresa.name}</p>
+          {empresa.address && (
+            <p className="text-xs text-zinc-400 mt-0.5 truncate">{empresa.address}</p>
+          )}
+        </div>
+        <div className="flex items-center gap-1 shrink-0">
+          {empresa.isActive ? (
+            <CheckCircle size={14} weight="fill" className="text-emerald-500" />
+          ) : (
+            <XCircle size={14} weight="fill" className="text-zinc-400" />
+          )}
+        </div>
+      </div>
+
+      {/* Contact */}
+      <div className="space-y-1">
+        {empresa.contactName && (
+          <div className="flex items-center gap-1.5 text-xs text-zinc-500">
+            <User size={12} className="text-zinc-400 shrink-0" />
+            {empresa.contactName}
+          </div>
+        )}
+        {empresa.contactPhone && (
+          <div className="flex items-center gap-1.5 text-xs text-zinc-500">
+            <Phone size={12} className="text-zinc-400 shrink-0" />
+            {empresa.contactPhone}
+          </div>
+        )}
+      </div>
+
+      {/* Footer */}
+      <div className="flex items-center justify-between pt-1 border-t border-zinc-50">
+        <div className="flex items-center gap-1.5 text-xs text-zinc-400">
+          <Package size={12} />
+          {empresa._count.orders} orden{empresa._count.orders !== 1 ? 'es' : ''}
+        </div>
+        <EmpresaActions empresaId={empresa.id} isActive={empresa.isActive} />
+      </div>
+    </div>
+  )
+}

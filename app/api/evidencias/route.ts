@@ -3,13 +3,11 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { apiError } from '@/lib/utils'
-import { writeFile, unlink } from 'fs/promises'
-import { join, basename } from 'path'
 import sharp from 'sharp'
 
 const MAX_SIZE_MB  = parseInt(process.env.MAX_PHOTO_SIZE_MB   ?? '1')
 const MAX_PHOTOS   = parseInt(process.env.MAX_PHOTOS_PER_ORDER ?? '5')
-const UPLOAD_DIR   = process.env.UPLOAD_DIR ?? './public/uploads'
+const IS_VERCEL    = !!process.env.BLOB_READ_WRITE_TOKEN
 
 // POST /api/evidencias — upload photo
 export async function POST(req: NextRequest) {
@@ -26,7 +24,6 @@ export async function POST(req: NextRequest) {
   if (!file)    return apiError('Archivo requerido')
   if (!orderId) return apiError('orderId requerido')
 
-  // Validate order exists and user has access
   const order = await prisma.pickupOrder.findUnique({ where: { id: orderId } })
   if (!order) return apiError('Orden no encontrada', 404)
 
@@ -34,7 +31,6 @@ export async function POST(req: NextRequest) {
     return apiError('Acceso denegado', 403)
   }
 
-  // Count existing photos for this order+stage
   const existingCount = await prisma.evidence.count({
     where: { orderId, stage: stage as any },
   })
@@ -42,11 +38,9 @@ export async function POST(req: NextRequest) {
     return apiError(`Límite de ${MAX_PHOTOS} fotos alcanzado`)
   }
 
-  // Read file buffer
   const bytes  = await file.arrayBuffer()
   const buffer = Buffer.from(bytes)
 
-  // Compress with sharp (max 1MB, WebP)
   const compressed = await sharp(buffer)
     .resize({ width: 1600, withoutEnlargement: true })
     .webp({ quality: 82 })
@@ -57,17 +51,30 @@ export async function POST(req: NextRequest) {
     return apiError(`La foto supera el tamaño máximo de ${MAX_SIZE_MB}MB`)
   }
 
-  // Save file
-  const filename  = `ev_${orderId}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}.webp`
-  const filepath  = join(process.cwd(), UPLOAD_DIR, filename)
+  const filename = `ev_${orderId}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}.webp`
+  let imagePath: string
 
-  await writeFile(filepath, compressed)
+  if (IS_VERCEL) {
+    const { put } = await import('@vercel/blob')
+    const blob = await put(`evidencias/${filename}`, compressed, {
+      access: 'public',
+      contentType: 'image/webp',
+    })
+    imagePath = blob.url
+  } else {
+    const { writeFile } = await import('fs/promises')
+    const { join } = await import('path')
+    const uploadDir = process.env.UPLOAD_DIR ?? './public/uploads'
+    const filepath  = join(process.cwd(), uploadDir, filename)
+    await writeFile(filepath, compressed)
+    imagePath = `/uploads/${filename}`
+  }
 
   const evidence = await prisma.evidence.create({
     data: {
       orderId,
-      stage:       stage as any,
-      imagePath:   `/uploads/${filename}`,
+      stage:        stage as any,
+      imagePath,
       uploadedById: session.user.id,
       ...(lat ? { lat } : {}),
       ...(lng ? { lng } : {}),
@@ -77,7 +84,7 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({ id: evidence.id, path: evidence.imagePath }, { status: 201 })
 }
 
-// DELETE /api/evidencias?id=xxx  OR  ?path=/uploads/xxx.webp
+// DELETE /api/evidencias?id=xxx
 export async function DELETE(req: NextRequest) {
   const session = await getServerSession(authOptions)
   if (!session) return apiError('No autorizado', 401)
@@ -94,17 +101,19 @@ export async function DELETE(req: NextRequest) {
 
   if (!evidence) return apiError('Evidencia no encontrada', 404)
 
-  // Only uploader, or ADMIN, can delete
   if (session.user.role === 'CHOFER' && evidence.uploadedById !== session.user.id) {
     return apiError('Acceso denegado', 403)
   }
 
-  // Delete file from disk
-  try {
-    const diskPath = join(process.cwd(), 'public', evidence.imagePath)
-    await unlink(diskPath)
-  } catch {
-    // File may not exist — continue
+  if (IS_VERCEL) {
+    const { del } = await import('@vercel/blob')
+    try { await del(evidence.imagePath) } catch { /* already deleted */ }
+  } else {
+    const { unlink } = await import('fs/promises')
+    const { join }   = await import('path')
+    try {
+      await unlink(join(process.cwd(), 'public', evidence.imagePath))
+    } catch { /* file may not exist */ }
   }
 
   await prisma.evidence.delete({ where: { id: evidence.id } })

@@ -3,8 +3,8 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { apiError, calculateDiscrepancy } from '@/lib/utils'
-import { writeFile } from 'fs/promises'
-import { join } from 'path'
+
+const IS_VERCEL = !!process.env.BLOB_READ_WRITE_TOKEN
 
 // GET /api/ordenes/:id
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
@@ -136,18 +136,30 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     if (!clientSignerName?.trim()) return apiError('El nombre del firmante es requerido')
 
     // Save signature image
-    const base64 = signatureDataUrl.replace(/^data:image\/\w+;base64,/, '')
-    const buffer = Buffer.from(base64, 'base64')
+    const base64  = signatureDataUrl.replace(/^data:image\/\w+;base64,/, '')
+    const buffer  = Buffer.from(base64, 'base64')
     const filename = `firma_${params.id}_${Date.now()}.png`
-    const uploadDir = process.env.UPLOAD_DIR ?? './public/uploads'
-    const filepath  = join(process.cwd(), uploadDir, filename)
+    let signaturePath: string
 
-    await writeFile(filepath, buffer)
+    if (IS_VERCEL) {
+      const { put } = await import('@vercel/blob')
+      const blob = await put(`firmas/${filename}`, buffer, {
+        access: 'public',
+        contentType: 'image/png',
+      })
+      signaturePath = blob.url
+    } else {
+      const { writeFile } = await import('fs/promises')
+      const { join }      = await import('path')
+      const uploadDir = process.env.UPLOAD_DIR ?? './public/uploads'
+      await writeFile(join(process.cwd(), uploadDir, filename), buffer)
+      signaturePath = `/uploads/${filename}`
+    }
 
     const updated = await prisma.pickupOrder.update({
       where: { id: params.id },
       data: {
-        signatureImagePath: `/uploads/${filename}`,
+        signatureImagePath: signaturePath,
         clientSignerName:   clientSignerName.trim(),
       },
     })

@@ -15,7 +15,7 @@ export interface EvidenciaPhoto {
 interface EvidenciaUploaderProps {
   orderId: string
   photos: EvidenciaPhoto[]
-  onChange: (photos: EvidenciaPhoto[]) => void
+  onChange: (photos: EvidenciaPhoto[] | ((prev: EvidenciaPhoto[]) => EvidenciaPhoto[])) => void
   maxPhotos?: number
   disabled?: boolean
 }

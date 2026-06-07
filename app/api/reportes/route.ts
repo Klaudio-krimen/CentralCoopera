@@ -60,12 +60,13 @@ export async function GET(req: NextRequest) {
       new Date(d.createdAt).toLocaleDateString('es-CL'),
     ])
   } else if (type === 'choferes') {
-    data = await prisma.pickupOrder.groupBy({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    data = (await (prisma.pickupOrder as any).groupBy({
       by: ['driverId'],
       where: Object.keys(dateFilter).length ? { createdAt: dateFilter } : {},
       _count:  { id: true },
       orderBy: { _count: { id: 'desc' } },
-    })
+    })) as any[]
 
     const drivers = await prisma.user.findMany({
       where: { id: { in: data.map((d: any) => d.driverId) } },

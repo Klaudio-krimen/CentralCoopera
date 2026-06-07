@@ -55,8 +55,8 @@ export const authOptions: NextAuthOptions = {
         if (dbUser?.isActive) {
           token.role = dbUser.role
         } else {
-          // Usuario inactivo: borrar rol para que el middleware rechace la sesión
-          delete token.role
+          // Usuario inactivo: limpiar rol para que el middleware rechace la sesión
+          token.role = undefined as any
         }
       }
       return token

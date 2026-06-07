@@ -11,7 +11,7 @@ import {
 } from '@phosphor-icons/react/dist/ssr'
 
 async function getPendingOrders() {
-  return prisma.order.findMany({
+  return prisma.pickupOrder.findMany({
     where: { status: 'EN_TRANSITO' },
     include: {
       company: { select: { name: true } },

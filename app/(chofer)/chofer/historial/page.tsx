@@ -9,7 +9,7 @@ import { ArrowRight, ClipboardText } from '@phosphor-icons/react/dist/ssr'
 export default async function HistorialPage() {
   const session = await getServerSession(authOptions)
 
-  const orders = await prisma.order.findMany({
+  const orders = await prisma.pickupOrder.findMany({
     where: { driverId: session!.user.id },
     include: {
       company: { select: { name: true } },

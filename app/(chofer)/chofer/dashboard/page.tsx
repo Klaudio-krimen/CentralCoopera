@@ -16,7 +16,7 @@ async function getChoferOrders(userId: string) {
   const today = new Date()
   today.setHours(0, 0, 0, 0)
 
-  return prisma.order.findMany({
+  return prisma.pickupOrder.findMany({
     where: {
       driverId: userId,
       createdAt: { gte: today },

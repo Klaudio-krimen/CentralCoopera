@@ -22,7 +22,7 @@ export default async function OrdenDetailPage({ params, searchParams }: {
 }) {
   const session = await getServerSession(authOptions)
 
-  const order = await prisma.order.findUnique({
+  const order = await prisma.pickupOrder.findUnique({
     where: { id: params.id },
     include: {
       company:   { select: { name: true, address: true } },

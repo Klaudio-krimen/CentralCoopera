@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { BuildingsPlus, X, SpinnerGap, Warning } from '@phosphor-icons/react'
+import { Buildings, X, SpinnerGap, Warning } from '@phosphor-icons/react'
 
 export default function NuevaEmpresaModal() {
   const [open, setOpen]       = useState(false)
@@ -41,7 +41,7 @@ export default function NuevaEmpresaModal() {
   return (
     <>
       <button onClick={() => setOpen(true)} className="btn-primary">
-        <BuildingsPlus size={17} />
+        <Buildings size={17} />
         Nueva empresa
       </button>
 

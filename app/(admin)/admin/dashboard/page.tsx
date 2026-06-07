@@ -16,10 +16,10 @@ async function getDashboardData() {
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
 
   const [totalMes, activas, discrepancias, recentOrders] = await Promise.all([
-    prisma.order.count({ where: { createdAt: { gte: startOfMonth } } }),
-    prisma.order.count({ where: { status: { in: ['EN_RETIRO', 'EN_TRANSITO'] } } }),
+    prisma.pickupOrder.count({ where: { createdAt: { gte: startOfMonth } } }),
+    prisma.pickupOrder.count({ where: { status: { in: ['EN_RETIRO', 'EN_TRANSITO'] } } }),
     prisma.discrepancy.count({ where: { status: 'PENDIENTE' } }),
-    prisma.order.findMany({
+    prisma.pickupOrder.findMany({
       where: { status: { in: ['DISCREPANCIA', 'EN_TRANSITO', 'RECIBIDA'] } },
       include: {
         company:      { select: { name: true } },

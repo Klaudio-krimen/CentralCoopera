@@ -8,7 +8,7 @@ import Link from 'next/link'
 import { ArrowLeft } from '@phosphor-icons/react/dist/ssr'
 
 export default async function RecibirPage({ params }: { params: { ordenId: string } }) {
-  const order = await prisma.order.findUnique({
+  const order = await prisma.pickupOrder.findUnique({
     where: { id: params.ordenId },
     include: {
       company:   { select: { name: true } },

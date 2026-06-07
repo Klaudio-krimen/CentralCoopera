@@ -141,11 +141,11 @@ export default async function OrdenDetailPage({ params, searchParams }: {
       )}
 
       {/* Geolocation */}
-      {order.latitude && order.longitude && (
+      {order.pickupLat && order.pickupLng && (
         <div className="flex items-center gap-2 text-xs text-zinc-400">
           <MapPin size={13} />
           <span>
-            GPS: {Number(order.latitude).toFixed(5)}, {Number(order.longitude).toFixed(5)}
+            GPS: {Number(order.pickupLat).toFixed(5)}, {Number(order.pickupLng).toFixed(5)}
           </span>
         </div>
       )}

@@ -35,13 +35,17 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions)
   if (!session) return apiError('No autorizado', 401)
-  if (session.user.role !== 'ADMIN') return apiError('Acceso denegado', 403)
+  if (session.user.role !== 'ADMIN') {
+    console.warn('[auth] acceso denegado a POST /api/usuarios', { userId: session.user.id, role: session.user.role })
+    return apiError('Acceso denegado', 403)
+  }
 
   const { name, email, password, role } = await req.json()
 
   if (!name?.trim())     return apiError('Nombre requerido')
   if (!email?.trim())    return apiError('Email requerido')
   if (!password?.trim()) return apiError('Contraseña requerida')
+  if (password.length < 8) return apiError('La contraseña debe tener al menos 8 caracteres')
   if (!['CHOFER', 'RECEPCION', 'ADMIN'].includes(role)) {
     return apiError('Rol inválido')
   }
@@ -75,7 +79,10 @@ export async function POST(req: NextRequest) {
 export async function PATCH(req: NextRequest) {
   const session = await getServerSession(authOptions)
   if (!session) return apiError('No autorizado', 401)
-  if (session.user.role !== 'ADMIN') return apiError('Acceso denegado', 403)
+  if (session.user.role !== 'ADMIN') {
+    console.warn('[auth] acceso denegado a PATCH /api/usuarios', { userId: session.user.id, role: session.user.role })
+    return apiError('Acceso denegado', 403)
+  }
 
   const { id, name, email, password, isActive } = await req.json()
 
@@ -91,6 +98,7 @@ export async function PATCH(req: NextRequest) {
   if (email    !== undefined) data.email    = email.trim().toLowerCase()
   if (isActive !== undefined) data.isActive = isActive
   if (password?.trim()) {
+    if (password.length < 8) return apiError('La contraseña debe tener al menos 8 caracteres')
     data.password = await hash(password, 12)
   }
 

@@ -1,10 +1,14 @@
 import { PrismaClient, UserRole } from '@prisma/client'
 import { hash } from 'bcryptjs'
 
+if (process.env.NODE_ENV === 'production') {
+  throw new Error('El seed no puede ejecutarse en producción. Configura NODE_ENV correctamente.')
+}
+
 const prisma = new PrismaClient()
 
 async function main() {
-  console.log('🌱 Seeding database...')
+  console.log('Seeding database...')
 
   // ── Counter ──────────────────────────────────────────────
   await prisma.orderCounter.upsert({
@@ -14,9 +18,9 @@ async function main() {
   })
 
   // ── Users ─────────────────────────────────────────────────
-  const adminPw  = await hash('admin123', 12)
-  const choferPw = await hash('chofer123', 12)
-  const recepPw  = await hash('recep123', 12)
+  const adminPw  = await hash(process.env.SEED_ADMIN_PASSWORD  ?? 'Admin1234!', 12)
+  const choferPw = await hash(process.env.SEED_CHOFER_PASSWORD ?? 'Chofer1234!', 12)
+  const recepPw  = await hash(process.env.SEED_RECEP_PASSWORD  ?? 'Recep1234!', 12)
 
   const admin = await prisma.user.upsert({
     where: { email: 'admin@cooperapro.cl' },
@@ -165,12 +169,7 @@ async function main() {
     }),
   ])
 
-  console.log('✅ Seed completado.')
-  console.log('')
-  console.log('Credenciales de prueba:')
-  console.log('  ADMIN:    admin@cooperapro.cl     / admin123')
-  console.log('  CHOFER:   carlos.rojas@cooperapro.cl / chofer123')
-  console.log('  RECEPCION: recepcion@cooperapro.cl / recep123')
+  console.log('Seed completado. Cambia las contraseñas antes de usar en producción.')
 }
 
 main()

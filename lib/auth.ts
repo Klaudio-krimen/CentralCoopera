@@ -3,7 +3,10 @@ import CredentialsProvider from 'next-auth/providers/credentials'
 import { compare } from 'bcryptjs'
 import { prisma } from './db'
 
+const SESSION_MAX_AGE = 8 * 60 * 60 // 8 horas
+
 export const authOptions: NextAuthOptions = {
+  secret: process.env.NEXTAUTH_SECRET,
   providers: [
     CredentialsProvider({
       name: 'credentials',
@@ -18,10 +21,20 @@ export const authOptions: NextAuthOptions = {
           where: { email: credentials.email },
         })
 
-        if (!user || !user.isActive) return null
+        if (!user) {
+          console.warn('[auth] login fallido: usuario no encontrado', { email: credentials.email })
+          return null
+        }
+        if (!user.isActive) {
+          console.warn('[auth] login fallido: cuenta inactiva', { email: credentials.email, userId: user.id })
+          return null
+        }
 
         const ok = await compare(credentials.password, user.password)
-        if (!ok) return null
+        if (!ok) {
+          console.warn('[auth] login fallido: contraseña incorrecta', { email: credentials.email, userId: user.id })
+          return null
+        }
 
         return { id: user.id, email: user.email, name: user.name, role: user.role }
       },
@@ -33,6 +46,15 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id
         token.role = (user as any).role
       }
+      // Re-validar rol y estado activo desde DB en cada renovación de token
+      if (!user && token.id) {
+        const dbUser = await prisma.user.findUnique({
+          where: { id: token.id as string },
+          select: { role: true, isActive: true },
+        })
+        if (!dbUser || !dbUser.isActive) return {}
+        token.role = dbUser.role
+      }
       return token
     },
     session: async ({ session, token }) => {
@@ -43,6 +65,20 @@ export const authOptions: NextAuthOptions = {
       return session
     },
   },
+  cookies: {
+    sessionToken: {
+      name: process.env.NODE_ENV === 'production'
+        ? '__Secure-next-auth.session-token'
+        : 'next-auth.session-token',
+      options: {
+        httpOnly: true,
+        sameSite: 'lax' as const,
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+      },
+    },
+  },
   pages: { signIn: '/login' },
-  session: { strategy: 'jwt' },
+  session: { strategy: 'jwt', maxAge: SESSION_MAX_AGE },
+  jwt: { maxAge: SESSION_MAX_AGE },
 }

@@ -13,6 +13,8 @@ export async function GET(req: NextRequest) {
   const active = searchParams.get('active') === 'true'
   const q = searchParams.get('q') ?? ''
 
+  const isChofer = session.user.role === 'CHOFER'
+
   const companies = await prisma.company.findMany({
     where: {
       ...(active ? { isActive: true } : {}),
@@ -21,10 +23,13 @@ export async function GET(req: NextRequest) {
     select: {
       id: true,
       name: true,
-      address: true,
-      contactName: true,
-      contactPhone: true,
-      isActive: true,
+      // CHOFERs solo necesitan id y nombre para crear órdenes
+      ...(isChofer ? {} : {
+        address: true,
+        contactName: true,
+        contactPhone: true,
+        isActive: true,
+      }),
     },
     orderBy: { name: 'asc' },
     take: 20,

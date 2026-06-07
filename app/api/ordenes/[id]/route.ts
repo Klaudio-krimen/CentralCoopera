@@ -135,6 +135,12 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     const { signatureDataUrl, clientSignerName } = body
     if (!clientSignerName?.trim()) return apiError('El nombre del firmante es requerido')
 
+    // Límite de tamaño: 2MB equivalente en base64 (~2.74MB de string)
+    const MAX_SIG_CHARS = 2 * 1024 * 1024 * 1.37
+    if (!signatureDataUrl || signatureDataUrl.length > MAX_SIG_CHARS) {
+      return apiError('La firma supera el tamaño máximo permitido', 413)
+    }
+
     // Save signature image
     const base64  = signatureDataUrl.replace(/^data:image\/\w+;base64,/, '')
     const buffer  = Buffer.from(base64, 'base64')
@@ -170,6 +176,10 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   // ── Action: UPDATE ITEMS ──────────────────────────────────────────────────
   if (body.items !== undefined) {
     if (session.user.role === 'RECEPCION') return apiError('Acceso denegado', 403)
+    // Solo se pueden editar ítems mientras la orden esté en retiro
+    if (order.status !== 'EN_RETIRO') {
+      return apiError('No se pueden editar los ítems de una orden que ya fue despachada', 409)
+    }
 
     const { items } = body as {
       items: { materialTypeId: string; declaredQuantity: number; unit: string }[]

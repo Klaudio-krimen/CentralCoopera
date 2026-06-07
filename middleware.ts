@@ -6,6 +6,14 @@ export default withAuth(
     const token = req.nextauth.token
     const { pathname } = req.nextUrl
 
+    // Rutas API sin token → 401 JSON (no redirect)
+    if (pathname.startsWith('/api/')) {
+      if (!token) {
+        return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+      }
+      return NextResponse.next()
+    }
+
     if (pathname.startsWith('/chofer') && token?.role !== 'CHOFER' && token?.role !== 'ADMIN') {
       return NextResponse.redirect(new URL('/login', req.url))
     }
@@ -26,5 +34,10 @@ export default withAuth(
 )
 
 export const config = {
-  matcher: ['/chofer/:path*', '/recepcion/:path*', '/admin/:path*'],
+  matcher: [
+    '/chofer/:path*',
+    '/recepcion/:path*',
+    '/admin/:path*',
+    '/api/((?!auth).*)',
+  ],
 }

@@ -38,13 +38,30 @@ export async function POST(req: NextRequest) {
     return apiError(`Límite de ${MAX_PHOTOS} fotos alcanzado`)
   }
 
+  // Validar tamaño del archivo original antes de leer a memoria
+  const MAX_RAW_MB = 20
+  if (file.size > MAX_RAW_MB * 1024 * 1024) {
+    return apiError(`El archivo supera el límite de ${MAX_RAW_MB}MB`, 413)
+  }
+
+  // Validar tipo MIME declarado (defensa básica; sharp validará el contenido real)
+  const ALLOWED_MIMES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/heic', 'image/heif']
+  if (!ALLOWED_MIMES.includes(file.type)) {
+    return apiError('Tipo de archivo no permitido. Solo se aceptan imágenes.', 415)
+  }
+
   const bytes  = await file.arrayBuffer()
   const buffer = Buffer.from(bytes)
 
-  const compressed = await sharp(buffer)
-    .resize({ width: 1600, withoutEnlargement: true })
-    .webp({ quality: 82 })
-    .toBuffer()
+  let compressed: Buffer
+  try {
+    compressed = await sharp(buffer)
+      .resize({ width: 1600, withoutEnlargement: true })
+      .webp({ quality: 82 })
+      .toBuffer()
+  } catch {
+    return apiError('El archivo no es una imagen válida', 422)
+  }
 
   const maxBytes = MAX_SIZE_MB * 1024 * 1024
   if (compressed.length > maxBytes) {

@@ -25,6 +25,15 @@ dev.db
 public/uploads/*
 !public/uploads/.gitkeep
 
+# Keys & certificates
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+id_rsa
+id_ed25519
+
 # OS
 .DS_Store
 Thumbs.db

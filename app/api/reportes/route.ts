@@ -31,11 +31,11 @@ export async function GET(req: NextRequest) {
     data = await prisma.discrepancy.findMany({
       where: {
         ...(Object.keys(dateFilter).length ? { createdAt: dateFilter } : {}),
-        ...(driverId  ? { pickupOrder: { driverId  } } : {}),
-        ...(companyId ? { pickupOrder: { companyId } } : {}),
+        ...(driverId  ? { order: { driverId  } } : {}),
+        ...(companyId ? { order: { companyId } } : {}),
       },
       include: {
-        pickupOrder: {
+        order: {
           include: {
             company: { select: { name: true } },
             driver:  { select: { name: true } },
@@ -48,9 +48,9 @@ export async function GET(req: NextRequest) {
     filename   = `discrepancias_${new Date().toISOString().slice(0, 10)}.csv`
     csvHeaders = ['Código Orden', 'Empresa', 'Chofer', 'Material', 'Declarado', 'Recibido', 'Diferencia %', 'Severidad', 'Estado', 'Fecha']
     csvRows    = data.map((d) => [
-      d.pickupOrder.orderCode,
-      d.pickupOrder.company.name,
-      d.pickupOrder.driver?.name ?? '',
+      d.order.orderCode,
+      d.order.company.name,
+      d.order.driver?.name ?? '',
       d.materialType ?? '',
       d.declaredQuantity ?? '',
       d.receivedQuantity ?? '',

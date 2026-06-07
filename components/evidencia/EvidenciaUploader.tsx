@@ -6,8 +6,8 @@ import Image from 'next/image'
 
 export interface EvidenciaPhoto {
   id: string
-  url: string       // local blob URL for preview
-  path?: string     // server path after upload
+  url: string
+  path?: string
   uploading?: boolean
   error?: boolean
 }
@@ -15,7 +15,7 @@ export interface EvidenciaPhoto {
 interface EvidenciaUploaderProps {
   orderId: string
   photos: EvidenciaPhoto[]
-  onChange: (photos: EvidenciaPhoto[] | ((prev: EvidenciaPhoto[]) => EvidenciaPhoto[])) => void
+  onChange: (photos: EvidenciaPhoto[]) => void
   maxPhotos?: number
   disabled?: boolean
 }
@@ -27,12 +27,20 @@ export default function EvidenciaUploader({
   maxPhotos = 5,
   disabled = false,
 }: EvidenciaUploaderProps) {
-  const inputRef = useRef<HTMLInputElement>(null)
+  const inputRef  = useRef<HTMLInputElement>(null)
+  const photosRef = useRef<EvidenciaPhoto[]>(photos)
+  photosRef.current = photos
+
+  const update = (updater: (prev: EvidenciaPhoto[]) => EvidenciaPhoto[]) => {
+    const next = updater(photosRef.current)
+    photosRef.current = next
+    onChange(next)
+  }
 
   const handleFiles = async (files: FileList | null) => {
     if (!files) return
 
-    const available = maxPhotos - photos.length
+    const available = maxPhotos - photosRef.current.length
     const toProcess = Array.from(files).slice(0, available)
 
     const previews: EvidenciaPhoto[] = toProcess.map((f) => ({
@@ -41,9 +49,8 @@ export default function EvidenciaUploader({
       uploading: true,
     }))
 
-    onChange([...photos, ...previews])
+    update((prev) => [...prev, ...previews])
 
-    // Upload each photo
     await Promise.all(
       previews.map(async (preview, idx) => {
         const file = toProcess[idx]
@@ -52,10 +59,10 @@ export default function EvidenciaUploader({
           formData.append('file', file)
           formData.append('orderId', orderId)
 
-          const res = await fetch('/api/evidencias', { method: 'POST', body: formData })
+          const res  = await fetch('/api/evidencias', { method: 'POST', body: formData })
           const data = await res.json()
 
-          onChange((prev: EvidenciaPhoto[]) =>
+          update((prev) =>
             prev.map((p) =>
               p.id === preview.id
                 ? { ...p, path: data.path, uploading: false, error: !res.ok }
@@ -63,7 +70,7 @@ export default function EvidenciaUploader({
             )
           )
         } catch {
-          onChange((prev: EvidenciaPhoto[]) =>
+          update((prev) =>
             prev.map((p) => (p.id === preview.id ? { ...p, uploading: false, error: true } : p))
           )
         }
@@ -83,36 +90,24 @@ export default function EvidenciaUploader({
 
   return (
     <div className="space-y-3">
-      {/* Photo grid */}
       <div className="grid grid-cols-3 gap-2">
         {photos.map((photo) => (
           <div
             key={photo.id}
             className="relative aspect-square rounded-xl overflow-hidden bg-zinc-100 border border-zinc-200"
           >
-            <Image
-              src={photo.url}
-              alt="Evidencia"
-              fill
-              className="object-cover"
-              sizes="120px"
-            />
+            <Image src={photo.url} alt="Evidencia" fill className="object-cover" sizes="120px" />
 
-            {/* Uploading overlay */}
             {photo.uploading && (
               <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
                 <SpinnerGap size={22} className="text-white animate-spin" />
               </div>
             )}
-
-            {/* Error overlay */}
             {photo.error && (
               <div className="absolute inset-0 bg-red-500/30 flex items-center justify-center">
                 <span className="text-white text-[10px] font-medium px-1 text-center">Error al subir</span>
               </div>
             )}
-
-            {/* Remove button */}
             {!photo.uploading && (
               <button
                 type="button"
@@ -125,7 +120,6 @@ export default function EvidenciaUploader({
           </div>
         ))}
 
-        {/* Add photo button */}
         {canAdd && (
           <button
             type="button"
@@ -140,7 +134,6 @@ export default function EvidenciaUploader({
         )}
       </div>
 
-      {/* Empty state */}
       {photos.length === 0 && (
         <div className="flex items-center gap-2 text-zinc-400 text-xs">
           <ImageSquare size={14} />
@@ -148,7 +141,6 @@ export default function EvidenciaUploader({
         </div>
       )}
 
-      {/* Counter */}
       <p className="text-xs text-zinc-400">
         {photos.length}/{maxPhotos} fotos
         {photos.length >= maxPhotos && (
@@ -156,7 +148,6 @@ export default function EvidenciaUploader({
         )}
       </p>
 
-      {/* Hidden file input */}
       <input
         ref={inputRef}
         type="file"

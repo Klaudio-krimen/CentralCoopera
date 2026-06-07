@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -27,8 +27,14 @@ interface Empresa { id: string; name: string; address?: string }
 
 interface MaterialItem {
   id: string
-  materialType: string
+  materialTypeId: string
   quantity: string
+  unit: string
+}
+
+interface MaterialType {
+  id: string
+  name: string
   unit: string
 }
 
@@ -43,19 +49,6 @@ interface WizardState {
   loading: boolean
   error: string | null
 }
-
-// ── Static data (replace with API calls) ─────────────────────────────────────
-
-const MATERIAL_TYPES = [
-  { id: 'carton',     label: 'Cartón',              unit: 'kg' },
-  { id: 'vidrio',     label: 'Vidrio',              unit: 'kg' },
-  { id: 'plastico',   label: 'Plástico',            unit: 'kg' },
-  { id: 'metal',      label: 'Metal / Chatarra',    unit: 'kg' },
-  { id: 'papel',      label: 'Papel',               unit: 'kg' },
-  { id: 'electronico',label: 'Residuo electrónico', unit: 'unidades' },
-  { id: 'organico',   label: 'Residuo orgánico',    unit: 'litros' },
-  { id: 'madera',     label: 'Madera / Pallets',    unit: 'unidades' },
-]
 
 const STEP_LABELS: Record<Step, string> = {
   1: 'Empresa',
@@ -77,7 +70,12 @@ const slideVariants = {
 
 export default function NuevaOrdenPage() {
   const router = useRouter()
-  const [direction, setDirection] = useState(1)
+  const [direction, setDirection]       = useState(1)
+  const [materialTypes, setMaterialTypes] = useState<MaterialType[]>([])
+
+  useEffect(() => {
+    fetch('/api/materiales').then((r) => r.json()).then(setMaterialTypes)
+  }, [])
 
   const [state, setState] = useState<WizardState>({
     step: 1,
@@ -139,7 +137,7 @@ export default function NuevaOrdenPage() {
       ...s,
       items: [
         ...s.items,
-        { id: crypto.randomUUID(), materialType: '', quantity: '', unit: 'kg' },
+        { id: crypto.randomUUID(), materialTypeId: '', quantity: '', unit: 'kg' },
       ],
     }))
   }
@@ -149,9 +147,9 @@ export default function NuevaOrdenPage() {
       ...s,
       items: s.items.map((item) => {
         if (item.id !== id) return item
-        if (field === 'materialType') {
-          const mt = MATERIAL_TYPES.find((m) => m.id === value)
-          return { ...item, materialType: value, unit: mt?.unit ?? item.unit }
+        if (field === 'materialTypeId') {
+          const mt = materialTypes.find((m) => m.id === value)
+          return { ...item, materialTypeId: value, unit: mt?.unit ?? item.unit }
         }
         return { ...item, [field]: value }
       }),
@@ -171,9 +169,9 @@ export default function NuevaOrdenPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           items: state.items.map((i) => ({
-            materialType: i.materialType,
+            materialTypeId:   i.materialTypeId,
             declaredQuantity: parseFloat(i.quantity),
-            unit: i.unit,
+            unit:             i.unit,
           })),
         }),
       })
@@ -233,7 +231,7 @@ export default function NuevaOrdenPage() {
   // Step validation
   const canAdvance: Record<Step, boolean> = {
     1: !!state.empresa,
-    2: state.items.length > 0 && state.items.every((i) => i.materialType && parseFloat(i.quantity) > 0),
+    2: state.items.length > 0 && state.items.every((i) => i.materialTypeId && parseFloat(i.quantity) > 0),
     3: state.photos.length > 0 && state.photos.every((p) => !p.uploading),
     4: !!state.signatureDataUrl && state.signerName.trim().length > 0,
     5: true,
@@ -401,13 +399,13 @@ export default function NuevaOrdenPage() {
                       <div className="space-y-1">
                         <label className="text-xs font-medium text-zinc-600">Tipo</label>
                         <select
-                          value={item.materialType}
-                          onChange={(e) => updateItem(item.id, 'materialType', e.target.value)}
+                          value={item.materialTypeId}
+                          onChange={(e) => updateItem(item.id, 'materialTypeId', e.target.value)}
                           className="input-base text-sm"
                         >
                           <option value="">Selecciona un tipo...</option>
-                          {MATERIAL_TYPES.map((mt) => (
-                            <option key={mt.id} value={mt.id}>{mt.label}</option>
+                          {materialTypes.map((mt) => (
+                            <option key={mt.id} value={mt.id}>{mt.name}</option>
                           ))}
                         </select>
                       </div>
@@ -550,10 +548,10 @@ export default function NuevaOrdenPage() {
                     <p className="text-xs text-zinc-400 mb-2">Materiales</p>
                     <div className="space-y-1.5">
                       {items.map((item) => {
-                        const mt = MATERIAL_TYPES.find((m) => m.id === item.materialType)
+                        const mt = materialTypes.find((m) => m.id === item.materialTypeId)
                         return (
                           <div key={item.id} className="flex items-center justify-between">
-                            <p className="text-sm text-zinc-700">{mt?.label ?? item.materialType}</p>
+                            <p className="text-sm text-zinc-700">{mt?.name ?? item.materialTypeId}</p>
                             <p className="text-sm font-medium text-zinc-900 font-mono">
                               {item.quantity} {item.unit}
                             </p>

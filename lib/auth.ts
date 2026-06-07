@@ -46,14 +46,18 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id
         token.role = (user as any).role
       }
-      // Re-validar rol y estado activo desde DB en cada renovación de token
+      // Re-validar rol desde DB en cada renovación (detecta cambios de rol)
       if (!user && token.id) {
         const dbUser = await prisma.user.findUnique({
           where: { id: token.id as string },
           select: { role: true, isActive: true },
         })
-        if (!dbUser || !dbUser.isActive) return {}
-        token.role = dbUser.role
+        if (dbUser?.isActive) {
+          token.role = dbUser.role
+        } else {
+          // Usuario inactivo: borrar rol para que el middleware rechace la sesión
+          delete token.role
+        }
       }
       return token
     },

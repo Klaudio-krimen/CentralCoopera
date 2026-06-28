@@ -14,7 +14,7 @@ export async function GET() {
   const latest = await prisma.position.findMany({
     where: { tracker: { isActive: true } },
     distinct: ['trackerId'],
-    orderBy: { recordedAt: 'desc' },
+    orderBy: [{ trackerId: 'asc' }, { recordedAt: 'desc' }],
     include: { tracker: { select: { label: true, kind: true } } },
   })
 

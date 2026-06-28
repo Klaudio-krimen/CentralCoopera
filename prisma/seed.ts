@@ -169,6 +169,32 @@ async function main() {
     }),
   ])
 
+  // ── Trackers ──────────────────────────────────────────────
+  const trackerChofer1 = await prisma.tracker.upsert({
+    where:  { userId: chofer1.id },
+    update: {},
+    create: { label: chofer1.name, type: 'USUARIO', kind: 'CHOFER', userId: chofer1.id },
+  })
+  const trackerChofer2 = await prisma.tracker.upsert({
+    where:  { userId: chofer2.id },
+    update: {},
+    create: { label: chofer2.name, type: 'USUARIO', kind: 'CHOFER', userId: chofer2.id },
+  })
+  // Dispositivo GPS de demo (sin login) para probar el camino x-device-key
+  await prisma.tracker.upsert({
+    where:  { deviceKey: 'GPS-001-DEMO' },
+    update: {},
+    create: { label: 'GPS-001', type: 'DISPOSITIVO', kind: 'RECICLADOR', deviceKey: 'GPS-001-DEMO' },
+  })
+
+  // ── Posiciones de demo (cerca de Santiago) ────────────────
+  await prisma.position.create({
+    data: { trackerId: trackerChofer1.id, lat: -33.447, lng: -70.673, source: 'phone' },
+  })
+  await prisma.position.create({
+    data: { trackerId: trackerChofer2.id, lat: -33.421, lng: -70.610, source: 'phone' },
+  })
+
   console.log('Seed completado. Cambia las contraseñas antes de usar en producción.')
 }
 

@@ -11,6 +11,7 @@ import {
   Users,
   Buildings,
   FileText,
+  MapPin,
   SignOut,
   GearSix,
 } from '@phosphor-icons/react'
@@ -18,6 +19,7 @@ import {
 const NAV = [
   { href: '/admin/dashboard',     label: 'Dashboard',     icon: ChartBar },
   { href: '/admin/ordenes',       label: 'Órdenes',       icon: Truck },
+  { href: '/admin/mapa',          label: 'Mapa',          icon: MapPin },
   { href: '/admin/discrepancias', label: 'Discrepancias', icon: Warning },
   { href: '/admin/choferes',      label: 'Choferes',      icon: Users },
   { href: '/admin/empresas',      label: 'Empresas',      icon: Buildings },

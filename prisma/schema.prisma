@@ -58,6 +58,7 @@ model User {
   evidencesUploaded Evidence[]   @relation("Uploader")
   discrepanciesFound Discrepancy[] @relation("DetectedBy")
   discrepanciesResolved Discrepancy[] @relation("ResolvedBy")
+  trackers              Tracker[]
 
   @@index([email])
   @@index([role, isActive])
@@ -188,4 +189,46 @@ model Discrepancy {
 model OrderCounter {
   id    String @id @default("singleton")
   count Int    @default(0)
+}
+
+enum TrackerType {
+  USUARIO
+  DISPOSITIVO
+}
+
+enum TrackerKind {
+  CHOFER
+  RECICLADOR
+}
+
+model Tracker {
+  id        String      @id @default(cuid())
+  label     String
+  type      TrackerType
+  kind      TrackerKind
+  isActive  Boolean     @default(true)
+
+  userId    String?     @unique
+  user      User?       @relation(fields: [userId], references: [id])
+
+  deviceKey String?     @unique
+
+  positions Position[]
+  createdAt DateTime    @default(now())
+
+  @@index([kind, isActive])
+}
+
+model Position {
+  id         String   @id @default(cuid())
+  trackerId  String
+  tracker    Tracker  @relation(fields: [trackerId], references: [id], onDelete: Cascade)
+
+  lat        Float
+  lng        Float
+  accuracy   Float?
+  source     String
+  recordedAt DateTime @default(now())
+
+  @@index([trackerId, recordedAt])
 }

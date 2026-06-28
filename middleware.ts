@@ -38,6 +38,6 @@ export const config = {
     '/chofer/:path*',
     '/recepcion/:path*',
     '/admin/:path*',
-    '/api/((?!auth).*)',
+    '/api/((?!auth|posiciones).*)',
   ],
 }

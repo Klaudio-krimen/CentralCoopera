@@ -20,7 +20,11 @@ por la app real TrackResiduos, sirviéndola en el subdominio
 - El "ERP" es el archivo `portal-erp.html`, enlazado en `index.html` (línea 120)
   como botón **"Intranet"**. Es una subpágina estática, no un sistema real.
 - El sitio **ya usa subdominios**: el botón "Aula Virtual" apunta a
-  `https://aula.cooperapro.cl` (línea 119). El patrón subdominio ya funciona en Hostinger.
+  `https://aula.cooperapro.cl` (línea 119), que es una instalación de **Moodle**
+  (subdominio interno de Hostinger, NO Vercel). Por lo tanto `intranet` será el
+  **primer subdominio que apunta a un host externo** (Vercel) — mismo lugar (zona
+  DNS de Hostinger) pero registro `CNAME` a Vercel en vez de un subdominio interno.
+- El sitio estático se subió por el **File Manager del hPanel** de Hostinger.
 - **TrackResiduos** es una app Next.js 14 desplegada en **Vercel**, con base de
   datos **Neon** y almacenamiento **Vercel Blob**. Funcionando.
 

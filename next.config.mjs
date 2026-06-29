@@ -22,7 +22,7 @@ const config = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "img-src 'self' *.public.blob.vercel-storage.com data: blob:",
+              "img-src 'self' *.public.blob.vercel-storage.com https://*.tile.openstreetmap.org data: blob:",
               "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
               "style-src 'self' 'unsafe-inline'",
               "connect-src 'self'",

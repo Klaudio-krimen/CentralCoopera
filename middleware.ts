@@ -20,7 +20,17 @@ export default withAuth(
     if (pathname.startsWith('/recepcion') && token?.role !== 'RECEPCION' && token?.role !== 'ADMIN') {
       return NextResponse.redirect(new URL('/login', req.url))
     }
-    if (pathname.startsWith('/admin') && token?.role !== 'ADMIN') {
+    // Módulos del panel admin: cada uno con su propio set de roles permitidos.
+    // El orden importa — crm/inventario se evalúan antes que el fallback genérico /admin.
+    if (pathname.startsWith('/admin/crm')) {
+      if (token?.role !== 'ADMIN' && token?.role !== 'VENTAS') {
+        return NextResponse.redirect(new URL('/login', req.url))
+      }
+    } else if (pathname.startsWith('/admin/inventario')) {
+      if (token?.role !== 'ADMIN' && token?.role !== 'BODEGA') {
+        return NextResponse.redirect(new URL('/login', req.url))
+      }
+    } else if (pathname.startsWith('/admin') && token?.role !== 'ADMIN') {
       return NextResponse.redirect(new URL('/login', req.url))
     }
 

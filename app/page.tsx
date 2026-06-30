@@ -11,6 +11,8 @@ export default async function RootPage() {
     case 'CHOFER':    redirect('/chofer/dashboard')
     case 'RECEPCION': redirect('/recepcion/dashboard')
     case 'ADMIN':     redirect('/admin/dashboard')
+    case 'VENTAS':    redirect('/admin/crm/clientes')
+    case 'BODEGA':    redirect('/admin/inventario/stock')
     default:          redirect('/login')
   }
 }

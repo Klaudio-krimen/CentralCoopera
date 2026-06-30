@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import { signOut } from 'next-auth/react'
 import {
   Recycle,
@@ -10,21 +10,19 @@ import {
   Warning,
   Truck,
   Users,
-  Buildings,
   FileText,
   MapPin,
   SignOut,
   AddressBook,
-  Stack,
   Package,
   ArrowsLeftRight,
-  Lock,
   type Icon,
 } from '@phosphor-icons/react'
 
 // ── Module definitions ───────────────────────────────────────────────────────
 
 type ModuleKey = 'operaciones' | 'crm' | 'inventario'
+type AppRole = 'ADMIN' | 'VENTAS' | 'BODEGA'
 
 interface NavItem {
   href: string
@@ -37,9 +35,6 @@ interface ModuleDef {
   key: ModuleKey
   label: string
   tag: string
-  live: boolean
-  // accent classes per module — Operaciones=emerald, CRM=blue, Finanzas=amber
-  dot: string
   activeBg: string
   activeText: string
   activeIcon: string
@@ -51,8 +46,6 @@ const MODULES: ModuleDef[] = [
     key: 'operaciones',
     label: 'Operaciones',
     tag: 'Operaciones',
-    live: true,
-    dot: 'bg-emerald-500',
     activeBg: 'bg-emerald-50',
     activeText: 'text-emerald-700',
     activeIcon: 'text-emerald-600',
@@ -61,8 +54,7 @@ const MODULES: ModuleDef[] = [
       { href: '/admin/ordenes', label: 'Órdenes', icon: Truck },
       { href: '/admin/mapa', label: 'Mapa', icon: MapPin },
       { href: '/admin/discrepancias', label: 'Discrepancias', icon: Warning, badge: 'discrepancias' },
-      { href: '/admin/choferes', label: 'Choferes', icon: Users },
-      { href: '/admin/empresas', label: 'Empresas', icon: Buildings },
+      { href: '/admin/choferes', label: 'Equipo', icon: Users },
       { href: '/admin/reportes', label: 'Reportes', icon: FileText },
     ],
   },
@@ -70,48 +62,65 @@ const MODULES: ModuleDef[] = [
     key: 'crm',
     label: 'CRM',
     tag: 'CRM · Clientes',
-    live: false,
-    dot: 'bg-blue-500',
     activeBg: 'bg-blue-50',
     activeText: 'text-blue-700',
     activeIcon: 'text-blue-600',
     nav: [
-      { href: '#', label: 'Clientes', icon: AddressBook },
-      { href: '#', label: 'Taller de pallets', icon: Stack },
-      { href: '#', label: 'Contactos', icon: Users },
+      { href: '/admin/crm/clientes', label: 'Clientes', icon: AddressBook },
     ],
   },
   {
     key: 'inventario',
     label: 'Inventario',
     tag: 'Inventario',
-    live: false,
-    dot: 'bg-amber-500',
     activeBg: 'bg-amber-50',
     activeText: 'text-amber-700',
     activeIcon: 'text-amber-600',
     nav: [
-      { href: '#', label: 'Stock', icon: Package },
-      { href: '#', label: 'Pallets', icon: Stack },
-      { href: '#', label: 'Movimientos', icon: ArrowsLeftRight },
+      { href: '/admin/inventario/stock', label: 'Stock', icon: Package },
+      { href: '/admin/inventario/movimientos', label: 'Movimientos', icon: ArrowsLeftRight },
     ],
   },
 ]
+
+// Qué módulo le corresponde a cada rol no-admin. ADMIN ve los tres.
+const ROLE_MODULE: Partial<Record<AppRole, ModuleKey>> = {
+  VENTAS: 'crm',
+  BODEGA: 'inventario',
+}
 
 // ── Component ────────────────────────────────────────────────────────────────
 
 export default function AdminSidebar({
   userName,
   email,
+  role,
   discrepanciasCount = 0,
 }: {
   userName: string
   email: string
+  role: string
   discrepanciasCount?: number
 }) {
   const path = usePathname()
-  const [active, setActive] = useState<ModuleKey>('operaciones')
-  const mod = MODULES.find((m) => m.key === active)!
+  const router = useRouter()
+
+  const isAdmin = role === 'ADMIN'
+  const visibleModules = isAdmin
+    ? MODULES
+    : MODULES.filter((m) => m.key === ROLE_MODULE[role as AppRole])
+
+  const [active, setActive] = useState<ModuleKey>(visibleModules[0]?.key ?? 'operaciones')
+
+  // El sidebar persiste entre navegaciones dentro de (admin); sincroniza el
+  // módulo resaltado con la ruta real en vez de quedarse en el estado inicial.
+  useEffect(() => {
+    if (path.startsWith('/admin/crm')) setActive('crm')
+    else if (path.startsWith('/admin/inventario')) setActive('inventario')
+    else setActive('operaciones')
+  }, [path])
+
+  const mod = visibleModules.find((m) => m.key === active) ?? visibleModules[0]
 
   const initials = userName
     .split(' ')
@@ -119,6 +128,8 @@ export default function AdminSidebar({
     .map((p) => p[0])
     .join('')
     .toUpperCase()
+
+  if (!mod) return null
 
   return (
     <aside className="hidden lg:flex w-64 shrink-0 flex-col bg-white border-r border-zinc-200/70 min-h-[100dvh] sticky top-0">
@@ -135,48 +146,52 @@ export default function AdminSidebar({
         </div>
       </div>
 
-      {/* Module switcher — segmented control */}
-      <div className="px-4 pb-3">
-        <div className="flex gap-0.5 p-1 rounded-xl bg-zinc-100/80" role="tablist" aria-label="Módulos">
-          {MODULES.map((m) => {
-            const on = m.key === active
-            return (
-              <button
-                key={m.key}
-                role="tab"
-                aria-selected={on}
-                onClick={() => setActive(m.key)}
-                className={`flex-1 flex items-center justify-center gap-1 px-2 py-1.5 rounded-lg text-[12px] font-medium transition-all duration-200 ${
-                  on
-                    ? 'bg-white text-zinc-900 shadow-[0_1px_2px_-1px_rgba(24,24,27,0.12)]'
-                    : 'text-zinc-500 hover:text-zinc-800'
-                }`}
-              >
-                {m.label}
-                {!m.live && <Lock size={9} weight="bold" className="text-zinc-400" aria-label="próximamente" />}
-              </button>
-            )
-          })}
+      {/* Module switcher — solo cuando hay más de un módulo disponible (ADMIN) */}
+      {visibleModules.length > 1 && (
+        <div className="px-4 pb-3">
+          <div className="flex gap-0.5 p-1 rounded-xl bg-zinc-100/80" role="tablist" aria-label="Módulos">
+            {visibleModules.map((m) => {
+              const on = m.key === active
+              return (
+                <button
+                  key={m.key}
+                  role="tab"
+                  aria-selected={on}
+                  onClick={() => router.push(m.nav[0].href)}
+                  className={`flex-1 px-2 py-1.5 rounded-lg text-[12px] font-medium transition-all duration-200 ${
+                    on
+                      ? 'bg-white text-zinc-900 shadow-[0_1px_2px_-1px_rgba(24,24,27,0.12)]'
+                      : 'text-zinc-500 hover:text-zinc-800'
+                  }`}
+                >
+                  {m.label}
+                </button>
+              )
+            })}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Nav */}
       <nav className="flex-1 px-3 py-1 space-y-0.5">
-        {!mod.live && (
-          <p className="px-3 pt-2 pb-3 text-[11px] text-zinc-400 leading-relaxed">
-            Módulo en construcción. Estructura planificada:
-          </p>
-        )}
         {mod.nav.map(({ href, label, icon: Icon, badge }) => {
-          const active = mod.live && path.startsWith(href)
+          const itemActive = path.startsWith(href)
           const showCount = badge === 'discrepancias' && discrepanciasCount > 0
 
-          const inner = (
-            <>
+          return (
+            <Link
+              key={href}
+              href={href}
+              className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm transition-all duration-200 ${
+                itemActive
+                  ? `${mod.activeBg} ${mod.activeText} font-medium`
+                  : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50'
+              }`}
+            >
               <Icon
                 size={17}
-                weight={active ? 'fill' : 'regular'}
-                className={active ? mod.activeIcon : mod.live ? 'text-zinc-400' : 'text-zinc-300'}
+                weight={itemActive ? 'fill' : 'regular'}
+                className={itemActive ? mod.activeIcon : 'text-zinc-400'}
               />
               {label}
               {showCount && (
@@ -184,32 +199,6 @@ export default function AdminSidebar({
                   {discrepanciasCount}
                 </span>
               )}
-            </>
-          )
-
-          if (!mod.live) {
-            return (
-              <div
-                key={label}
-                aria-disabled="true"
-                className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm text-zinc-400 cursor-default border border-dashed border-zinc-200/80"
-              >
-                {inner}
-              </div>
-            )
-          }
-
-          return (
-            <Link
-              key={href}
-              href={href}
-              className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm transition-all duration-200 ${
-                active
-                  ? `${mod.activeBg} ${mod.activeText} font-medium`
-                  : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50'
-              }`}
-            >
-              {inner}
             </Link>
           )
         })}

@@ -7,6 +7,8 @@ import { UserCirclePlus, X, SpinnerGap, Warning } from '@phosphor-icons/react'
 const ROLES = [
   { value: 'CHOFER',    label: 'Chofer' },
   { value: 'RECEPCION', label: 'Recepcionista' },
+  { value: 'VENTAS',    label: 'Encargada de Ventas (CRM)' },
+  { value: 'BODEGA',    label: 'Bodeguero encargado (Inventario)' },
   { value: 'ADMIN',     label: 'Administrador' },
 ]
 

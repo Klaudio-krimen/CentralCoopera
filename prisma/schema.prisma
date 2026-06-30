@@ -14,6 +14,8 @@ enum UserRole {
   CHOFER
   RECEPCION
   ADMIN
+  VENTAS  // Encargada de Ventas — módulo CRM
+  BODEGA  // Bodeguero encargado — módulo Inventario
 }
 
 enum PickupOrderStatus {
@@ -59,6 +61,7 @@ model User {
   discrepanciesFound Discrepancy[] @relation("DetectedBy")
   discrepanciesResolved Discrepancy[] @relation("ResolvedBy")
   trackers              Tracker[]
+  inventoryMovements    InventoryMovement[] @relation("InventoryMovementBy")
 
   @@index([email])
   @@index([role, isActive])
@@ -231,4 +234,51 @@ model Position {
   recordedAt DateTime @default(now())
 
   @@index([trackerId, recordedAt])
+}
+
+// ── Inventario (módulo Bodega) ──────────────────────────────────────────────
+
+enum InventoryCategory {
+  MATERIA_PRIMA
+  PALLET
+  OTRO
+}
+
+enum MovementType {
+  ENTRADA // suma cantidad
+  SALIDA  // resta cantidad
+  AJUSTE  // fija la cantidad a un valor exacto (conteo físico)
+}
+
+model InventoryItem {
+  id        String             @id @default(cuid())
+  name      String
+  category  InventoryCategory  @default(OTRO)
+  quantity  Float              @default(0)
+  unit      String             @default("kg")
+  isActive  Boolean            @default(true)
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+
+  movements InventoryMovement[]
+
+  @@index([isActive])
+  @@index([category])
+}
+
+model InventoryMovement {
+  id       String        @id @default(cuid())
+  itemId   String
+  item     InventoryItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  type     MovementType
+  quantity Float
+  reason   String?
+
+  userId   String
+  user     User          @relation("InventoryMovementBy", fields: [userId], references: [id])
+
+  createdAt DateTime     @default(now())
+
+  @@index([itemId, createdAt])
 }

@@ -1,5 +1,4 @@
 import { prisma } from '@/lib/db'
-import { formatDate } from '@/lib/utils'
 import EmpresaActions from '@/components/ui/EmpresaActions'
 import NuevaEmpresaModal from '@/components/ui/NuevaEmpresaModal'
 import {
@@ -20,17 +19,17 @@ async function getEmpresas() {
   })
 }
 
-export default async function EmpresasPage() {
+export default async function ClientesPage() {
   const empresas = await getEmpresas()
   const activas   = empresas.filter((e) => e.isActive)
   const inactivas = empresas.filter((e) => !e.isActive)
 
   return (
-    <div className="space-y-8 max-w-4xl">
+    <div className="space-y-8">
       {/* Header */}
-      <div className="flex items-start justify-between">
+      <div className="flex items-start justify-between animate-fade-up">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900">Empresas cliente</h1>
+          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900">Clientes</h1>
           <p className="text-zinc-500 text-sm mt-1">
             {activas.length} activa{activas.length !== 1 ? 's' : ''} · {inactivas.length} inactiva{inactivas.length !== 1 ? 's' : ''}
           </p>
@@ -40,13 +39,15 @@ export default async function EmpresasPage() {
 
       {/* Active */}
       {activas.length === 0 ? (
-        <div className="text-center py-16 border-2 border-dashed border-zinc-200 rounded-2xl">
-          <Buildings size={36} className="text-zinc-300 mx-auto mb-3" />
-          <p className="text-zinc-600 font-medium">Sin empresas registradas</p>
-          <p className="text-zinc-400 text-sm mt-1">Agrega la primera empresa cliente</p>
+        <div className="panel text-center py-16 animate-fade-up" style={{ animationDelay: '60ms' }}>
+          <div className="w-12 h-12 rounded-2xl bg-zinc-100 flex items-center justify-center mx-auto mb-3">
+            <Buildings size={22} className="text-zinc-400" />
+          </div>
+          <p className="text-zinc-700 font-medium">Sin empresas registradas</p>
+          <p className="text-zinc-500 text-sm mt-1">Agrega la primera empresa cliente</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 animate-fade-up" style={{ animationDelay: '60ms' }}>
           {activas.map((empresa) => (
             <EmpresaCard key={empresa.id} empresa={empresa as any} />
           ))}
@@ -56,7 +57,7 @@ export default async function EmpresasPage() {
       {/* Inactive */}
       {inactivas.length > 0 && (
         <div className="space-y-3">
-          <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Inactivas</p>
+          <p className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">Inactivas</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {inactivas.map((empresa) => (
               <EmpresaCard key={empresa.id} empresa={empresa as any} muted />
@@ -91,7 +92,7 @@ function EmpresaCard({
         <div className="min-w-0">
           <p className="text-sm font-semibold text-zinc-900 leading-tight">{empresa.name}</p>
           {empresa.address && (
-            <p className="text-xs text-zinc-400 mt-0.5 truncate">{empresa.address}</p>
+            <p className="text-xs text-zinc-500 mt-0.5 truncate">{empresa.address}</p>
           )}
         </div>
         <div className="flex items-center gap-1 shrink-0">
@@ -120,8 +121,8 @@ function EmpresaCard({
       </div>
 
       {/* Footer */}
-      <div className="flex items-center justify-between pt-1 border-t border-zinc-50">
-        <div className="flex items-center gap-1.5 text-xs text-zinc-400">
+      <div className="flex items-center justify-between pt-1 border-t border-zinc-100">
+        <div className="flex items-center gap-1.5 text-xs text-zinc-500">
           <Package size={12} />
           {empresa._count.orders} orden{empresa._count.orders !== 1 ? 'es' : ''}
         </div>

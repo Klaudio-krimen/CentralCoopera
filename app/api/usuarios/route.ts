@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
   if (!email?.trim())    return apiError('Email requerido')
   if (!password?.trim()) return apiError('Contraseña requerida')
   if (password.length < 8) return apiError('La contraseña debe tener al menos 8 caracteres')
-  if (!['CHOFER', 'RECEPCION', 'ADMIN'].includes(role)) {
+  if (!['CHOFER', 'RECEPCION', 'ADMIN', 'VENTAS', 'BODEGA'].includes(role)) {
     return apiError('Rol inválido')
   }
 

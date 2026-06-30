@@ -38,11 +38,13 @@ export async function GET(req: NextRequest) {
   return NextResponse.json(companies)
 }
 
-// POST /api/empresas — solo ADMIN
+// POST /api/empresas — ADMIN o VENTAS (módulo CRM)
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions)
   if (!session) return apiError('No autorizado', 401)
-  if (session.user.role !== 'ADMIN') return apiError('Acceso denegado', 403)
+  if (session.user.role !== 'ADMIN' && session.user.role !== 'VENTAS') {
+    return apiError('Acceso denegado', 403)
+  }
 
   const body = await req.json()
   const { name, address, contactName, contactPhone } = body
@@ -61,11 +63,13 @@ export async function POST(req: NextRequest) {
   return NextResponse.json(company, { status: 201 })
 }
 
-// PATCH /api/empresas — editar empresa (solo ADMIN)
+// PATCH /api/empresas — editar empresa (ADMIN o VENTAS)
 export async function PATCH(req: NextRequest) {
   const session = await getServerSession(authOptions)
   if (!session) return apiError('No autorizado', 401)
-  if (session.user.role !== 'ADMIN') return apiError('Acceso denegado', 403)
+  if (session.user.role !== 'ADMIN' && session.user.role !== 'VENTAS') {
+    return apiError('Acceso denegado', 403)
+  }
 
   const body = await req.json()
   const { id, name, address, contactName, contactPhone, isActive } = body

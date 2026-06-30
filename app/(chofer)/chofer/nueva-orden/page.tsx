@@ -61,9 +61,9 @@ const STEP_LABELS: Record<Step, string> = {
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
 const slideVariants = {
-  enter: (dir: number) => ({ x: dir > 0 ? 40 : -40, opacity: 0 }),
+  enter: (dir: number) => ({ x: dir > 0 ? 20 : -20, opacity: 0 }),
   center: { x: 0, opacity: 1 },
-  exit: (dir: number) => ({ x: dir > 0 ? -40 : 40, opacity: 0 }),
+  exit: (dir: number) => ({ x: dir > 0 ? -20 : 20, opacity: 0 }),
 }
 
 // ── Component ────────────────────────────────────────────────────────────────
@@ -246,13 +246,14 @@ export default function NuevaOrdenPage() {
         <div className="flex items-center gap-3 mb-4">
           <button
             onClick={() => (step === 1 ? router.back() : goTo((step - 1) as Step))}
-            className="w-8 h-8 rounded-lg hover:bg-zinc-100 flex items-center justify-center transition-colors"
+            aria-label="Volver al paso anterior"
+            className="w-9 h-9 rounded-lg hover:bg-zinc-100 active:translate-y-[1px] flex items-center justify-center transition-all"
           >
             <ArrowLeft size={18} className="text-zinc-600" />
           </button>
           <div className="flex-1">
-            <p className="text-xs text-zinc-400 font-medium">
-              Paso {step} de 5 — {STEP_LABELS[step]}
+            <p className="text-xs text-zinc-500 font-medium">
+              <span className="font-mono tabular-nums">Paso {step} de 5</span> — {STEP_LABELS[step]}
             </p>
           </div>
         </div>
@@ -297,12 +298,12 @@ export default function NuevaOrdenPage() {
                 <div className="relative">
                   <MagnifyingGlass
                     size={16}
-                    className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400"
+                    className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500"
                   />
                   {searchLoading && (
                     <SpinnerGap
                       size={16}
-                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-400 animate-spin"
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-500 animate-spin"
                     />
                   )}
                   <input
@@ -332,7 +333,7 @@ export default function NuevaOrdenPage() {
                           <div>
                             <p className="text-sm font-medium text-zinc-900">{emp.name}</p>
                             {emp.address && (
-                              <p className="text-xs text-zinc-400 mt-0.5 truncate max-w-[240px]">
+                              <p className="text-xs text-zinc-500 mt-0.5 truncate max-w-[240px]">
                                 {emp.address}
                               </p>
                             )}
@@ -350,7 +351,7 @@ export default function NuevaOrdenPage() {
                       <CheckCircle size={20} weight="fill" className="text-emerald-500 shrink-0" />
                       <div>
                         <p className="text-sm font-medium text-zinc-900">{empresa.name}</p>
-                        <p className="text-xs text-zinc-400 mt-0.5">Empresa seleccionada</p>
+                        <p className="text-xs text-zinc-500 mt-0.5">Empresa seleccionada</p>
                       </div>
                     </div>
                   </div>
@@ -359,7 +360,7 @@ export default function NuevaOrdenPage() {
                 {error && <ErrorBanner message={error} />}
 
                 {loading && (
-                  <div className="flex items-center justify-center gap-2 py-4 text-zinc-400 text-sm">
+                  <div className="flex items-center justify-center gap-2 py-4 text-zinc-500 text-sm">
                     <SpinnerGap size={16} className="animate-spin" />
                     Creando orden...
                   </div>
@@ -385,13 +386,13 @@ export default function NuevaOrdenPage() {
                   {items.map((item, idx) => (
                     <div key={item.id} className="card p-4 space-y-3">
                       <div className="flex items-center justify-between">
-                        <p className="text-xs font-medium text-zinc-400">Material {idx + 1}</p>
+                        <p className="text-xs font-medium text-zinc-500">Material {idx + 1}</p>
                         <button
                           type="button"
                           onClick={() => removeItem(item.id)}
                           className="w-6 h-6 rounded-md hover:bg-red-50 flex items-center justify-center transition-colors group"
                         >
-                          <Trash size={14} className="text-zinc-400 group-hover:text-red-500 transition-colors" />
+                          <Trash size={14} className="text-zinc-500 group-hover:text-red-500 transition-colors" />
                         </button>
                       </div>
 
@@ -450,7 +451,7 @@ export default function NuevaOrdenPage() {
                 </button>
 
                 {items.length === 0 && (
-                  <div className="flex items-center gap-2 text-zinc-400 text-xs">
+                  <div className="flex items-center gap-2 text-zinc-500 text-xs">
                     <Package size={14} />
                     <span>Agrega al menos un material para continuar</span>
                   </div>
@@ -536,16 +537,16 @@ export default function NuevaOrdenPage() {
                 <div className="card divide-y divide-zinc-50">
                   {/* Empresa */}
                   <div className="px-4 py-3 flex items-center gap-3">
-                    <Buildings size={16} className="text-zinc-400 shrink-0" />
+                    <Buildings size={16} className="text-zinc-500 shrink-0" />
                     <div>
-                      <p className="text-xs text-zinc-400">Empresa</p>
+                      <p className="text-xs text-zinc-500">Empresa</p>
                       <p className="text-sm font-medium text-zinc-900">{empresa?.name}</p>
                     </div>
                   </div>
 
                   {/* Items */}
                   <div className="px-4 py-3">
-                    <p className="text-xs text-zinc-400 mb-2">Materiales</p>
+                    <p className="text-xs text-zinc-500 mb-2">Materiales</p>
                     <div className="space-y-1.5">
                       {items.map((item) => {
                         const mt = materialTypes.find((m) => m.id === item.materialTypeId)
@@ -563,18 +564,18 @@ export default function NuevaOrdenPage() {
 
                   {/* Photos */}
                   <div className="px-4 py-3 flex items-center gap-3">
-                    <Camera size={16} className="text-zinc-400 shrink-0" />
+                    <Camera size={16} className="text-zinc-500 shrink-0" />
                     <div>
-                      <p className="text-xs text-zinc-400">Fotos</p>
+                      <p className="text-xs text-zinc-500">Fotos</p>
                       <p className="text-sm font-medium text-zinc-900">{photos.length} foto{photos.length !== 1 ? 's' : ''} adjunta{photos.length !== 1 ? 's' : ''}</p>
                     </div>
                   </div>
 
                   {/* Firma */}
                   <div className="px-4 py-3 flex items-center gap-3">
-                    <PenNib size={16} className="text-zinc-400 shrink-0" />
+                    <PenNib size={16} className="text-zinc-500 shrink-0" />
                     <div>
-                      <p className="text-xs text-zinc-400">Firmado por</p>
+                      <p className="text-xs text-zinc-500">Firmado por</p>
                       <p className="text-sm font-medium text-zinc-900">{signerName}</p>
                     </div>
                   </div>

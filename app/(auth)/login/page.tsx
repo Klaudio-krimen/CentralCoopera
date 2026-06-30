@@ -59,8 +59,8 @@ export default function LoginPage() {
             <Recycle size={20} weight="bold" className="text-white" />
           </div>
           <div>
-            <p className="text-white font-semibold text-base leading-none">TrackResiduos</p>
-            <p className="text-zinc-500 text-xs mt-0.5 leading-none">Coopera Pro</p>
+            <p className="text-white font-semibold text-base leading-none tracking-tight">Central Coopera</p>
+            <p className="text-zinc-500 text-xs mt-1 leading-none">Intranet operativa</p>
           </div>
         </div>
 
@@ -70,26 +70,26 @@ export default function LoginPage() {
             Cadena de custodia
           </p>
           <h1 className="text-[3.25rem] font-semibold tracking-tight text-white leading-[1.05] mb-5">
-            Cada kilo<br />
-            <span className="text-emerald-400">cuenta.</span>
+            Trazabilidad<br />
+            <span className="text-emerald-400">Interna.</span>
           </h1>
           <p className="text-zinc-400 text-base leading-relaxed max-w-[340px]">
-            Registro completo desde el retiro en la empresa cliente hasta la recepción en bodega. Sin grietas.
+            Registro completo, sistema de operación y GPS track de vehículos de la empresa.
           </p>
 
-          {/* Stats */}
+          {/* Módulos */}
           <div className="mt-10 grid grid-cols-3 gap-3">
             {[
-              { value: '100%', label: 'Trazabilidad' },
-              { value: '≤ 2%', label: 'Tolerancia' },
-              { value: 'Tiempo real', label: 'Registro' },
-            ].map((s) => (
+              { name: 'Operaciones', desc: 'Choferes · GPS' },
+              { name: 'CRM', desc: 'Clientes' },
+              { name: 'Inventario', desc: 'Pallets · stock' },
+            ].map((m) => (
               <div
-                key={s.label}
+                key={m.name}
                 className="border border-zinc-800 rounded-xl p-4 bg-zinc-900/40 backdrop-blur-sm"
               >
-                <p className="text-emerald-400 font-semibold text-lg leading-none">{s.value}</p>
-                <p className="text-zinc-600 text-xs mt-1">{s.label}</p>
+                <p className="text-emerald-400 font-semibold text-[15px] tracking-tight leading-none">{m.name}</p>
+                <p className="text-zinc-500 text-[11px] mt-1.5">{m.desc}</p>
               </div>
             ))}
           </div>
@@ -109,7 +109,7 @@ export default function LoginPage() {
             <div className="w-9 h-9 rounded-xl bg-emerald-500 flex items-center justify-center">
               <Recycle size={17} weight="bold" className="text-white" />
             </div>
-            <p className="text-zinc-900 font-semibold">TrackResiduos</p>
+            <p className="text-zinc-900 font-semibold tracking-tight">Central Coopera</p>
           </div>
 
           <div className="mb-8">
@@ -154,7 +154,8 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setShowPw(!showPw)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 transition-colors"
+                  aria-label={showPw ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 transition-colors"
                   tabIndex={-1}
                 >
                   {showPw ? <EyeSlash size={18} /> : <Eye size={18} />}

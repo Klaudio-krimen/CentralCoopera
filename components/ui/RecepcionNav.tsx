@@ -18,12 +18,12 @@ export default function RecepcionNav({ userName }: { userName: string }) {
       <div className="max-w-4xl mx-auto px-6 h-14 flex items-center justify-between">
         {/* Logo */}
         <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-lg bg-emerald-500 flex items-center justify-center">
-            <Recycle size={14} weight="bold" className="text-white" />
+          <div className="w-8 h-8 rounded-xl bg-emerald-500 flex items-center justify-center shadow-[inset_0_0_0_1px_rgba(255,255,255,0.12)]">
+            <Recycle size={15} weight="bold" className="text-white" />
           </div>
-          <span className="font-semibold text-zinc-900 text-sm">TrackResiduos</span>
+          <span className="font-semibold text-zinc-900 text-sm tracking-tight">Central Coopera</span>
           <span className="text-zinc-300 text-sm">·</span>
-          <span className="text-xs text-zinc-400 font-medium">Recepción</span>
+          <span className="text-xs text-zinc-500 font-medium">Recepción</span>
         </div>
 
         {/* Nav */}
@@ -49,9 +49,10 @@ export default function RecepcionNav({ userName }: { userName: string }) {
 
         {/* User */}
         <div className="flex items-center gap-3">
-          <p className="text-xs text-zinc-400 hidden sm:block truncate max-w-[120px]">{userName}</p>
+          <p className="text-xs text-zinc-500 hidden sm:block truncate max-w-[120px]">{userName}</p>
           <button
             onClick={() => signOut({ callbackUrl: '/login' })}
+            aria-label="Cerrar sesión"
             className="flex items-center gap-1.5 text-xs text-zinc-500 hover:text-red-600 transition-colors"
           >
             <SignOut size={15} />

@@ -44,32 +44,37 @@ canvas {
 @layer components {
   .input-base {
     @apply w-full px-4 py-3 rounded-xl border border-zinc-200 bg-white text-zinc-900 text-sm
-      placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20
-      focus:border-emerald-500 transition-colors duration-150;
+      placeholder-zinc-400 focus:outline-none focus:ring-[3px] focus:ring-emerald-500/15
+      focus:border-emerald-500 transition-[box-shadow,border-color] duration-200;
   }
 
   .btn-primary {
     @apply flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-emerald-500
-      text-white font-medium text-sm hover:bg-emerald-600 active:scale-[0.98] active:bg-emerald-700
-      transition-all duration-150 disabled:opacity-40 disabled:cursor-not-allowed
-      disabled:active:scale-100 select-none;
+      text-white font-medium text-sm hover:bg-emerald-600 active:translate-y-[1px] active:bg-emerald-700
+      transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]
+      disabled:opacity-40 disabled:cursor-not-allowed disabled:active:translate-y-0 select-none;
   }
 
   .btn-secondary {
     @apply flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl border border-zinc-200
-      bg-white text-zinc-700 font-medium text-sm hover:bg-zinc-50 active:scale-[0.98]
-      transition-all duration-150 select-none;
+      bg-white text-zinc-700 font-medium text-sm hover:bg-zinc-50 hover:border-zinc-300
+      active:translate-y-[1px] transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] select-none;
   }
 
   .btn-ghost {
-    @apply flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-zinc-500
-      text-sm hover:bg-zinc-100 hover:text-zinc-700 active:scale-[0.98]
-      transition-all duration-150 select-none;
+    @apply flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-zinc-600
+      text-sm hover:bg-zinc-100 hover:text-zinc-900 active:translate-y-[1px]
+      transition-all duration-200 select-none;
   }
 
+  /* Anti-card-overuse: .card is for genuine elevation only. Flat groups use .panel. */
   .card {
-    @apply bg-white rounded-2xl border border-zinc-100
-      shadow-[0_2px_8px_-2px_rgba(0,0,0,0.06)];
+    @apply bg-white rounded-2xl border border-zinc-200/70
+      shadow-[0_1px_2px_-1px_rgba(24,24,27,0.05)];
+  }
+
+  .panel {
+    @apply rounded-2xl border border-zinc-200/70 bg-white;
   }
 
   .skeleton {

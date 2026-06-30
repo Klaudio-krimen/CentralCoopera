@@ -17,18 +17,20 @@ export default function ChoferHeader({ userName }: { userName: string }) {
     <header className="sticky top-0 z-20 bg-zinc-50/90 backdrop-blur-md border-b border-zinc-100 px-4 py-3">
       <div className="flex items-center justify-between">
         {/* Logo */}
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-emerald-500 flex items-center justify-center">
-            <Recycle size={14} weight="bold" className="text-white" />
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-xl bg-emerald-500 flex items-center justify-center shadow-[inset_0_0_0_1px_rgba(255,255,255,0.12)]">
+            <Recycle size={15} weight="bold" className="text-white" />
           </div>
-          <span className="font-semibold text-zinc-900 text-sm">TrackResiduos</span>
+          <span className="font-semibold text-zinc-900 text-sm tracking-tight">Central Coopera</span>
         </div>
 
         {/* Avatar menu */}
         <div className="relative">
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className="w-8 h-8 rounded-full bg-zinc-200 flex items-center justify-center text-xs font-semibold text-zinc-700 hover:bg-zinc-300 transition-colors"
+            aria-label="Menú de usuario"
+            aria-expanded={menuOpen}
+            className="w-9 h-9 rounded-full bg-zinc-200 flex items-center justify-center text-xs font-semibold text-zinc-700 hover:bg-zinc-300 active:translate-y-[1px] transition-all"
           >
             {initials || <User size={14} />}
           </button>

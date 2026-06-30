@@ -39,7 +39,7 @@ export default async function OrdenDetailPage({ params, searchParams }: {
   const isSuccess = searchParams.success === '1'
 
   return (
-    <div className="pt-4 pb-8 space-y-5">
+    <div className="pt-4 pb-8 space-y-5 animate-fade-up">
       {/* Back */}
       <Link
         href="/chofer/dashboard"
@@ -65,9 +65,9 @@ export default async function OrdenDetailPage({ params, searchParams }: {
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-xs font-mono text-zinc-400">{order.orderCode}</p>
+          <p className="text-xs font-mono text-zinc-500 tabular-nums">{order.orderCode}</p>
           <h1 className="text-lg font-semibold text-zinc-900 mt-0.5">{order.company.name}</h1>
-          <p className="text-xs text-zinc-400 mt-1">
+          <p className="text-xs text-zinc-500 mt-1">
             {formatDate(order.createdAt)} · {formatTime(order.createdAt)}
           </p>
         </div>
@@ -76,13 +76,13 @@ export default async function OrdenDetailPage({ params, searchParams }: {
 
       {/* Empresa */}
       <div className="card p-4 space-y-2">
-        <p className="text-xs font-medium text-zinc-400 uppercase tracking-wider">Empresa</p>
+        <p className="text-xs font-medium text-zinc-500 uppercase tracking-wider">Empresa</p>
         <div className="flex items-start gap-3">
-          <Buildings size={16} className="text-zinc-400 mt-0.5 shrink-0" />
+          <Buildings size={16} className="text-zinc-500 mt-0.5 shrink-0" />
           <div>
             <p className="text-sm font-medium text-zinc-900">{order.company.name}</p>
             {order.company.address && (
-              <p className="text-xs text-zinc-400 mt-0.5">{order.company.address}</p>
+              <p className="text-xs text-zinc-500 mt-0.5">{order.company.address}</p>
             )}
           </div>
         </div>
@@ -90,9 +90,9 @@ export default async function OrdenDetailPage({ params, searchParams }: {
 
       {/* Materials */}
       <div className="card p-4 space-y-3">
-        <p className="text-xs font-medium text-zinc-400 uppercase tracking-wider">Materiales declarados</p>
+        <p className="text-xs font-medium text-zinc-500 uppercase tracking-wider">Materiales declarados</p>
         {order.items.length === 0 ? (
-          <p className="text-sm text-zinc-400 flex items-center gap-2">
+          <p className="text-sm text-zinc-500 flex items-center gap-2">
             <Package size={14} />
             Sin materiales
           </p>
@@ -113,7 +113,7 @@ export default async function OrdenDetailPage({ params, searchParams }: {
       {/* Photos */}
       {order.evidences.length > 0 && (
         <div className="space-y-2">
-          <p className="text-xs font-medium text-zinc-400 uppercase tracking-wider">
+          <p className="text-xs font-medium text-zinc-500 uppercase tracking-wider">
             Fotos ({order.evidences.length})
           </p>
           <div className="grid grid-cols-3 gap-2">
@@ -129,12 +129,12 @@ export default async function OrdenDetailPage({ params, searchParams }: {
       {/* Signature */}
       {order.signatureImagePath && (
         <div className="card p-4 space-y-3">
-          <p className="text-xs font-medium text-zinc-400 uppercase tracking-wider">Firma del cliente</p>
+          <p className="text-xs font-medium text-zinc-500 uppercase tracking-wider">Firma del cliente</p>
           <div className="relative h-28 rounded-xl overflow-hidden bg-zinc-50 border border-zinc-100">
             <Image src={order.signatureImagePath} alt="Firma" fill className="object-contain" sizes="400px" />
           </div>
           <div className="flex items-center gap-2">
-            <PenNib size={14} className="text-zinc-400" />
+            <PenNib size={14} className="text-zinc-500" />
             <p className="text-sm text-zinc-700">{order.clientSignerName}</p>
           </div>
         </div>
@@ -142,9 +142,9 @@ export default async function OrdenDetailPage({ params, searchParams }: {
 
       {/* Geolocation */}
       {order.pickupLat && order.pickupLng && (
-        <div className="flex items-center gap-2 text-xs text-zinc-400">
+        <div className="flex items-center gap-2 text-xs text-zinc-500">
           <MapPin size={13} />
-          <span>
+          <span className="font-mono tabular-nums">
             GPS: {Number(order.pickupLat).toFixed(5)}, {Number(order.pickupLng).toFixed(5)}
           </span>
         </div>

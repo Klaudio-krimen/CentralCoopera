@@ -4,8 +4,8 @@ import { GeistMono } from 'geist/font/mono'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'TrackResiduos — Coopera Pro',
-  description: 'Sistema de trazabilidad de materiales reciclables',
+  title: 'Central Coopera',
+  description: 'Intranet operativa de Coopera Pro — operaciones, clientes y finanzas',
   manifest: '/manifest.json',
 }
 

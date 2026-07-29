@@ -8,24 +8,25 @@ function canAccessCrm(role: string) {
   return role === 'ADMIN' || role === 'VENTAS'
 }
 
-// GET /api/actividades?companyId=xxx — timeline de una empresa, más reciente primero
+// GET /api/actividades?companyId=xxx — timeline de una empresa
+// GET /api/actividades — listado global (todas las empresas), más reciente primero
 export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions)
   if (!session) return apiError('No autorizado', 401)
   if (!canAccessCrm(session.user.role)) return apiError('Acceso denegado', 403)
 
   const companyId = req.nextUrl.searchParams.get('companyId')
-  if (!companyId) return apiError('companyId requerido')
 
   const activities = await prisma.activity.findMany({
-    where: { companyId },
+    where: companyId ? { companyId } : {},
     include: {
       contact: { select: { name: true } },
       deal: { select: { title: true } },
       createdBy: { select: { name: true } },
+      ...(companyId ? {} : { company: { select: { name: true } } }),
     },
     orderBy: { createdAt: 'desc' },
-    take: 50,
+    take: companyId ? 50 : 200,
   })
 
   return NextResponse.json(activities)

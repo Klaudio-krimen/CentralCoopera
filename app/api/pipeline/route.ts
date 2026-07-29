@@ -3,26 +3,10 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { apiError } from '@/lib/utils'
+import { ensurePipelineStages } from '@/lib/pipeline'
 
 function canAccessCrm(role: string) {
   return role === 'ADMIN' || role === 'VENTAS'
-}
-
-const DEFAULT_STAGES = [
-  { name: 'Prospecto', order: 1, color: '#64748b', isWon: false, isLost: false },
-  { name: 'Contactado', order: 2, color: '#2563eb', isWon: false, isLost: false },
-  { name: 'Propuesta', order: 3, color: '#8b5cf6', isWon: false, isLost: false },
-  { name: 'Negociación', order: 4, color: '#ea580c', isWon: false, isLost: false },
-  { name: 'Cerrado ganado', order: 5, color: '#16a34a', isWon: true, isLost: false },
-  { name: 'Cerrado perdido', order: 6, color: '#dc2626', isWon: false, isLost: true },
-]
-
-// Auto-siembra las etapas por defecto la primera vez que alguien abre el pipeline.
-async function ensureStages() {
-  const count = await prisma.pipelineStage.count()
-  if (count === 0) {
-    await prisma.pipelineStage.createMany({ data: DEFAULT_STAGES })
-  }
 }
 
 // GET /api/pipeline — etapas con sus deals (para el tablero Kanban)
@@ -31,7 +15,7 @@ export async function GET() {
   if (!session) return apiError('No autorizado', 401)
   if (!canAccessCrm(session.user.role)) return apiError('Acceso denegado', 403)
 
-  await ensureStages()
+  await ensurePipelineStages()
 
   const stages = await prisma.pipelineStage.findMany({
     orderBy: { order: 'asc' },
@@ -39,7 +23,7 @@ export async function GET() {
       deals: {
         include: {
           company: { select: { name: true } },
-          contact: { select: { name: true } },
+          contact: { select: { name: true, temperature: true } },
         },
         orderBy: { updatedAt: 'desc' },
       },

@@ -11,14 +11,23 @@ interface ContactoInitial {
   email: string | null
   phone: string | null
   notes: string | null
+  temperature?: 'FRIO' | 'TIBIO' | 'CALIENTE'
+  score?: number
+}
+
+interface EmpresaOption {
+  id: string
+  name: string
 }
 
 export default function ContactoModal({
   companyId,
+  empresas,
   initialData,
   trigger,
 }: {
-  companyId: string
+  companyId?: string
+  empresas?: EmpresaOption[]
   initialData?: ContactoInitial
   trigger?: React.ReactNode
 }) {
@@ -29,11 +38,14 @@ export default function ContactoModal({
   const router = useRouter()
 
   const [form, setForm] = useState({
+    companyId: companyId ?? '',
     name: initialData?.name ?? '',
     role: initialData?.role ?? '',
     email: initialData?.email ?? '',
     phone: initialData?.phone ?? '',
     notes: initialData?.notes ?? '',
+    temperature: initialData?.temperature ?? 'FRIO',
+    score: String(initialData?.score ?? 0),
   })
 
   const set = (k: keyof typeof form, v: string) => setForm((f) => ({ ...f, [k]: v }))
@@ -43,10 +55,13 @@ export default function ContactoModal({
     setLoading(true)
     setError('')
     try {
+      const body = isEdit
+        ? { id: initialData!.id, ...form }
+        : { ...form, companyId: companyId ?? form.companyId }
       const res = await fetch('/api/contactos', {
         method: isEdit ? 'PATCH' : 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(isEdit ? { id: initialData!.id, ...form } : { companyId, ...form }),
+        body: JSON.stringify(body),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
@@ -58,6 +73,8 @@ export default function ContactoModal({
       setLoading(false)
     }
   }
+
+  const needsCompanySelect = !companyId && !isEdit && empresas
 
   return (
     <>
@@ -87,6 +104,23 @@ export default function ContactoModal({
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
+              {needsCompanySelect && (
+                <div className="space-y-1.5">
+                  <label className="block text-sm font-medium text-zinc-700">Empresa *</label>
+                  <select
+                    value={form.companyId}
+                    onChange={(e) => set('companyId', e.target.value)}
+                    className="input-base"
+                    required
+                  >
+                    <option value="">Selecciona una empresa...</option>
+                    {empresas!.map((emp) => (
+                      <option key={emp.id} value={emp.id}>{emp.name}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
                   <label className="block text-sm font-medium text-zinc-700">Nombre *</label>
@@ -130,6 +164,33 @@ export default function ContactoModal({
                     onChange={(e) => set('phone', e.target.value)}
                     placeholder="+56 9 xxxx xxxx"
                     className="input-base"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <label className="block text-sm font-medium text-zinc-700">Temperatura</label>
+                  <select
+                    value={form.temperature}
+                    onChange={(e) => set('temperature', e.target.value)}
+                    className="input-base"
+                  >
+                    <option value="FRIO">Frío</option>
+                    <option value="TIBIO">Tibio</option>
+                    <option value="CALIENTE">Caliente</option>
+                  </select>
+                </div>
+                <div className="space-y-1.5">
+                  <label className="block text-sm font-medium text-zinc-700">Score (0-100)</label>
+                  <input
+                    type="number"
+                    inputMode="numeric"
+                    min="0"
+                    max="100"
+                    value={form.score}
+                    onChange={(e) => set('score', e.target.value)}
+                    className="input-base font-mono"
                   />
                 </div>
               </div>

@@ -2,24 +2,48 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/db'
-import { apiError } from '@/lib/utils'
+import { apiError, clamp } from '@/lib/utils'
 
 function canAccessCrm(role: string) {
   return role === 'ADMIN' || role === 'VENTAS'
 }
 
-// GET /api/contactos?companyId=xxx
+const TEMPERATURES = ['FRIO', 'TIBIO', 'CALIENTE']
+
+// GET /api/contactos?companyId=xxx — contactos de una empresa
+// GET /api/contactos?temperature=CALIENTE&search=texto — listado global (todas las empresas)
 export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions)
   if (!session) return apiError('No autorizado', 401)
   if (!canAccessCrm(session.user.role)) return apiError('Acceso denegado', 403)
 
   const companyId = req.nextUrl.searchParams.get('companyId')
-  if (!companyId) return apiError('companyId requerido')
+  const temperature = req.nextUrl.searchParams.get('temperature')
+  const search = req.nextUrl.searchParams.get('search')
+
+  if (companyId) {
+    const contacts = await prisma.contact.findMany({
+      where: { companyId, isActive: true },
+      orderBy: { name: 'asc' },
+    })
+    return NextResponse.json(contacts)
+  }
 
   const contacts = await prisma.contact.findMany({
-    where: { companyId, isActive: true },
-    orderBy: { name: 'asc' },
+    where: {
+      isActive: true,
+      ...(temperature && TEMPERATURES.includes(temperature) ? { temperature: temperature as any } : {}),
+      ...(search
+        ? {
+            OR: [
+              { name: { contains: search, mode: 'insensitive' } },
+              { email: { contains: search, mode: 'insensitive' } },
+            ],
+          }
+        : {}),
+    },
+    include: { company: { select: { name: true } } },
+    orderBy: { createdAt: 'desc' },
   })
 
   return NextResponse.json(contacts)
@@ -31,10 +55,13 @@ export async function POST(req: NextRequest) {
   if (!session) return apiError('No autorizado', 401)
   if (!canAccessCrm(session.user.role)) return apiError('Acceso denegado', 403)
 
-  const { companyId, name, role, email, phone, notes } = await req.json()
+  const { companyId, name, role, email, phone, notes, temperature, score } = await req.json()
 
   if (!companyId) return apiError('companyId requerido')
   if (!name?.trim()) return apiError('El nombre es requerido')
+  if (temperature !== undefined && !TEMPERATURES.includes(temperature)) {
+    return apiError('Temperatura inválida')
+  }
 
   const contact = await prisma.contact.create({
     data: {
@@ -44,6 +71,8 @@ export async function POST(req: NextRequest) {
       email: email?.trim() || null,
       phone: phone?.trim() || null,
       notes: notes?.trim() || null,
+      ...(temperature !== undefined ? { temperature } : {}),
+      ...(score !== undefined ? { score: clamp(Number(score) || 0, 0, 100) } : {}),
     },
   })
 
@@ -56,8 +85,11 @@ export async function PATCH(req: NextRequest) {
   if (!session) return apiError('No autorizado', 401)
   if (!canAccessCrm(session.user.role)) return apiError('Acceso denegado', 403)
 
-  const { id, name, role, email, phone, notes, isActive } = await req.json()
+  const { id, name, role, email, phone, notes, isActive, temperature, score } = await req.json()
   if (!id) return apiError('id requerido')
+  if (temperature !== undefined && !TEMPERATURES.includes(temperature)) {
+    return apiError('Temperatura inválida')
+  }
 
   const contact = await prisma.contact.update({
     where: { id },
@@ -68,6 +100,8 @@ export async function PATCH(req: NextRequest) {
       ...(phone !== undefined ? { phone: phone?.trim() || null } : {}),
       ...(notes !== undefined ? { notes: notes?.trim() || null } : {}),
       ...(isActive !== undefined ? { isActive } : {}),
+      ...(temperature !== undefined ? { temperature } : {}),
+      ...(score !== undefined ? { score: clamp(Number(score) || 0, 0, 100) } : {}),
     },
   })
 

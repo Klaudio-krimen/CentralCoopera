@@ -53,3 +53,16 @@ export function formatCurrency(value: number): string {
 export function cn(...classes: (string | undefined | null | false)[]): string {
   return classes.filter(Boolean).join(' ')
 }
+
+export function formatRelativeDate(date: Date | string): string {
+  const then = new Date(date).getTime()
+  const diffMs = Date.now() - then
+  const minutes = Math.floor(diffMs / 60000)
+  if (minutes < 1) return 'ahora'
+  if (minutes < 60) return `hace ${minutes} min`
+  const hours = Math.floor(minutes / 60)
+  if (hours < 24) return `hace ${hours} h`
+  const days = Math.floor(hours / 24)
+  if (days < 30) return `hace ${days} d`
+  return formatDate(date)
+}

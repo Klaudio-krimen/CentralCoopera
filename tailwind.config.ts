@@ -21,6 +21,37 @@ const config: Config = {
           700: '#15803d',
           900: '#14532d',
         },
+        // Paleta scoped al módulo CRM — replica los tokens exactos de auto-crm
+        // (la app de referencia). Solo se usa dentro de app/(admin)/admin/crm/*
+        // y sus componentes; el resto de la app sigue con la paleta emerald/zinc.
+        crm: {
+          bg: '#fafafa',
+          card: '#ffffff',
+          border: '#e2e8f0',
+          foreground: '#0f172a',
+          muted: '#64748b',
+          primary: '#2563eb',
+          'primary-foreground': '#ffffff',
+          secondary: '#f1f5f9',
+          destructive: '#dc2626',
+          success: '#16a34a',
+          warning: '#ea580c',
+          chart: {
+            1: '#2563eb',
+            2: '#16a34a',
+            3: '#ea580c',
+            4: '#8b5cf6',
+            5: '#64748b',
+          },
+          temp: {
+            frio: '#64748b',
+            'frio-bg': '#f1f5f9',
+            tibio: '#ea580c',
+            'tibio-bg': '#fff7ed',
+            caliente: '#dc2626',
+            'caliente-bg': '#fef2f2',
+          },
+        },
       },
       keyframes: {
         shimmer: {

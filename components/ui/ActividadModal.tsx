@@ -12,23 +12,34 @@ const TIPOS = [
   { value: 'SEGUIMIENTO', label: 'Seguimiento' },
 ]
 
+interface EmpresaOption { id: string; name: string }
+
 export default function ActividadModal({
   companyId,
   contactId,
   dealId,
+  empresas,
 }: {
-  companyId: string
+  companyId?: string
   contactId?: string
   dealId?: string
+  empresas?: EmpresaOption[]
 }) {
   const [open, setOpen]       = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError]     = useState('')
   const router = useRouter()
 
-  const [form, setForm] = useState({ type: 'NOTA', description: '', scheduledAt: '' })
+  const [form, setForm] = useState({
+    companyId: companyId ?? '',
+    type: 'NOTA',
+    description: '',
+    scheduledAt: '',
+  })
 
   const set = (k: keyof typeof form, v: string) => setForm((f) => ({ ...f, [k]: v }))
+
+  const needsCompanySelect = !companyId && empresas
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -39,7 +50,7 @@ export default function ActividadModal({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          companyId,
+          companyId: companyId ?? form.companyId,
           contactId: contactId || null,
           dealId: dealId || null,
           type: form.type,
@@ -50,7 +61,7 @@ export default function ActividadModal({
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
       setOpen(false)
-      setForm({ type: 'NOTA', description: '', scheduledAt: '' })
+      setForm({ companyId: companyId ?? '', type: 'NOTA', description: '', scheduledAt: '' })
       router.refresh()
     } catch (e: any) {
       setError(e.message)
@@ -83,6 +94,23 @@ export default function ActividadModal({
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
+              {needsCompanySelect && (
+                <div className="space-y-1.5">
+                  <label className="block text-sm font-medium text-zinc-700">Empresa *</label>
+                  <select
+                    value={form.companyId}
+                    onChange={(e) => set('companyId', e.target.value)}
+                    className="input-base"
+                    required
+                  >
+                    <option value="">Selecciona una empresa...</option>
+                    {empresas!.map((emp) => (
+                      <option key={emp.id} value={emp.id}>{emp.name}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
               <div className="space-y-1.5">
                 <label className="block text-sm font-medium text-zinc-700">Tipo</label>
                 <select value={form.type} onChange={(e) => set('type', e.target.value)} className="input-base">

@@ -3,9 +3,28 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { apiError } from '@/lib/utils'
+import { ensurePipelineStages } from '@/lib/pipeline'
 
 function canAccessCrm(role: string) {
   return role === 'ADMIN' || role === 'VENTAS'
+}
+
+// GET /api/deals — listado global de deals (para la tabla de Deals)
+export async function GET() {
+  const session = await getServerSession(authOptions)
+  if (!session) return apiError('No autorizado', 401)
+  if (!canAccessCrm(session.user.role)) return apiError('Acceso denegado', 403)
+
+  const deals = await prisma.deal.findMany({
+    include: {
+      company: { select: { name: true } },
+      contact: { select: { name: true } },
+      stage: true,
+    },
+    orderBy: { updatedAt: 'desc' },
+  })
+
+  return NextResponse.json(deals)
 }
 
 // POST /api/deals — crear deal (arranca en la primera etapa del pipeline)
@@ -19,6 +38,7 @@ export async function POST(req: NextRequest) {
   if (!companyId) return apiError('companyId requerido')
   if (!title?.trim()) return apiError('El título es requerido')
 
+  await ensurePipelineStages()
   const firstStage = await prisma.pipelineStage.findFirst({ orderBy: { order: 'asc' } })
   if (!firstStage) return apiError('No hay etapas de pipeline configuradas')
 

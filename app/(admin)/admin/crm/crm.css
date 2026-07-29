@@ -1,0 +1,26 @@
+/* Tokens visuales scoped al módulo CRM (imagen de auto-crm) — solo se importa
+   desde app/(admin)/admin/crm/layout.tsx. No afecta Operaciones/Inventario/
+   Chofer/Recepción, que siguen usando .card/.btn-primary/.input-base (emerald). */
+
+.crm-card {
+  @apply bg-crm-card rounded-xl ring-1 ring-crm-foreground/10 py-4 px-4;
+}
+
+.crm-btn-primary {
+  @apply inline-flex items-center justify-center gap-1.5 h-8 px-3 rounded-lg
+    bg-crm-primary text-crm-primary-foreground text-sm font-medium
+    hover:bg-crm-primary/90 active:translate-y-[1px] transition-all
+    disabled:opacity-50 disabled:pointer-events-none disabled:active:translate-y-0 select-none;
+}
+
+.crm-btn-outline {
+  @apply inline-flex items-center justify-center gap-1.5 h-8 px-3 rounded-lg
+    border border-crm-border bg-white text-crm-foreground text-sm font-medium
+    hover:bg-crm-secondary transition-all select-none;
+}
+
+.crm-input {
+  @apply w-full h-8 px-3 rounded-lg border border-crm-border bg-white text-sm
+    text-crm-foreground placeholder-crm-muted focus:outline-none
+    focus:ring-2 focus:ring-crm-primary/30 focus:border-crm-primary transition-all;
+}

@@ -291,17 +291,25 @@ model InventoryMovement {
 // Todo cuelga de Company: un contacto, deal o actividad siempre pertenece a
 // una empresa real del sistema — no hay un universo de leads paralelo.
 
+enum ContactTemperature {
+  FRIO
+  TIBIO
+  CALIENTE
+}
+
 model Contact {
   id        String   @id @default(cuid())
   companyId String
   company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
-  name     String
-  role     String? // cargo dentro de la empresa
-  email    String?
-  phone    String?
-  notes    String?
-  isActive Boolean  @default(true)
+  name        String
+  role        String? // cargo dentro de la empresa
+  email       String?
+  phone       String?
+  notes       String?
+  isActive    Boolean            @default(true)
+  temperature ContactTemperature @default(FRIO)
+  score       Int                @default(0) // 0-100
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -310,6 +318,7 @@ model Contact {
   activities Activity[]
 
   @@index([companyId])
+  @@index([temperature])
 }
 
 model PipelineStage {

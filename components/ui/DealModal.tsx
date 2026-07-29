@@ -5,24 +5,53 @@ import { useRouter } from 'next/navigation'
 import { Target, X, SpinnerGap, Warning } from '@phosphor-icons/react'
 
 interface ContactoOption { id: string; name: string }
+interface EmpresaOption { id: string; name: string; contacts: ContactoOption[] }
+
+interface DealInitial {
+  id: string
+  title: string
+  value: number
+  probability: number
+  contactId: string | null
+  expectedClose: string | null // yyyy-mm-dd
+  notes: string | null
+}
 
 export default function DealModal({
   companyId,
   contactos,
+  empresas,
+  initialData,
+  trigger,
 }: {
-  companyId: string
-  contactos: ContactoOption[]
+  companyId?: string
+  contactos?: ContactoOption[]
+  empresas?: EmpresaOption[]
+  initialData?: DealInitial
+  trigger?: React.ReactNode
 }) {
+  const isEdit = !!initialData
   const [open, setOpen]       = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError]     = useState('')
   const router = useRouter()
 
   const [form, setForm] = useState({
-    title: '', value: '', probability: '20', contactId: '', expectedClose: '', notes: '',
+    companyId: companyId ?? '',
+    title: initialData?.title ?? '',
+    value: initialData ? String(initialData.value) : '',
+    probability: initialData ? String(initialData.probability) : '20',
+    contactId: initialData?.contactId ?? '',
+    expectedClose: initialData?.expectedClose ?? '',
+    notes: initialData?.notes ?? '',
   })
 
   const set = (k: keyof typeof form, v: string) => setForm((f) => ({ ...f, [k]: v }))
+
+  const needsCompanySelect = !companyId && !isEdit && empresas
+  const availableContactos = needsCompanySelect
+    ? empresas!.find((e) => e.id === form.companyId)?.contacts ?? []
+    : contactos ?? []
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -30,22 +59,36 @@ export default function DealModal({
     setError('')
     try {
       const res = await fetch('/api/deals', {
-        method: 'POST',
+        method: isEdit ? 'PATCH' : 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          companyId,
-          contactId: form.contactId || null,
-          title: form.title,
-          value: form.value || 0,
-          probability: form.probability || 0,
-          expectedClose: form.expectedClose || null,
-          notes: form.notes,
-        }),
+        body: JSON.stringify(
+          isEdit
+            ? {
+                id: initialData!.id,
+                title: form.title,
+                value: form.value || 0,
+                probability: form.probability || 0,
+                contactId: form.contactId || null,
+                expectedClose: form.expectedClose || null,
+                notes: form.notes,
+              }
+            : {
+                companyId: companyId ?? form.companyId,
+                contactId: form.contactId || null,
+                title: form.title,
+                value: form.value || 0,
+                probability: form.probability || 0,
+                expectedClose: form.expectedClose || null,
+                notes: form.notes,
+              }
+        ),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
       setOpen(false)
-      setForm({ title: '', value: '', probability: '20', contactId: '', expectedClose: '', notes: '' })
+      if (!isEdit) {
+        setForm({ companyId: companyId ?? '', title: '', value: '', probability: '20', contactId: '', expectedClose: '', notes: '' })
+      }
       router.refresh()
     } catch (e: any) {
       setError(e.message)
@@ -56,10 +99,14 @@ export default function DealModal({
 
   return (
     <>
-      <button onClick={() => setOpen(true)} className="btn-secondary text-sm py-2 px-3">
-        <Target size={15} />
-        Deal
-      </button>
+      {trigger ? (
+        <span onClick={() => setOpen(true)}>{trigger}</span>
+      ) : (
+        <button onClick={() => setOpen(true)} className="btn-secondary text-sm py-2 px-3">
+          <Target size={15} />
+          Deal
+        </button>
+      )}
 
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -67,7 +114,7 @@ export default function DealModal({
 
           <div className="relative z-10 bg-white rounded-2xl shadow-[0_24px_48px_-12px_rgba(0,0,0,0.18)] w-full max-w-md p-6 animate-fade-up">
             <div className="flex items-center justify-between mb-5">
-              <h2 className="text-lg font-semibold text-zinc-900">Nuevo deal</h2>
+              <h2 className="text-lg font-semibold text-zinc-900">{isEdit ? 'Editar deal' : 'Nuevo deal'}</h2>
               <button
                 onClick={() => setOpen(false)}
                 aria-label="Cerrar"
@@ -78,6 +125,23 @@ export default function DealModal({
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
+              {needsCompanySelect && (
+                <div className="space-y-1.5">
+                  <label className="block text-sm font-medium text-zinc-700">Empresa *</label>
+                  <select
+                    value={form.companyId}
+                    onChange={(e) => setForm((f) => ({ ...f, companyId: e.target.value, contactId: '' }))}
+                    className="input-base"
+                    required
+                  >
+                    <option value="">Selecciona una empresa...</option>
+                    {empresas!.map((emp) => (
+                      <option key={emp.id} value={emp.id}>{emp.name}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
               <div className="space-y-1.5">
                 <label className="block text-sm font-medium text-zinc-700">Título *</label>
                 <input
@@ -121,7 +185,7 @@ export default function DealModal({
                 <label className="block text-sm font-medium text-zinc-700">Contacto</label>
                 <select value={form.contactId} onChange={(e) => set('contactId', e.target.value)} className="input-base">
                   <option value="">Sin contacto asignado</option>
-                  {contactos.map((c) => (
+                  {availableContactos.map((c) => (
                     <option key={c.id} value={c.id}>{c.name}</option>
                   ))}
                 </select>
@@ -131,7 +195,7 @@ export default function DealModal({
                 <label className="block text-sm font-medium text-zinc-700">Cierre estimado</label>
                 <input
                   type="date"
-                  value={form.expectedClose}
+                  value={form.expectedClose ?? ''}
                   onChange={(e) => set('expectedClose', e.target.value)}
                   className="input-base"
                 />
@@ -149,7 +213,7 @@ export default function DealModal({
                   Cancelar
                 </button>
                 <button type="submit" disabled={loading || !form.title} className="btn-primary flex-1">
-                  {loading ? <SpinnerGap size={16} className="animate-spin" /> : 'Crear deal'}
+                  {loading ? <SpinnerGap size={16} className="animate-spin" /> : isEdit ? 'Guardar' : 'Crear deal'}
                 </button>
               </div>
             </form>

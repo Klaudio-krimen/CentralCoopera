@@ -3,6 +3,7 @@
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { formatCurrency } from '@/lib/utils'
+import TemperatureBadge from './TemperatureBadge'
 
 export interface DealCardData {
   id: string
@@ -10,10 +11,11 @@ export interface DealCardData {
   value: number
   companyName: string
   contactName: string | null
+  contactTemperature?: 'FRIO' | 'TIBIO' | 'CALIENTE' | null
   probability: number
 }
 
-export default function DealCard({ id, title, value, companyName, contactName, probability }: DealCardData) {
+export default function DealCard({ id, title, value, companyName, contactName, contactTemperature, probability }: DealCardData) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id })
 
   const style = {
@@ -36,11 +38,16 @@ export default function DealCard({ id, title, value, companyName, contactName, p
         <span className="text-sm font-semibold text-emerald-700 font-mono tabular-nums">
           {formatCurrency(value)}
         </span>
-        <span className="text-xs text-zinc-500 font-mono tabular-nums">{probability}%</span>
+        {contactTemperature ? (
+          <TemperatureBadge temperature={contactTemperature} size="sm" />
+        ) : (
+          <span className="text-xs text-zinc-500 font-mono tabular-nums">{probability}%</span>
+        )}
       </div>
-      {contactName && (
-        <p className="text-[11px] text-zinc-400 truncate">{contactName}</p>
-      )}
+      <div className="flex items-center justify-between">
+        {contactName && <p className="text-[11px] text-zinc-400 truncate">{contactName}</p>}
+        {contactTemperature && <span className="text-[11px] text-zinc-500 font-mono tabular-nums">{probability}%</span>}
+      </div>
     </div>
   )
 }

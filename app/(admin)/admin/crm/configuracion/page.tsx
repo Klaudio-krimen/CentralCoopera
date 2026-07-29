@@ -1,6 +1,8 @@
 import { prisma } from '@/lib/db'
 import { ensurePipelineStages } from '@/lib/pipeline'
 import PipelineStagesList from '@/components/crm/PipelineStagesList'
+import WebhookSettings from '@/components/crm/WebhookSettings'
+import NotificationsToggle from '@/components/crm/NotificationsToggle'
 
 async function getStages() {
   await ensurePipelineStages()
@@ -14,10 +16,16 @@ export default async function ConfiguracionPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold tracking-tight text-crm-foreground">Configuración</h1>
-        <p className="text-crm-muted text-sm mt-1">Etapas del pipeline de ventas</p>
+        <p className="text-crm-muted text-sm mt-1">Etapas del pipeline, leads automáticos y notificaciones</p>
       </div>
 
-      <PipelineStagesList stages={stages} />
+      <div className="grid gap-4 lg:grid-cols-2">
+        <PipelineStagesList stages={stages} />
+        <div className="space-y-4">
+          <WebhookSettings />
+          <NotificationsToggle />
+        </div>
+      </div>
     </div>
   )
 }

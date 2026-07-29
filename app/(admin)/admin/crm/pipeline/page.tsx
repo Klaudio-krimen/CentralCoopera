@@ -2,7 +2,7 @@ import { prisma } from '@/lib/db'
 import KanbanBoard, { type PipelineColumn } from '@/components/ui/KanbanBoard'
 import { formatCurrency } from '@/lib/utils'
 import { ensurePipelineStages } from '@/lib/pipeline'
-import { Target } from '@phosphor-icons/react/dist/ssr'
+import { Target } from 'lucide-react'
 
 async function getStages() {
   await ensurePipelineStages()
@@ -50,20 +50,20 @@ export default async function PipelinePage() {
     <div className="space-y-6">
       <div className="flex items-start justify-between animate-fade-up">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900">Pipeline</h1>
-          <p className="text-zinc-500 text-sm mt-1">
+          <h1 className="text-2xl font-bold tracking-tight text-crm-foreground">Pipeline</h1>
+          <p className="text-crm-muted text-sm mt-1">
             {openCount} deal{openCount !== 1 ? 's' : ''} abierto{openCount !== 1 ? 's' : ''} · {formatCurrency(totalOpen)} en juego
           </p>
         </div>
       </div>
 
       {stages.every((s) => s.deals.length === 0) ? (
-        <div className="panel text-center py-16 animate-fade-up" style={{ animationDelay: '60ms' }}>
-          <div className="w-12 h-12 rounded-2xl bg-zinc-100 flex items-center justify-center mx-auto mb-3">
-            <Target size={22} className="text-zinc-400" />
+        <div className="crm-card text-center py-16 animate-fade-up" style={{ animationDelay: '60ms' }}>
+          <div className="w-12 h-12 rounded-2xl bg-crm-secondary flex items-center justify-center mx-auto mb-3">
+            <Target size={22} className="text-crm-muted" />
           </div>
-          <p className="text-zinc-700 font-medium">Sin deals todavía</p>
-          <p className="text-zinc-500 text-sm mt-1">Crea un deal desde la ficha de un cliente en Clientes</p>
+          <p className="text-crm-foreground font-medium">Sin deals todavía</p>
+          <p className="text-crm-muted text-sm mt-1">Crea un deal desde la ficha de un cliente en Clientes</p>
         </div>
       ) : (
         <div className="animate-fade-up" style={{ animationDelay: '60ms' }}>

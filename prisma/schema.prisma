@@ -395,3 +395,12 @@ model Activity {
   @@index([contactId])
   @@index([dealId])
 }
+
+// Configuración singleton del webhook de leads externos (formularios, Zapier,
+// Make, etc). id fijo "singleton" — mismo patrón que OrderCounter.
+model CrmWebhookConfig {
+  id        String   @id @default("singleton")
+  enabled   Boolean  @default(false)
+  secret    String
+  updatedAt DateTime @updatedAt
+}

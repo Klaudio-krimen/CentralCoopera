@@ -2,6 +2,7 @@ import { prisma } from '@/lib/db'
 import { UserPlus } from 'lucide-react'
 import ContactsTable from '@/components/crm/ContactsTable'
 import ContactoModal from '@/components/ui/ContactoModal'
+import ImportContactsButton from '@/components/crm/ImportContactsButton'
 
 async function getData() {
   const [contacts, empresas] = await Promise.all([
@@ -31,15 +32,18 @@ export default async function ContactosPage() {
             {contacts.length} contacto{contacts.length !== 1 ? 's' : ''} en todas las empresas
           </p>
         </div>
-        <ContactoModal
-          empresas={empresas}
-          trigger={
-            <button className="crm-btn-primary">
-              <UserPlus className="h-4 w-4" />
-              Nuevo Contacto
-            </button>
-          }
-        />
+        <div className="flex items-center gap-2">
+          <ImportContactsButton />
+          <ContactoModal
+            empresas={empresas}
+            trigger={
+              <button className="crm-btn-primary">
+                <UserPlus className="h-4 w-4" />
+                Nuevo Contacto
+              </button>
+            }
+          />
+        </div>
       </div>
 
       <ContactsTable contacts={contacts as any} />

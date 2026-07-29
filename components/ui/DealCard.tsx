@@ -30,23 +30,23 @@ export default function DealCard({ id, title, value, companyName, contactName, c
       style={style}
       {...attributes}
       {...listeners}
-      className="card p-3 space-y-2 cursor-grab active:cursor-grabbing hover:shadow-card-hover transition-shadow"
+      className="crm-card space-y-2 cursor-grab active:cursor-grabbing hover:shadow-card-hover transition-shadow"
     >
-      <p className="text-sm font-medium text-zinc-900 leading-tight">{title}</p>
-      <p className="text-xs text-zinc-500 truncate">{companyName}</p>
+      <p className="text-sm font-medium text-crm-foreground leading-tight">{title}</p>
+      <p className="text-xs text-crm-muted truncate">{companyName}</p>
       <div className="flex items-center justify-between pt-1">
-        <span className="text-sm font-semibold text-emerald-700 font-mono tabular-nums">
+        <span className="text-sm font-semibold text-crm-primary font-mono tabular-nums">
           {formatCurrency(value)}
         </span>
         {contactTemperature ? (
           <TemperatureBadge temperature={contactTemperature} size="sm" />
         ) : (
-          <span className="text-xs text-zinc-500 font-mono tabular-nums">{probability}%</span>
+          <span className="text-xs text-crm-muted font-mono tabular-nums">{probability}%</span>
         )}
       </div>
       <div className="flex items-center justify-between">
-        {contactName && <p className="text-[11px] text-zinc-400 truncate">{contactName}</p>}
-        {contactTemperature && <span className="text-[11px] text-zinc-500 font-mono tabular-nums">{probability}%</span>}
+        {contactName && <p className="text-[11px] text-crm-muted/80 truncate">{contactName}</p>}
+        {contactTemperature && <span className="text-[11px] text-crm-muted font-mono tabular-nums">{probability}%</span>}
       </div>
     </div>
   )

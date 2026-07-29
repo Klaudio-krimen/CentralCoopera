@@ -94,7 +94,7 @@ export default function KanbanBoard({ initialColumns }: { initialColumns: Pipeli
   return (
     <div className="space-y-3">
       {error && (
-        <div className="flex items-center gap-2.5 px-4 py-3 rounded-xl bg-red-50 border border-red-100 text-sm text-red-600">
+        <div className="flex items-center gap-2.5 px-4 py-3 rounded-xl bg-crm-destructive/10 border border-crm-destructive/20 text-sm text-crm-destructive">
           {error}
         </div>
       )}

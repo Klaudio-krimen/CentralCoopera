@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/db'
+import Link from 'next/link'
 import EmpresaActions from '@/components/ui/EmpresaActions'
 import NuevaEmpresaModal from '@/components/ui/NuevaEmpresaModal'
 import {
@@ -87,38 +88,40 @@ function EmpresaCard({
 }) {
   return (
     <div className={`card p-5 space-y-3 ${muted ? 'opacity-60' : ''}`}>
-      {/* Name + status */}
-      <div className="flex items-start justify-between gap-2">
-        <div className="min-w-0">
-          <p className="text-sm font-semibold text-zinc-900 leading-tight">{empresa.name}</p>
-          {empresa.address && (
-            <p className="text-xs text-zinc-500 mt-0.5 truncate">{empresa.address}</p>
-          )}
+      <Link href={`/admin/crm/clientes/${empresa.id}`} className="block space-y-3">
+        {/* Name + status */}
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0">
+            <p className="text-sm font-semibold text-zinc-900 leading-tight">{empresa.name}</p>
+            {empresa.address && (
+              <p className="text-xs text-zinc-500 mt-0.5 truncate">{empresa.address}</p>
+            )}
+          </div>
+          <div className="flex items-center gap-1 shrink-0">
+            {empresa.isActive ? (
+              <CheckCircle size={14} weight="fill" className="text-emerald-500" />
+            ) : (
+              <XCircle size={14} weight="fill" className="text-zinc-400" />
+            )}
+          </div>
         </div>
-        <div className="flex items-center gap-1 shrink-0">
-          {empresa.isActive ? (
-            <CheckCircle size={14} weight="fill" className="text-emerald-500" />
-          ) : (
-            <XCircle size={14} weight="fill" className="text-zinc-400" />
-          )}
-        </div>
-      </div>
 
-      {/* Contact */}
-      <div className="space-y-1">
-        {empresa.contactName && (
-          <div className="flex items-center gap-1.5 text-xs text-zinc-500">
-            <User size={12} className="text-zinc-400 shrink-0" />
-            {empresa.contactName}
-          </div>
-        )}
-        {empresa.contactPhone && (
-          <div className="flex items-center gap-1.5 text-xs text-zinc-500">
-            <Phone size={12} className="text-zinc-400 shrink-0" />
-            {empresa.contactPhone}
-          </div>
-        )}
-      </div>
+        {/* Contact */}
+        <div className="space-y-1">
+          {empresa.contactName && (
+            <div className="flex items-center gap-1.5 text-xs text-zinc-500">
+              <User size={12} className="text-zinc-400 shrink-0" />
+              {empresa.contactName}
+            </div>
+          )}
+          {empresa.contactPhone && (
+            <div className="flex items-center gap-1.5 text-xs text-zinc-500">
+              <Phone size={12} className="text-zinc-400 shrink-0" />
+              {empresa.contactPhone}
+            </div>
+          )}
+        </div>
+      </Link>
 
       {/* Footer */}
       <div className="flex items-center justify-between pt-1 border-t border-zinc-100">

@@ -14,6 +14,7 @@ import {
   MapPin,
   SignOut,
   AddressBook,
+  Target,
   Package,
   ArrowsLeftRight,
   type Icon,
@@ -67,6 +68,7 @@ const MODULES: ModuleDef[] = [
     activeIcon: 'text-blue-600',
     nav: [
       { href: '/admin/crm/clientes', label: 'Clientes', icon: AddressBook },
+      { href: '/admin/crm/pipeline', label: 'Pipeline', icon: Target },
     ],
   },
   {

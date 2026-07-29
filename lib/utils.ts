@@ -42,6 +42,14 @@ export function clamp(val: number, min: number, max: number) {
   return Math.min(Math.max(val, min), max)
 }
 
+export function formatCurrency(value: number): string {
+  return new Intl.NumberFormat('es-CL', {
+    style: 'currency',
+    currency: 'CLP',
+    maximumFractionDigits: 0,
+  }).format(value)
+}
+
 export function cn(...classes: (string | undefined | null | false)[]): string {
   return classes.filter(Boolean).join(' ')
 }

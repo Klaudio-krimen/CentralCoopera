@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { DotsThree, PencilSimple, ToggleLeft, ToggleRight, SpinnerGap } from '@phosphor-icons/react'
 import ContactoModal from './ContactoModal'
+import { CONTACT_SOURCE_LABELS } from '@/lib/utils'
 
 interface ContactoInitial {
   id: string
@@ -14,6 +15,7 @@ interface ContactoInitial {
   notes: string | null
   temperature: 'FRIO' | 'TIBIO' | 'CALIENTE'
   score: number
+  source: keyof typeof CONTACT_SOURCE_LABELS
 }
 
 export default function ContactoActions({

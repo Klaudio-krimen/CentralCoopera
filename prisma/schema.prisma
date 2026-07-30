@@ -297,6 +297,20 @@ enum ContactTemperature {
   CALIENTE
 }
 
+enum ContactSource {
+  WEBSITE
+  WHATSAPP
+  REFERIDO
+  REDES_SOCIALES
+  LLAMADA_FRIA
+  EMAIL
+  FORMULARIO
+  EVENTO
+  IMPORT
+  WEBHOOK
+  OTRO
+}
+
 model Contact {
   id        String   @id @default(cuid())
   companyId String
@@ -310,6 +324,7 @@ model Contact {
   isActive    Boolean            @default(true)
   temperature ContactTemperature @default(FRIO)
   score       Int                @default(0) // 0-100
+  source      ContactSource      @default(OTRO)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

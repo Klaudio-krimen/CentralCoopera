@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/db'
-import { apiError } from '@/lib/utils'
+import { apiError, CONTACT_SOURCE_LABELS } from '@/lib/utils'
 import { toCsv } from '@/lib/csv'
 
 const TEMPERATURES = ['FRIO', 'TIBIO', 'CALIENTE']
@@ -44,6 +44,7 @@ export async function GET(req: NextRequest) {
       telefono: c.phone ?? '',
       temperatura: c.temperature,
       score: c.score,
+      fuente: CONTACT_SOURCE_LABELS[c.source],
     })),
     [
       { key: 'nombre', label: 'Nombre' },
@@ -53,6 +54,7 @@ export async function GET(req: NextRequest) {
       { key: 'telefono', label: 'Teléfono' },
       { key: 'temperatura', label: 'Temperatura' },
       { key: 'score', label: 'Score' },
+      { key: 'fuente', label: 'Fuente' },
     ]
   )
 

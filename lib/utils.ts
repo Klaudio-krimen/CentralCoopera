@@ -1,4 +1,19 @@
 import { NextResponse } from 'next/server'
+import type { ContactSource } from '@prisma/client'
+
+export const CONTACT_SOURCE_LABELS: Record<ContactSource, string> = {
+  WEBSITE: 'Sitio web',
+  WHATSAPP: 'WhatsApp',
+  REFERIDO: 'Referido',
+  REDES_SOCIALES: 'Redes sociales',
+  LLAMADA_FRIA: 'Llamada fría',
+  EMAIL: 'Email',
+  FORMULARIO: 'Formulario',
+  EVENTO: 'Evento',
+  IMPORT: 'Importado',
+  WEBHOOK: 'Webhook',
+  OTRO: 'Otro',
+}
 
 export function apiError(message: string, status = 400) {
   return NextResponse.json({ error: message }, { status })

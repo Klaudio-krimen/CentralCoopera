@@ -9,6 +9,7 @@ function canAccessCrm(role: string) {
 }
 
 const TEMPERATURES = ['FRIO', 'TIBIO', 'CALIENTE']
+const SOURCES = ['WEBSITE', 'WHATSAPP', 'REFERIDO', 'REDES_SOCIALES', 'LLAMADA_FRIA', 'EMAIL', 'FORMULARIO', 'EVENTO', 'IMPORT', 'WEBHOOK', 'OTRO']
 
 interface ImportRow {
   name?: string
@@ -17,6 +18,7 @@ interface ImportRow {
   role?: string
   company?: string
   temperature?: string
+  source?: string
 }
 
 // POST /api/contactos/import — carga masiva de contactos desde un CSV ya
@@ -57,6 +59,7 @@ export async function POST(req: NextRequest) {
       }
 
       const temperature = row.temperature?.trim().toUpperCase()
+      const source = row.source?.trim().toUpperCase()
 
       await prisma.contact.create({
         data: {
@@ -65,6 +68,7 @@ export async function POST(req: NextRequest) {
           email: row.email?.trim() || null,
           phone: row.phone?.trim() || null,
           role: row.role?.trim() || null,
+          source: source && SOURCES.includes(source) ? (source as any) : 'IMPORT',
           ...(temperature && TEMPERATURES.includes(temperature) ? { temperature: temperature as any } : {}),
         },
       })

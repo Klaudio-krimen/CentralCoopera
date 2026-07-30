@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { UserPlus, X, SpinnerGap, Warning } from '@phosphor-icons/react'
+import { CONTACT_SOURCE_LABELS } from '@/lib/utils'
 
 interface ContactoInitial {
   id: string
@@ -13,6 +14,7 @@ interface ContactoInitial {
   notes: string | null
   temperature?: 'FRIO' | 'TIBIO' | 'CALIENTE'
   score?: number
+  source?: keyof typeof CONTACT_SOURCE_LABELS
 }
 
 interface EmpresaOption {
@@ -46,6 +48,7 @@ export default function ContactoModal({
     notes: initialData?.notes ?? '',
     temperature: initialData?.temperature ?? 'FRIO',
     score: String(initialData?.score ?? 0),
+    source: initialData?.source ?? 'OTRO',
   })
 
   const set = (k: keyof typeof form, v: string) => setForm((f) => ({ ...f, [k]: v }))
@@ -193,6 +196,19 @@ export default function ContactoModal({
                     className="input-base font-mono"
                   />
                 </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="block text-sm font-medium text-zinc-700">Fuente</label>
+                <select
+                  value={form.source}
+                  onChange={(e) => set('source', e.target.value)}
+                  className="input-base"
+                >
+                  {Object.entries(CONTACT_SOURCE_LABELS).map(([value, label]) => (
+                    <option key={value} value={value}>{label}</option>
+                  ))}
+                </select>
               </div>
 
               <div className="space-y-1.5">

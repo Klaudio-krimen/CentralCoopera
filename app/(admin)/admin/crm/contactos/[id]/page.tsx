@@ -7,7 +7,9 @@ import TemperatureBadge from '@/components/ui/TemperatureBadge'
 import ContactoActions from '@/components/ui/ContactoActions'
 import ActividadModal from '@/components/ui/ActividadModal'
 import CompletarActividadButton from '@/components/crm/CompletarActividadButton'
+import RecalculateScoreButton from '@/components/crm/RecalculateScoreButton'
 import { EmailQuickActions, PhoneQuickActions } from '@/components/crm/ContactQuickActions'
+import { CONTACT_SOURCE_LABELS } from '@/lib/utils'
 
 const ACTIVITY_LABEL: Record<string, string> = {
   LLAMADA: 'Llamada',
@@ -53,8 +55,9 @@ export default async function ContactoDetailPage({ params }: { params: { id: str
             <h1 className="text-2xl font-bold text-crm-foreground">{contacto.name}</h1>
             <TemperatureBadge temperature={contacto.temperature} />
           </div>
-          <p className="text-crm-muted text-sm">
-            Score: {contacto.score}/100 · {contacto.company.name}
+          <p className="text-crm-muted text-sm flex items-center gap-2 flex-wrap">
+            <span>Score: {contacto.score}/100 · {contacto.company.name} · {CONTACT_SOURCE_LABELS[contacto.source]}</span>
+            <RecalculateScoreButton contactId={contacto.id} />
           </p>
         </div>
         <ContactoActions contacto={contacto} isActive={contacto.isActive} />

@@ -49,18 +49,23 @@ export async function GET(req: NextRequest) {
   return NextResponse.json(contacts)
 }
 
+const SOURCES = ['WEBSITE', 'WHATSAPP', 'REFERIDO', 'REDES_SOCIALES', 'LLAMADA_FRIA', 'EMAIL', 'FORMULARIO', 'EVENTO', 'IMPORT', 'WEBHOOK', 'OTRO']
+
 // POST /api/contactos — crear contacto
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions)
   if (!session) return apiError('No autorizado', 401)
   if (!canAccessCrm(session.user.role)) return apiError('Acceso denegado', 403)
 
-  const { companyId, name, role, email, phone, notes, temperature, score } = await req.json()
+  const { companyId, name, role, email, phone, notes, temperature, score, source } = await req.json()
 
   if (!companyId) return apiError('companyId requerido')
   if (!name?.trim()) return apiError('El nombre es requerido')
   if (temperature !== undefined && !TEMPERATURES.includes(temperature)) {
     return apiError('Temperatura inválida')
+  }
+  if (source !== undefined && !SOURCES.includes(source)) {
+    return apiError('Fuente inválida')
   }
 
   const contact = await prisma.contact.create({
@@ -73,6 +78,7 @@ export async function POST(req: NextRequest) {
       notes: notes?.trim() || null,
       ...(temperature !== undefined ? { temperature } : {}),
       ...(score !== undefined ? { score: clamp(Number(score) || 0, 0, 100) } : {}),
+      ...(source !== undefined ? { source } : {}),
     },
   })
 
@@ -85,10 +91,13 @@ export async function PATCH(req: NextRequest) {
   if (!session) return apiError('No autorizado', 401)
   if (!canAccessCrm(session.user.role)) return apiError('Acceso denegado', 403)
 
-  const { id, name, role, email, phone, notes, isActive, temperature, score } = await req.json()
+  const { id, name, role, email, phone, notes, isActive, temperature, score, source } = await req.json()
   if (!id) return apiError('id requerido')
   if (temperature !== undefined && !TEMPERATURES.includes(temperature)) {
     return apiError('Temperatura inválida')
+  }
+  if (source !== undefined && !SOURCES.includes(source)) {
+    return apiError('Fuente inválida')
   }
 
   const contact = await prisma.contact.update({
@@ -102,6 +111,7 @@ export async function PATCH(req: NextRequest) {
       ...(isActive !== undefined ? { isActive } : {}),
       ...(temperature !== undefined ? { temperature } : {}),
       ...(score !== undefined ? { score: clamp(Number(score) || 0, 0, 100) } : {}),
+      ...(source !== undefined ? { source } : {}),
     },
   })
 

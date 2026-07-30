@@ -13,6 +13,7 @@ const HEADER_ALIASES: Record<string, string[]> = {
   role: ['cargo', 'role', 'puesto'],
   company: ['empresa', 'company'],
   temperature: ['temperatura', 'temperature'],
+  source: ['fuente', 'source'],
 }
 
 function mapHeaders(headerRow: string[]) {
@@ -27,8 +28,8 @@ function mapHeaders(headerRow: string[]) {
 
 function downloadTemplate() {
   const template =
-    'nombre,email,telefono,cargo,empresa,temperatura\n' +
-    'Juan Pérez,juan@empresa.cl,+56912345678,Gerente de Compras,Empresa Ejemplo SpA,TIBIO\n'
+    'nombre,email,telefono,cargo,empresa,temperatura,fuente\n' +
+    'Juan Pérez,juan@empresa.cl,+56912345678,Gerente de Compras,Empresa Ejemplo SpA,TIBIO,REFERIDO\n'
   const blob = new Blob([template], { type: 'text/csv;charset=utf-8;' })
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
@@ -67,6 +68,7 @@ export default function ImportContactsButton() {
         phone: map.phone !== undefined ? r[map.phone] : undefined,
         role: map.role !== undefined ? r[map.role] : undefined,
         temperature: map.temperature !== undefined ? r[map.temperature] : undefined,
+        source: map.source !== undefined ? r[map.source] : undefined,
       }))
 
       const res = await fetch('/api/contactos/import', {

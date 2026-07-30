@@ -3,6 +3,7 @@ import { ensurePipelineStages } from '@/lib/pipeline'
 import PipelineStagesList from '@/components/crm/PipelineStagesList'
 import WebhookSettings from '@/components/crm/WebhookSettings'
 import NotificationsToggle from '@/components/crm/NotificationsToggle'
+import ClassifyAllButton from '@/components/crm/ClassifyAllButton'
 
 async function getStages() {
   await ensurePipelineStages()
@@ -24,6 +25,7 @@ export default async function ConfiguracionPage() {
         <div className="space-y-4">
           <WebhookSettings />
           <NotificationsToggle />
+          <ClassifyAllButton />
         </div>
       </div>
     </div>

@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Search, Download } from 'lucide-react'
 import TemperatureBadge from '@/components/ui/TemperatureBadge'
-import { formatDate } from '@/lib/utils'
+import { formatDate, CONTACT_SOURCE_LABELS } from '@/lib/utils'
 
 export interface ContactRow {
   id: string
@@ -14,6 +14,7 @@ export interface ContactRow {
   role: string | null
   temperature: 'FRIO' | 'TIBIO' | 'CALIENTE'
   score: number
+  source: keyof typeof CONTACT_SOURCE_LABELS
   createdAt: string | Date
   company: { name: string }
 }
@@ -85,6 +86,7 @@ export default function ContactsTable({ contacts }: { contacts: ContactRow[] }) 
               <th className="text-left font-medium text-crm-muted px-3 py-2">Nombre</th>
               <th className="text-left font-medium text-crm-muted px-3 py-2 hidden sm:table-cell">Empresa</th>
               <th className="text-left font-medium text-crm-muted px-3 py-2 hidden md:table-cell">Cargo</th>
+              <th className="text-left font-medium text-crm-muted px-3 py-2 hidden lg:table-cell">Fuente</th>
               <th className="text-left font-medium text-crm-muted px-3 py-2">Temperatura</th>
               <th className="text-left font-medium text-crm-muted px-3 py-2 hidden md:table-cell">Score</th>
               <th className="text-left font-medium text-crm-muted px-3 py-2 hidden lg:table-cell">Fecha</th>
@@ -103,6 +105,7 @@ export default function ContactsTable({ contacts }: { contacts: ContactRow[] }) 
                 </td>
                 <td className="px-3 py-2.5 hidden sm:table-cell text-crm-foreground">{c.company.name}</td>
                 <td className="px-3 py-2.5 hidden md:table-cell text-crm-muted">{c.role ?? '—'}</td>
+                <td className="px-3 py-2.5 hidden lg:table-cell text-crm-muted">{CONTACT_SOURCE_LABELS[c.source]}</td>
                 <td className="px-3 py-2.5">
                   <TemperatureBadge temperature={c.temperature} size="sm" />
                 </td>

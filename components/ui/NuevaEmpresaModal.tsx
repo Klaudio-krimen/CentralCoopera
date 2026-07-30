@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 import { Buildings, X, SpinnerGap, Warning } from '@phosphor-icons/react'
 
 export default function NuevaEmpresaModal() {
@@ -30,6 +31,7 @@ export default function NuevaEmpresaModal() {
       if (!res.ok) throw new Error(data.error)
       setOpen(false)
       setForm({ name: '', address: '', contactName: '', contactPhone: '' })
+      toast.success('Empresa creada')
       router.refresh()
     } catch (e: any) {
       setError(e.message)
@@ -40,7 +42,7 @@ export default function NuevaEmpresaModal() {
 
   return (
     <>
-      <button onClick={() => setOpen(true)} className="btn-primary">
+      <button onClick={() => setOpen(true)} className="crm-btn-primary">
         <Buildings size={17} />
         Nueva empresa
       </button>
@@ -49,79 +51,81 @@ export default function NuevaEmpresaModal() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setOpen(false)} />
 
-          <div className="relative z-10 bg-white rounded-2xl shadow-[0_24px_48px_-12px_rgba(0,0,0,0.18)] w-full max-w-md p-6 animate-fade-up">
+          <div className="relative z-10 bg-crm-card rounded-2xl shadow-[0_24px_48px_-12px_rgba(0,0,0,0.18)] w-full max-w-md p-6 animate-fade-up">
             <div className="flex items-center justify-between mb-5">
-              <h2 className="text-lg font-semibold text-zinc-900">Nueva empresa cliente</h2>
+              <h2 className="text-lg font-semibold text-crm-foreground">Nueva empresa cliente</h2>
               <button
                 onClick={() => setOpen(false)}
-                className="w-7 h-7 rounded-lg hover:bg-zinc-100 flex items-center justify-center transition-colors"
+                aria-label="Cerrar"
+                className="w-7 h-7 rounded-lg hover:bg-crm-secondary flex items-center justify-center transition-colors"
               >
-                <X size={16} className="text-zinc-500" />
+                <X size={16} className="text-crm-muted" />
               </button>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-1.5">
-                <label className="block text-sm font-medium text-zinc-700">Nombre de la empresa *</label>
+                <label className="block text-sm font-medium text-crm-foreground">Nombre de la empresa *</label>
                 <input
                   type="text"
                   value={form.name}
                   onChange={(e) => set('name', e.target.value)}
                   placeholder="Ej: Vidrios del Sur SA"
-                  className="input-base"
+                  className="crm-input"
+                  autoFocus
                   required
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="block text-sm font-medium text-zinc-700">Dirección</label>
+                <label className="block text-sm font-medium text-crm-foreground">Dirección</label>
                 <input
                   type="text"
                   value={form.address}
                   onChange={(e) => set('address', e.target.value)}
                   placeholder="Ej: Av. Pajaritos 3500, Maipú"
-                  className="input-base"
+                  className="crm-input"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <label className="block text-sm font-medium text-zinc-700">Contacto</label>
+                  <label className="block text-sm font-medium text-crm-foreground">Contacto</label>
                   <input
                     type="text"
                     value={form.contactName}
                     onChange={(e) => set('contactName', e.target.value)}
                     placeholder="Nombre del contacto"
-                    className="input-base"
+                    className="crm-input"
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="block text-sm font-medium text-zinc-700">Teléfono</label>
+                  <label className="block text-sm font-medium text-crm-foreground">Teléfono</label>
                   <input
                     type="tel"
                     value={form.contactPhone}
                     onChange={(e) => set('contactPhone', e.target.value)}
                     placeholder="+56 9 xxxx xxxx"
-                    className="input-base"
+                    className="crm-input"
                   />
                 </div>
               </div>
 
               {error && (
-                <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-red-50 border border-red-100 text-sm text-red-600">
+                <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-crm-destructive/10 border border-crm-destructive/20 text-sm text-crm-destructive">
                   <Warning size={15} weight="fill" />
                   {error}
                 </div>
               )}
 
               <div className="flex gap-3 pt-1">
-                <button type="button" onClick={() => setOpen(false)} className="btn-secondary flex-1">
+                <button type="button" onClick={() => setOpen(false)} className="crm-btn-outline flex-1">
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={loading || !form.name}
-                  className="btn-primary flex-1"
+                  className="crm-btn-primary flex-1"
                 >
                   {loading ? <SpinnerGap size={16} className="animate-spin" /> : 'Agregar empresa'}
                 </button>

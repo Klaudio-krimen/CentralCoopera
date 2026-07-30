@@ -81,7 +81,7 @@ export default async function ClienteDetailPage({ params }: { params: { id: stri
       {/* Back */}
       <Link
         href="/admin/crm/clientes"
-        className="inline-flex items-center gap-1.5 text-sm text-zinc-500 hover:text-zinc-800 transition-colors animate-fade-up"
+        className="inline-flex items-center gap-1.5 text-sm text-crm-muted hover:text-crm-foreground transition-colors animate-fade-up"
       >
         <ArrowLeft size={15} />
         Volver a Clientes
@@ -91,14 +91,14 @@ export default async function ClienteDetailPage({ params }: { params: { id: stri
       <div className="flex items-start justify-between animate-fade-up" style={{ animationDelay: '60ms' }}>
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-semibold tracking-tight text-zinc-900">{cliente.name}</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-crm-foreground">{cliente.name}</h1>
             {cliente.isActive ? (
-              <CheckCircle size={16} weight="fill" className="text-emerald-500" />
+              <CheckCircle size={16} weight="fill" className="text-crm-success" />
             ) : (
-              <XCircle size={16} weight="fill" className="text-zinc-400" />
+              <XCircle size={16} weight="fill" className="text-crm-muted" />
             )}
           </div>
-          <p className="text-zinc-500 text-sm mt-1">
+          <p className="text-crm-muted text-sm mt-1">
             {cliente._count.orders} orden{cliente._count.orders !== 1 ? 'es' : ''} de reciclaje · {cliente.deals.length} deal{cliente.deals.length !== 1 ? 's' : ''}
           </p>
         </div>
@@ -107,53 +107,53 @@ export default async function ClienteDetailPage({ params }: { params: { id: stri
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-fade-up" style={{ animationDelay: '120ms' }}>
         {/* Info */}
-        <div className="panel p-5 space-y-3">
-          <p className="text-xs font-medium text-zinc-500 uppercase tracking-wider">Información</p>
+        <div className="crm-card space-y-3">
+          <p className="text-xs font-medium text-crm-muted uppercase tracking-wider">Información</p>
           <div className="space-y-2">
             {cliente.address && (
-              <div className="flex items-center gap-2 text-sm text-zinc-700">
-                <Buildings size={15} className="text-zinc-400 shrink-0" />
+              <div className="flex items-center gap-2 text-sm text-crm-foreground">
+                <Buildings size={15} className="text-crm-muted shrink-0" />
                 {cliente.address}
               </div>
             )}
             {cliente.contactName && (
-              <div className="flex items-center gap-2 text-sm text-zinc-700">
-                <User size={15} className="text-zinc-400 shrink-0" />
+              <div className="flex items-center gap-2 text-sm text-crm-foreground">
+                <User size={15} className="text-crm-muted shrink-0" />
                 {cliente.contactName}
               </div>
             )}
             {cliente.contactPhone && (
-              <div className="flex items-center gap-2 text-sm text-zinc-700">
-                <Phone size={15} className="text-zinc-400 shrink-0" />
+              <div className="flex items-center gap-2 text-sm text-crm-foreground">
+                <Phone size={15} className="text-crm-muted shrink-0" />
                 {cliente.contactPhone}
               </div>
             )}
             {!cliente.address && !cliente.contactName && !cliente.contactPhone && (
-              <p className="text-sm text-zinc-500">Sin información de contacto general registrada.</p>
+              <p className="text-sm text-crm-muted">Sin información de contacto general registrada.</p>
             )}
           </div>
         </div>
 
         {/* Contactos */}
-        <div className="panel p-5 space-y-3">
+        <div className="crm-card space-y-3">
           <div className="flex items-center justify-between">
-            <p className="text-xs font-medium text-zinc-500 uppercase tracking-wider">
+            <p className="text-xs font-medium text-crm-muted uppercase tracking-wider">
               Contactos ({cliente.contacts.length})
             </p>
             <ContactoModal companyId={cliente.id} />
           </div>
           {cliente.contacts.length === 0 ? (
-            <p className="text-sm text-zinc-500">Sin contactos registrados.</p>
+            <p className="text-sm text-crm-muted">Sin contactos registrados.</p>
           ) : (
             <div className="space-y-2">
               {cliente.contacts.map((c) => (
                 <div key={c.id} className="flex items-start gap-2.5 py-1.5">
-                  <UserCircle size={18} className="text-zinc-400 shrink-0 mt-0.5" />
+                  <UserCircle size={18} className="text-crm-muted shrink-0 mt-0.5" />
                   <div className="min-w-0">
-                    <p className="text-sm font-medium text-zinc-900">
-                      {c.name} {c.role && <span className="text-zinc-500 font-normal">· {c.role}</span>}
+                    <p className="text-sm font-medium text-crm-foreground">
+                      {c.name} {c.role && <span className="text-crm-muted font-normal">· {c.role}</span>}
                     </p>
-                    <p className="text-xs text-zinc-500 truncate">
+                    <p className="text-xs text-crm-muted truncate">
                       {[c.email, c.phone].filter(Boolean).join(' · ') || 'Sin datos de contacto'}
                     </p>
                   </div>
@@ -166,21 +166,25 @@ export default async function ClienteDetailPage({ params }: { params: { id: stri
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-fade-up" style={{ animationDelay: '160ms' }}>
         {/* Deals */}
-        <div className="panel p-5 space-y-3">
+        <div className="crm-card space-y-3">
           <div className="flex items-center justify-between">
-            <p className="text-xs font-medium text-zinc-500 uppercase tracking-wider">
+            <p className="text-xs font-medium text-crm-muted uppercase tracking-wider">
               Deals ({cliente.deals.length})
             </p>
             <DealModal companyId={cliente.id} contactos={cliente.contacts.map((c) => ({ id: c.id, name: c.name }))} />
           </div>
           {cliente.deals.length === 0 ? (
-            <p className="text-sm text-zinc-500">Sin deals abiertos. Crea uno para seguir una negociación.</p>
+            <p className="text-sm text-crm-muted">Sin deals abiertos. Crea uno para seguir una negociación.</p>
           ) : (
             <div className="space-y-2">
               {cliente.deals.map((deal) => (
-                <div key={deal.id} className="rounded-xl border border-zinc-200/70 p-3">
+                <Link
+                  key={deal.id}
+                  href={`/admin/crm/deals/${deal.id}`}
+                  className="block rounded-xl border border-crm-border p-3 hover:bg-crm-secondary/50 transition-colors"
+                >
                   <div className="flex items-center justify-between gap-2">
-                    <p className="text-sm font-medium text-zinc-900 truncate">{deal.title}</p>
+                    <p className="text-sm font-medium text-crm-foreground truncate">{deal.title}</p>
                     <span
                       className="text-[11px] px-2 py-0.5 rounded-full border font-medium shrink-0"
                       style={{ borderColor: deal.stage.color, color: deal.stage.color }}
@@ -189,50 +193,50 @@ export default async function ClienteDetailPage({ params }: { params: { id: stri
                     </span>
                   </div>
                   <div className="flex items-center justify-between mt-1.5">
-                    <span className="text-sm font-semibold text-emerald-700 font-mono tabular-nums">
+                    <span className="text-sm font-semibold text-crm-primary font-mono tabular-nums">
                       {formatCurrency(deal.value)}
                     </span>
-                    <span className="text-xs text-zinc-500 font-mono tabular-nums">{deal.probability}%</span>
+                    <span className="text-xs text-crm-muted font-mono tabular-nums">{deal.probability}%</span>
                   </div>
                   {deal.contact && (
-                    <p className="text-xs text-zinc-500 mt-1">{deal.contact.name}</p>
+                    <p className="text-xs text-crm-muted mt-1">{deal.contact.name}</p>
                   )}
-                </div>
+                </Link>
               ))}
             </div>
           )}
         </div>
 
         {/* Actividades */}
-        <div className="panel p-5 space-y-3">
+        <div className="crm-card space-y-3">
           <div className="flex items-center justify-between">
-            <p className="text-xs font-medium text-zinc-500 uppercase tracking-wider">
+            <p className="text-xs font-medium text-crm-muted uppercase tracking-wider">
               Actividad ({actividades.length})
             </p>
             <ActividadModal companyId={cliente.id} />
           </div>
           {actividades.length === 0 ? (
-            <p className="text-sm text-zinc-500">Sin actividad registrada. Anota una llamada, email o nota.</p>
+            <p className="text-sm text-crm-muted">Sin actividad registrada. Anota una llamada, email o nota.</p>
           ) : (
             <div className="space-y-3 max-h-[360px] overflow-y-auto">
               {actividades.map((a) => {
                 const Icon = ACTIVITY_ICON[a.type] ?? Note
                 return (
                   <div key={a.id} className="flex gap-2.5">
-                    <div className="w-7 h-7 rounded-full bg-zinc-100 flex items-center justify-center shrink-0">
-                      <Icon size={13} className="text-zinc-500" />
+                    <div className="w-7 h-7 rounded-full bg-crm-secondary flex items-center justify-center shrink-0">
+                      <Icon size={13} className="text-crm-muted" />
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
-                        <span className="text-[11px] font-medium text-zinc-500 bg-zinc-100 px-1.5 py-0.5 rounded-full">
+                        <span className="text-[11px] font-medium text-crm-muted bg-crm-secondary px-1.5 py-0.5 rounded-full">
                           {ACTIVITY_LABEL[a.type] ?? a.type}
                         </span>
                         {!a.completedAt && a.scheduledAt && (
-                          <span className="text-[11px] text-amber-700">Pendiente</span>
+                          <span className="text-[11px] text-crm-warning">Pendiente</span>
                         )}
                       </div>
-                      <p className="text-sm text-zinc-800 mt-1">{a.description}</p>
-                      <p className="text-[11px] text-zinc-400 mt-0.5">
+                      <p className="text-sm text-crm-foreground mt-1">{a.description}</p>
+                      <p className="text-[11px] text-crm-muted mt-0.5">
                         {a.createdBy.name} · {formatDate(a.createdAt)}
                       </p>
                     </div>
@@ -246,21 +250,21 @@ export default async function ClienteDetailPage({ params }: { params: { id: stri
 
       {/* Historial de órdenes de reciclaje (solo lectura) */}
       <div className="animate-fade-up" style={{ animationDelay: '200ms' }}>
-        <p className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-3">
+        <p className="text-xs font-medium text-crm-muted uppercase tracking-wider mb-3">
           Historial de reciclaje
         </p>
         {cliente.orders.length === 0 ? (
-          <div className="panel text-center py-10">
-            <Package size={20} className="text-zinc-400 mx-auto mb-2" />
-            <p className="text-sm text-zinc-500">Sin órdenes de reciclaje registradas</p>
+          <div className="crm-card text-center py-10">
+            <Package size={20} className="text-crm-muted mx-auto mb-2" />
+            <p className="text-sm text-crm-muted">Sin órdenes de reciclaje registradas</p>
           </div>
         ) : (
-          <div className="panel overflow-hidden">
-            <div className="divide-y divide-zinc-100">
+          <div className="crm-card overflow-hidden !p-0">
+            <div className="divide-y divide-crm-border">
               {cliente.orders.map((o) => (
                 <div key={o.id} className="flex items-center gap-4 px-5 py-3">
-                  <p className="text-xs font-mono text-zinc-400 tabular-nums w-28 shrink-0">{o.orderCode}</p>
-                  <p className="text-xs text-zinc-500 flex-1">{formatDate(o.createdAt)}</p>
+                  <p className="text-xs font-mono text-crm-muted tabular-nums w-28 shrink-0">{o.orderCode}</p>
+                  <p className="text-xs text-crm-muted flex-1">{formatDate(o.createdAt)}</p>
                   <StatusBadge status={o.status as any} size="sm" />
                 </div>
               ))}

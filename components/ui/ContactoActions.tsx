@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 import { DotsThree, PencilSimple, ToggleLeft, ToggleRight, SpinnerGap } from '@phosphor-icons/react'
 import ContactoModal from './ContactoModal'
 import { CONTACT_SOURCE_LABELS } from '@/lib/utils'
@@ -30,15 +31,27 @@ export default function ContactoActions({
   const router = useRouter()
 
   const toggle = async () => {
-    setLoading(true)
+    const verb = isActive ? 'desactivar' : 'activar'
+    if (!confirm(`¿Seguro que quieres ${verb} a ${contacto.name}?`)) {
+      setOpen(false)
+      return
+    }
     setOpen(false)
-    await fetch('/api/contactos', {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: contacto.id, isActive: !isActive }),
-    })
-    router.refresh()
-    setLoading(false)
+    setLoading(true)
+    try {
+      const res = await fetch('/api/contactos', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: contacto.id, isActive: !isActive }),
+      })
+      if (!res.ok) throw new Error()
+      toast.success(isActive ? 'Contacto desactivado' : 'Contacto activado')
+      router.refresh()
+    } catch {
+      toast.error(`No se pudo ${verb} el contacto`)
+    } finally {
+      setLoading(false)
+    }
   }
 
   if (loading) return <SpinnerGap size={14} className="animate-spin text-zinc-400" />

@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { formatCurrency } from '@/lib/utils'
@@ -25,12 +26,13 @@ export default function DealCard({ id, title, value, companyName, contactName, c
   }
 
   return (
-    <div
+    <Link
+      href={`/admin/crm/deals/${id}`}
       ref={setNodeRef}
       style={style}
       {...attributes}
       {...listeners}
-      className="crm-card space-y-2 cursor-grab active:cursor-grabbing hover:shadow-card-hover transition-shadow"
+      className="crm-card block no-underline space-y-2 cursor-grab active:cursor-grabbing hover:shadow-card-hover transition-shadow"
     >
       <p className="text-sm font-medium text-crm-foreground leading-tight">{title}</p>
       <p className="text-xs text-crm-muted truncate">{companyName}</p>
@@ -48,6 +50,6 @@ export default function DealCard({ id, title, value, companyName, contactName, c
         {contactName && <p className="text-[11px] text-crm-muted/80 truncate">{contactName}</p>}
         {contactTemperature && <span className="text-[11px] text-crm-muted font-mono tabular-nums">{probability}%</span>}
       </div>
-    </div>
+    </Link>
   )
 }

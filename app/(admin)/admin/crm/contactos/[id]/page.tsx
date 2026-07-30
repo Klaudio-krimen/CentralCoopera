@@ -44,8 +44,8 @@ export default async function ContactoDetailPage({ params }: { params: { id: str
     <div className="space-y-6">
       <div className="flex items-center gap-4">
         <Link
-          href="/admin/crm/contactos"
-          aria-label="Volver a contactos"
+          href={`/admin/crm/clientes/${contacto.companyId}`}
+          aria-label={`Volver a ${contacto.company.name}`}
           className="w-9 h-9 rounded-lg hover:bg-crm-secondary flex items-center justify-center transition-colors"
         >
           <ArrowLeft className="h-5 w-5 text-crm-foreground" />

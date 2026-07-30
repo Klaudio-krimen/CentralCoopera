@@ -13,7 +13,6 @@ import {
   FileText,
   MapPin,
   SignOut,
-  AddressBook,
   Target,
   Briefcase,
   ListChecks,
@@ -73,7 +72,6 @@ const MODULES: ModuleDef[] = [
     nav: [
       { href: '/admin/crm/dashboard', label: 'Dashboard', icon: ChartBar },
       { href: '/admin/crm/pipeline', label: 'Pipeline', icon: Target },
-      { href: '/admin/crm/contactos', label: 'Contactos', icon: AddressBook },
       { href: '/admin/crm/deals', label: 'Deals', icon: Briefcase },
       { href: '/admin/crm/actividades', label: 'Actividades', icon: ListChecks },
       { href: '/admin/crm/clientes', label: 'Clientes', icon: Buildings },

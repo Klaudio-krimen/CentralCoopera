@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { createPortal } from 'react-dom'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { Buildings, X, SpinnerGap, Warning } from '@phosphor-icons/react'
@@ -47,7 +48,7 @@ export default function NuevaEmpresaModal() {
         Nueva empresa
       </button>
 
-      {open && (
+      {open && createPortal(
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setOpen(false)} />
 
@@ -132,7 +133,8 @@ export default function NuevaEmpresaModal() {
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   )

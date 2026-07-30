@@ -12,6 +12,7 @@ export const CONTACT_SOURCE_LABELS: Record<ContactSource, string> = {
   EVENTO: 'Evento',
   IMPORT: 'Importado',
   WEBHOOK: 'Webhook',
+  SCRAPING: 'Web scraping',
   OTRO: 'Otro',
 }
 

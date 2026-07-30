@@ -44,7 +44,7 @@ const FIELD_MAP: Record<string, string> = {
   fuente: 'source',
 }
 
-const SOURCES = ['WEBSITE', 'WHATSAPP', 'REFERIDO', 'REDES_SOCIALES', 'LLAMADA_FRIA', 'EMAIL', 'FORMULARIO', 'EVENTO', 'IMPORT', 'WEBHOOK', 'OTRO']
+const SOURCES = ['WEBSITE', 'WHATSAPP', 'REFERIDO', 'REDES_SOCIALES', 'LLAMADA_FRIA', 'EMAIL', 'FORMULARIO', 'EVENTO', 'IMPORT', 'WEBHOOK', 'SCRAPING', 'OTRO']
 
 // Quita tildes (NFD descompone "é" en "e" + acento combinante U+0300-U+036F,
 // luego se filtran esos code points) para que "Teléfono"/"Descripción" calcen

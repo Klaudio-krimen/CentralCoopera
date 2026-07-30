@@ -6,14 +6,27 @@ import { toast } from 'sonner'
 import { Upload } from 'lucide-react'
 import { parseCsv } from '@/lib/csv'
 
+// Cubre tanto el formato manual simple (nombre/empresa/...) como el formato
+// real que exporta el pipeline de scraping de leads en Apify (negocio/
+// contacto/puesto/sitio_web/instagram/linkedin/ciudad/rating/resenas/
+// senal_de_calificacion/fuente/fecha).
 const HEADER_ALIASES: Record<string, string[]> = {
-  name: ['nombre', 'name'],
+  name: ['nombre', 'name', 'contacto'],
   email: ['email', 'correo'],
   phone: ['telefono', 'teléfono', 'phone'],
   role: ['cargo', 'role', 'puesto'],
-  company: ['empresa', 'company'],
+  company: ['empresa', 'company', 'negocio'],
   temperature: ['temperatura', 'temperature'],
   source: ['fuente', 'source'],
+  notes: ['notas', 'notes'],
+  website: ['sitio_web', 'website', 'web'],
+  instagram: ['instagram'],
+  linkedin: ['linkedin'],
+  city: ['ciudad', 'city'],
+  rating: ['rating'],
+  reviews: ['resenas', 'reseñas', 'reviews'],
+  qualification: ['senal_de_calificacion', 'señal_de_calificación', 'qualification'],
+  date: ['fecha', 'date'],
 }
 
 function mapHeaders(headerRow: string[]) {
@@ -56,19 +69,30 @@ export default function ImportContactsButton() {
 
       const [header, ...dataRows] = table
       const map = mapHeaders(header)
-      if (map.name === undefined || map.company === undefined) {
-        toast.error('El CSV necesita columnas "nombre" y "empresa"')
+      if (map.company === undefined) {
+        toast.error('El CSV necesita una columna "empresa" o "negocio"')
         return
       }
 
+      const get = (field: string, r: string[]) => (map[field] !== undefined ? r[map[field]] : undefined)
+
       const rows = dataRows.map((r) => ({
-        name: r[map.name] ?? '',
-        company: r[map.company] ?? '',
-        email: map.email !== undefined ? r[map.email] : undefined,
-        phone: map.phone !== undefined ? r[map.phone] : undefined,
-        role: map.role !== undefined ? r[map.role] : undefined,
-        temperature: map.temperature !== undefined ? r[map.temperature] : undefined,
-        source: map.source !== undefined ? r[map.source] : undefined,
+        name: get('name', r) ?? '',
+        company: get('company', r) ?? '',
+        email: get('email', r),
+        phone: get('phone', r),
+        role: get('role', r),
+        temperature: get('temperature', r),
+        source: get('source', r),
+        notes: get('notes', r),
+        website: get('website', r),
+        instagram: get('instagram', r),
+        linkedin: get('linkedin', r),
+        city: get('city', r),
+        rating: get('rating', r),
+        reviews: get('reviews', r),
+        qualification: get('qualification', r),
+        date: get('date', r),
       }))
 
       const res = await fetch('/api/contactos/import', {

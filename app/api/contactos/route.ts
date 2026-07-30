@@ -49,7 +49,7 @@ export async function GET(req: NextRequest) {
   return NextResponse.json(contacts)
 }
 
-const SOURCES = ['WEBSITE', 'WHATSAPP', 'REFERIDO', 'REDES_SOCIALES', 'LLAMADA_FRIA', 'EMAIL', 'FORMULARIO', 'EVENTO', 'IMPORT', 'WEBHOOK', 'OTRO']
+const SOURCES = ['WEBSITE', 'WHATSAPP', 'REFERIDO', 'REDES_SOCIALES', 'LLAMADA_FRIA', 'EMAIL', 'FORMULARIO', 'EVENTO', 'IMPORT', 'WEBHOOK', 'SCRAPING', 'OTRO']
 
 // POST /api/contactos — crear contacto
 export async function POST(req: NextRequest) {

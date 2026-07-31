@@ -1,243 +1,248 @@
-'use client'
+"use client";
 
-import { useMemo, useState } from 'react'
-import Link from 'next/link'
-import { Search } from 'lucide-react'
+import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Search, Download } from "lucide-react";
+import { Input } from "@/components/crm/ui/input";
+import { Button } from "@/components/crm/ui/button";
 import {
-  Buildings,
-  Phone,
-  User,
-  CheckCircle,
-  XCircle,
-  Package,
-  CaretDown,
-  UserCirclePlus,
-} from '@phosphor-icons/react'
-import EmpresaActions from '@/components/ui/EmpresaActions'
-import ContactoModal from '@/components/ui/ContactoModal'
-import TemperatureBadge from '@/components/ui/TemperatureBadge'
-import { EmailQuickActions, PhoneQuickActions } from '@/components/crm/ContactQuickActions'
-import { CONTACT_SOURCE_LABELS } from '@/lib/utils'
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from "@/components/crm/ui/table";
+import TemperatureBadge from "@/components/ui/TemperatureBadge";
+import { CONTACT_SOURCE_LABELS, formatDate } from "@/lib/utils";
 
 export interface ContactoDeEmpresa {
-  id: string
-  name: string
-  role: string | null
-  email: string | null
-  phone: string | null
-  temperature: 'FRIO' | 'TIBIO' | 'CALIENTE'
-  score: number
-  source: keyof typeof CONTACT_SOURCE_LABELS
+  id: string;
+  name: string;
+  role: string | null;
+  email: string | null;
+  phone: string | null;
+  temperature: "FRIO" | "TIBIO" | "CALIENTE";
+  score: number;
+  source: keyof typeof CONTACT_SOURCE_LABELS;
+  createdAt: string | Date;
 }
 
 export interface EmpresaConContactos {
-  id: string
-  name: string
-  address: string | null
-  contactName: string | null
-  contactPhone: string | null
-  isActive: boolean
-  createdAt: Date
-  _count: { orders: number }
-  contacts: ContactoDeEmpresa[]
+  id: string;
+  name: string;
+  isActive: boolean;
+  contacts: ContactoDeEmpresa[];
 }
 
-function matches(empresa: EmpresaConContactos, q: string) {
-  if (empresa.name.toLowerCase().includes(q)) return true
-  return empresa.contacts.some(
-    (c) =>
-      c.name.toLowerCase().includes(q) ||
-      c.email?.toLowerCase().includes(q) ||
-      c.role?.toLowerCase().includes(q)
-  )
+interface Row {
+  key: string;
+  companyId: string;
+  companyName: string;
+  companyActive: boolean;
+  contact: ContactoDeEmpresa | null;
 }
 
-export default function ClientesConContactos({ empresas }: { empresas: EmpresaConContactos[] }) {
-  const [search, setSearch] = useState('')
-  const [expanded, setExpanded] = useState<Set<string>>(new Set())
+type Temp = "FRIO" | "TIBIO" | "CALIENTE";
 
-  const q = search.trim().toLowerCase()
-  const filtradas = useMemo(
-    () => (q ? empresas.filter((e) => matches(e, q)) : empresas),
-    [empresas, q]
-  )
-  // Mientras se busca, auto-expande las empresas cuyo match viene de un contacto.
-  const autoExpandidas = useMemo(() => {
-    if (!q) return expanded
-    const s = new Set(expanded)
-    for (const e of filtradas) {
-      if (!e.name.toLowerCase().includes(q)) s.add(e.id)
+const TEMP_FILTERS: { value: Temp | null; label: string }[] = [
+  { value: null, label: "Todos" },
+  { value: "CALIENTE", label: "Caliente" },
+  { value: "TIBIO", label: "Tibio" },
+  { value: "FRIO", label: "Frío" },
+];
+
+function flatten(empresas: EmpresaConContactos[]): Row[] {
+  const rows: Row[] = [];
+  for (const e of empresas) {
+    if (e.contacts.length === 0) {
+      rows.push({
+        key: `empresa-${e.id}`,
+        companyId: e.id,
+        companyName: e.name,
+        companyActive: e.isActive,
+        contact: null,
+      });
+    } else {
+      for (const c of e.contacts) {
+        rows.push({
+          key: c.id,
+          companyId: e.id,
+          companyName: e.name,
+          companyActive: e.isActive,
+          contact: c,
+        });
+      }
     }
-    return s
-  }, [q, filtradas, expanded])
+  }
+  return rows;
+}
 
-  const toggle = (id: string) =>
-    setExpanded((prev) => {
-      const next = new Set(prev)
-      next.has(id) ? next.delete(id) : next.add(id)
-      return next
-    })
+export default function ClientesConContactos({
+  empresas,
+}: {
+  empresas: EmpresaConContactos[];
+}) {
+  const router = useRouter();
+  const [search, setSearch] = useState("");
+  const [tempFilter, setTempFilter] = useState<Temp | null>(null);
 
-  const activas = filtradas.filter((e) => e.isActive)
-  const inactivas = filtradas.filter((e) => !e.isActive)
+  const rows = useMemo(() => flatten(empresas), [empresas]);
+
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return rows.filter((r) => {
+      if (tempFilter && r.contact?.temperature !== tempFilter) return false;
+      if (!q) return true;
+      return (
+        r.companyName.toLowerCase().includes(q) ||
+        (r.contact?.name.toLowerCase().includes(q) ?? false) ||
+        (r.contact?.email?.toLowerCase().includes(q) ?? false)
+      );
+    });
+  }, [rows, search, tempFilter]);
 
   return (
-    <div className="space-y-6">
-      <div className="relative max-w-md">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-crm-muted" />
-        <input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Buscar empresa o contacto..."
-          className="crm-input pl-9"
-        />
-      </div>
-
-      {filtradas.length === 0 ? (
-        <div className="crm-card text-center py-16">
-          <div className="w-12 h-12 rounded-2xl bg-crm-secondary flex items-center justify-center mx-auto mb-3">
-            <Buildings size={22} className="text-crm-muted" />
-          </div>
-          <p className="text-crm-foreground font-medium">Sin resultados</p>
-          <p className="text-crm-muted text-sm mt-1">Prueba con otro nombre de empresa o contacto</p>
+    <div className="space-y-4">
+      <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
+        <div className="relative w-full max-w-md">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-crm-muted" />
+          <Input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Buscar empresa o contacto..."
+            className="pl-9"
+          />
         </div>
-      ) : (
-        <>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {activas.map((empresa) => (
-              <EmpresaCard
-                key={empresa.id}
-                empresa={empresa}
-                expanded={autoExpandidas.has(empresa.id)}
-                onToggle={() => toggle(empresa.id)}
-              />
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
+            {TEMP_FILTERS.map((f) => (
+              <Button
+                key={f.label}
+                type="button"
+                size="sm"
+                variant={tempFilter === f.value ? "default" : "outline"}
+                onClick={() => setTempFilter(f.value)}
+              >
+                {f.label}
+              </Button>
             ))}
           </div>
-
-          {inactivas.length > 0 && (
-            <div className="space-y-3">
-              <p className="text-[11px] font-semibold text-crm-muted uppercase tracking-wider">Inactivas</p>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-                {inactivas.map((empresa) => (
-                  <EmpresaCard
-                    key={empresa.id}
-                    empresa={empresa}
-                    expanded={autoExpandidas.has(empresa.id)}
-                    onToggle={() => toggle(empresa.id)}
-                    muted
-                  />
-                ))}
-              </div>
-            </div>
-          )}
-        </>
-      )}
-    </div>
-  )
-}
-
-function EmpresaCard({
-  empresa,
-  expanded,
-  onToggle,
-  muted = false,
-}: {
-  empresa: EmpresaConContactos
-  expanded: boolean
-  onToggle: () => void
-  muted?: boolean
-}) {
-  return (
-    <div className={`crm-card space-y-3 ${muted ? 'opacity-60' : ''}`}>
-      <Link href={`/admin/crm/clientes/${empresa.id}`} className="block space-y-3">
-        <div className="flex items-start justify-between gap-2">
-          <div className="min-w-0">
-            <p className="text-sm font-semibold text-crm-foreground leading-tight">{empresa.name}</p>
-            {empresa.address && (
-              <p className="text-xs text-crm-muted mt-0.5 truncate">{empresa.address}</p>
-            )}
-          </div>
-          <div className="flex items-center gap-1 shrink-0">
-            {empresa.isActive ? (
-              <CheckCircle size={14} weight="fill" className="text-crm-success" />
-            ) : (
-              <XCircle size={14} weight="fill" className="text-crm-muted" />
-            )}
-          </div>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => window.open("/api/contactos/export")}
+          >
+            <Download className="h-3.5 w-3.5" />
+            Exportar
+          </Button>
         </div>
-
-        <div className="space-y-1">
-          {empresa.contactName && (
-            <div className="flex items-center gap-1.5 text-xs text-crm-muted">
-              <User size={12} className="text-crm-muted shrink-0" />
-              {empresa.contactName}
-            </div>
-          )}
-          {empresa.contactPhone && (
-            <div className="flex items-center gap-1.5 text-xs text-crm-muted">
-              <Phone size={12} className="text-crm-muted shrink-0" />
-              {empresa.contactPhone}
-            </div>
-          )}
-        </div>
-      </Link>
-
-      <div className="flex items-center justify-between pt-1 border-t border-crm-border">
-        <div className="flex items-center gap-1.5 text-xs text-crm-muted">
-          <Package size={12} />
-          {empresa._count.orders} orden{empresa._count.orders !== 1 ? 'es' : ''}
-        </div>
-        <EmpresaActions empresaId={empresa.id} isActive={empresa.isActive} />
       </div>
 
-      <div className="border-t border-crm-border pt-2">
-        <button
-          onClick={onToggle}
-          className="w-full flex items-center justify-between text-xs font-medium text-crm-muted hover:text-crm-foreground transition-colors py-1"
-        >
-          <span>Contactos ({empresa.contacts.length})</span>
-          <CaretDown size={13} className={`transition-transform ${expanded ? 'rotate-180' : ''}`} />
-        </button>
-
-        {expanded && (
-          <div className="space-y-2.5 mt-2">
-            {empresa.contacts.length === 0 ? (
-              <p className="text-xs text-crm-muted py-1">Sin contactos registrados.</p>
-            ) : (
-              empresa.contacts.map((c) => (
-                <div key={c.id} className="rounded-lg border border-crm-border p-2.5 space-y-1.5">
-                  <div className="flex items-center justify-between gap-2">
-                    <Link
-                      href={`/admin/crm/contactos/${c.id}`}
-                      className="text-sm font-medium text-crm-foreground hover:text-crm-primary truncate"
-                    >
-                      {c.name} {c.role && <span className="text-crm-muted font-normal">· {c.role}</span>}
-                    </Link>
-                    <TemperatureBadge temperature={c.temperature} size="sm" />
-                  </div>
-                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                    {c.email && <EmailQuickActions email={c.email} />}
-                    {c.phone && <PhoneQuickActions phone={c.phone} />}
-                    {!c.email && !c.phone && (
-                      <span className="text-xs text-crm-muted">Sin datos de contacto</span>
+      {filtered.length === 0 ? (
+        <div className="crm-card text-center py-16">
+          <p className="text-crm-foreground font-medium">Sin resultados</p>
+          <p className="text-crm-muted text-sm mt-1">
+            Prueba con otro nombre de empresa o contacto
+          </p>
+        </div>
+      ) : (
+        <div className="rounded-xl border border-crm-border overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Nombre</TableHead>
+                <TableHead className="hidden sm:table-cell">Empresa</TableHead>
+                <TableHead className="hidden md:table-cell">Cargo</TableHead>
+                <TableHead className="hidden lg:table-cell">Fuente</TableHead>
+                <TableHead>Temperatura</TableHead>
+                <TableHead className="hidden md:table-cell">Score</TableHead>
+                <TableHead className="hidden lg:table-cell">Fecha</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filtered.map((r) => (
+                <TableRow
+                  key={r.key}
+                  className={`cursor-pointer ${!r.companyActive ? "opacity-50" : ""}`}
+                  onClick={() =>
+                    router.push(
+                      r.contact
+                        ? `/admin/crm/contactos/${r.contact.id}`
+                        : `/admin/crm/clientes/${r.companyId}`
+                    )
+                  }
+                >
+                  <TableCell>
+                    <p className="font-medium text-crm-foreground">
+                      {r.contact?.name ?? r.companyName}
+                      {!r.companyActive && (
+                        <span className="text-crm-muted font-normal">
+                          {" "}
+                          · inactiva
+                        </span>
+                      )}
+                    </p>
+                    {r.contact?.email ? (
+                      <p className="text-xs text-crm-muted">
+                        {r.contact.email}
+                      </p>
+                    ) : !r.contact ? (
+                      <p className="text-xs text-crm-muted">
+                        Sin contacto registrado
+                      </p>
+                    ) : null}
+                  </TableCell>
+                  <TableCell className="hidden sm:table-cell text-crm-foreground">
+                    {r.companyName}
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell text-crm-muted">
+                    {r.contact?.role ?? "—"}
+                  </TableCell>
+                  <TableCell className="hidden lg:table-cell text-crm-muted">
+                    {r.contact ? CONTACT_SOURCE_LABELS[r.contact.source] : "—"}
+                  </TableCell>
+                  <TableCell>
+                    {r.contact ? (
+                      <TemperatureBadge
+                        temperature={r.contact.temperature}
+                        size="sm"
+                      />
+                    ) : (
+                      <span className="text-xs text-crm-muted">—</span>
                     )}
-                  </div>
-                </div>
-              ))
-            )}
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell">
+                    {r.contact ? (
+                      <div className="flex items-center gap-2">
+                        <div className="h-2 w-16 bg-crm-secondary rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-crm-primary rounded-full"
+                            style={{ width: `${r.contact.score}%` }}
+                          />
+                        </div>
+                        <span className="text-xs text-crm-muted font-mono tabular-nums">
+                          {r.contact.score}
+                        </span>
+                      </div>
+                    ) : (
+                      "—"
+                    )}
+                  </TableCell>
+                  <TableCell className="hidden lg:table-cell text-crm-muted text-xs">
+                    {r.contact ? formatDate(r.contact.createdAt) : "—"}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      )}
 
-            <ContactoModal
-              companyId={empresa.id}
-              trigger={
-                <button className="w-full crm-btn-outline text-xs py-1.5 justify-center">
-                  <UserCirclePlus size={14} />
-                  Nuevo contacto
-                </button>
-              }
-            />
-          </div>
-        )}
-      </div>
+      <p className="text-xs text-crm-muted">
+        {filtered.length} de {rows.length} filas
+      </p>
     </div>
-  )
+  );
 }

@@ -18,6 +18,7 @@ async function getEmpresas() {
           role: true,
           email: true,
           phone: true,
+          notes: true,
           temperature: true,
           score: true,
           source: true,

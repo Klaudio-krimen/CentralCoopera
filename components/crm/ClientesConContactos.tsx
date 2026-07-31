@@ -22,10 +22,22 @@ export interface ContactoDeEmpresa {
   role: string | null;
   email: string | null;
   phone: string | null;
+  notes: string | null;
   temperature: "FRIO" | "TIBIO" | "CALIENTE";
   score: number;
   source: keyof typeof CONTACT_SOURCE_LABELS;
   createdAt: string | Date;
+}
+
+// La ciudad del scraper no tiene columna propia en Contact — el importador
+// de CSV (Apify) la guarda como línea legible dentro de "notes" (ver
+// app/api/contactos/import/route.ts). Se extrae acá en vez de migrar el
+// schema, porque ya está disponible para todos los contactos importados
+// sin necesitar un backfill de datos existentes.
+function extractNoteField(notes: string | null, label: string): string | null {
+  if (!notes) return null;
+  const match = notes.match(new RegExp(`^${label}:\\s*(.+)$`, "im"));
+  return match ? match[1].trim() : null;
 }
 
 export interface EmpresaConContactos {
@@ -154,8 +166,7 @@ export default function ClientesConContactos({
               <TableRow>
                 <TableHead>Nombre</TableHead>
                 <TableHead className="hidden sm:table-cell">Empresa</TableHead>
-                <TableHead className="hidden md:table-cell">Cargo</TableHead>
-                <TableHead className="hidden lg:table-cell">Fuente</TableHead>
+                <TableHead className="hidden md:table-cell">Ciudad</TableHead>
                 <TableHead>Temperatura</TableHead>
                 <TableHead className="hidden md:table-cell">Score</TableHead>
                 <TableHead className="hidden lg:table-cell">Fecha</TableHead>
@@ -198,10 +209,9 @@ export default function ClientesConContactos({
                     {r.companyName}
                   </TableCell>
                   <TableCell className="hidden md:table-cell text-crm-muted">
-                    {r.contact?.role ?? "—"}
-                  </TableCell>
-                  <TableCell className="hidden lg:table-cell text-crm-muted">
-                    {r.contact ? CONTACT_SOURCE_LABELS[r.contact.source] : "—"}
+                    {(r.contact &&
+                      extractNoteField(r.contact.notes, "Ciudad")) ??
+                      "—"}
                   </TableCell>
                   <TableCell>
                     {r.contact ? (

@@ -13,21 +13,51 @@ const ROLES = [
   { value: "ADMIN", label: "Administrador" },
 ];
 
+const MODULES = [
+  { value: "OPERACIONES", label: "Operaciones" },
+  { value: "CRM", label: "CRM" },
+  { value: "INVENTARIO", label: "Inventario" },
+];
+
+// Roles cuyo acceso a módulos se puede personalizar. CHOFER/RECEPCION no
+// usan el panel admin; ADMIN ya ve todo sin importar moduleAccess.
+const CUSTOMIZABLE_ROLES = ["VENTAS", "BODEGA"];
+
+function defaultModulesForRole(role: string): string[] {
+  if (role === "VENTAS") return ["CRM"];
+  if (role === "BODEGA") return ["INVENTARIO"];
+  return [];
+}
+
+const EMPTY_FORM = {
+  name: "",
+  email: "",
+  password: "",
+  role: "CHOFER",
+  moduleAccess: [] as string[],
+};
+
 export default function NuevoUsuarioModal() {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
 
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    password: "",
-    role: "CHOFER",
-  });
+  const [form, setForm] = useState(EMPTY_FORM);
 
-  const set = (k: keyof typeof form, v: string) =>
+  const set = (k: "name" | "email" | "password", v: string) =>
     setForm((f) => ({ ...f, [k]: v }));
+
+  const setRole = (role: string) =>
+    setForm((f) => ({ ...f, role, moduleAccess: defaultModulesForRole(role) }));
+
+  const toggleModule = (module: string) =>
+    setForm((f) => ({
+      ...f,
+      moduleAccess: f.moduleAccess.includes(module)
+        ? f.moduleAccess.filter((m) => m !== module)
+        : [...f.moduleAccess, module],
+    }));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,7 +72,7 @@ export default function NuevoUsuarioModal() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       setOpen(false);
-      setForm({ name: "", email: "", password: "", role: "CHOFER" });
+      setForm(EMPTY_FORM);
       router.refresh();
     } catch (e: any) {
       setError(e.message);
@@ -136,7 +166,7 @@ export default function NuevoUsuarioModal() {
                   </label>
                   <select
                     value={form.role}
-                    onChange={(e) => set("role", e.target.value)}
+                    onChange={(e) => setRole(e.target.value)}
                     className="input-base"
                     required
                   >
@@ -147,6 +177,38 @@ export default function NuevoUsuarioModal() {
                     ))}
                   </select>
                 </div>
+
+                {CUSTOMIZABLE_ROLES.includes(form.role) && (
+                  <div className="space-y-1.5">
+                    <label className="block text-sm font-medium text-zinc-700">
+                      Acceso a módulos
+                    </label>
+                    <div className="flex flex-wrap gap-2">
+                      {MODULES.map((m) => {
+                        const checked = form.moduleAccess.includes(m.value);
+                        return (
+                          <button
+                            key={m.value}
+                            type="button"
+                            onClick={() => toggleModule(m.value)}
+                            aria-pressed={checked}
+                            className={`px-3 py-1.5 rounded-lg text-sm border transition-colors ${
+                              checked
+                                ? "bg-emerald-50 border-emerald-200 text-emerald-700 font-medium"
+                                : "bg-white border-zinc-200 text-zinc-500 hover:border-zinc-300"
+                            }`}
+                          >
+                            {m.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <p className="text-xs text-zinc-400">
+                      Puede combinar más de un módulo (ej: Operaciones + CRM
+                      para un supervisor).
+                    </p>
+                  </div>
+                )}
 
                 {error && (
                   <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-red-50 border border-red-100 text-sm text-red-600">

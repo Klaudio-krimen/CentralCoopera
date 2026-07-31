@@ -1,31 +1,33 @@
-import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
-import { prisma } from '@/lib/db'
-import { apiError } from '@/lib/utils'
+import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/db";
+import { apiError } from "@/lib/utils";
+import { hasModuleAccess } from "@/lib/access";
 
-// GET /api/posiciones/activas — última posición de cada tracker activo (solo ADMIN)
+// GET /api/posiciones/activas — última posición de cada tracker activo (ADMIN o acceso a Operaciones)
 export async function GET() {
-  const session = await getServerSession(authOptions)
-  if (!session) return apiError('No autorizado', 401)
-  if (session.user.role !== 'ADMIN') return apiError('Acceso denegado', 403)
+  const session = await getServerSession(authOptions);
+  if (!session) return apiError("No autorizado", 401);
+  if (!hasModuleAccess(session.user, "OPERACIONES"))
+    return apiError("Acceso denegado", 403);
 
   // Prisma `distinct` + orderBy desc → la primera fila por trackerId es la más reciente
   const latest = await prisma.position.findMany({
     where: { tracker: { isActive: true } },
-    distinct: ['trackerId'],
-    orderBy: [{ trackerId: 'asc' }, { recordedAt: 'desc' }],
+    distinct: ["trackerId"],
+    orderBy: [{ trackerId: "asc" }, { recordedAt: "desc" }],
     include: { tracker: { select: { label: true, kind: true } } },
-  })
+  });
 
   const result = latest.map((p) => ({
-    trackerId:  p.trackerId,
-    label:      p.tracker.label,
-    kind:       p.tracker.kind,
-    lat:        p.lat,
-    lng:        p.lng,
+    trackerId: p.trackerId,
+    label: p.tracker.label,
+    kind: p.tracker.kind,
+    lat: p.lat,
+    lng: p.lng,
     recordedAt: p.recordedAt,
-  }))
+  }));
 
-  return NextResponse.json(result)
+  return NextResponse.json(result);
 }

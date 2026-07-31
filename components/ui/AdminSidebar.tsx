@@ -1,9 +1,9 @@
-'use client'
+"use client";
 
-import { useEffect, useState } from 'react'
-import Link from 'next/link'
-import { useRouter, usePathname } from 'next/navigation'
-import { signOut } from 'next-auth/react'
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { useRouter, usePathname } from "next/navigation";
+import { signOut } from "next-auth/react";
 import {
   Recycle,
   ChartBar,
@@ -21,82 +21,100 @@ import {
   Package,
   ArrowsLeftRight,
   type Icon,
-} from '@phosphor-icons/react'
+} from "@phosphor-icons/react";
 
 // ── Module definitions ───────────────────────────────────────────────────────
 
-type ModuleKey = 'operaciones' | 'crm' | 'inventario'
-type AppRole = 'ADMIN' | 'VENTAS' | 'BODEGA'
+type ModuleKey = "operaciones" | "crm" | "inventario";
 
 interface NavItem {
-  href: string
-  label: string
-  icon: Icon
-  badge?: 'discrepancias'
+  href: string;
+  label: string;
+  icon: Icon;
+  badge?: "discrepancias";
 }
 
 interface ModuleDef {
-  key: ModuleKey
-  label: string
-  tag: string
-  activeBg: string
-  activeText: string
-  activeIcon: string
-  nav: NavItem[]
+  key: ModuleKey;
+  label: string;
+  tag: string;
+  activeBg: string;
+  activeText: string;
+  activeIcon: string;
+  nav: NavItem[];
 }
 
 const MODULES: ModuleDef[] = [
   {
-    key: 'operaciones',
-    label: 'Operaciones',
-    tag: 'Operaciones',
-    activeBg: 'bg-emerald-50',
-    activeText: 'text-emerald-700',
-    activeIcon: 'text-emerald-600',
+    key: "operaciones",
+    label: "Operaciones",
+    tag: "Operaciones",
+    activeBg: "bg-emerald-50",
+    activeText: "text-emerald-700",
+    activeIcon: "text-emerald-600",
     nav: [
-      { href: '/admin/dashboard', label: 'Dashboard', icon: ChartBar },
-      { href: '/admin/ordenes', label: 'Órdenes', icon: Truck },
-      { href: '/admin/mapa', label: 'Mapa', icon: MapPin },
-      { href: '/admin/discrepancias', label: 'Discrepancias', icon: Warning, badge: 'discrepancias' },
-      { href: '/admin/choferes', label: 'Equipo', icon: Users },
-      { href: '/admin/reportes', label: 'Reportes', icon: FileText },
+      { href: "/admin/dashboard", label: "Dashboard", icon: ChartBar },
+      { href: "/admin/ordenes", label: "Órdenes", icon: Truck },
+      { href: "/admin/mapa", label: "Mapa", icon: MapPin },
+      {
+        href: "/admin/discrepancias",
+        label: "Discrepancias",
+        icon: Warning,
+        badge: "discrepancias",
+      },
+      { href: "/admin/choferes", label: "Equipo", icon: Users },
+      { href: "/admin/reportes", label: "Reportes", icon: FileText },
     ],
   },
   {
-    key: 'crm',
-    label: 'CRM',
-    tag: 'CRM · Clientes',
-    activeBg: 'bg-blue-50',
-    activeText: 'text-blue-700',
-    activeIcon: 'text-blue-600',
+    key: "crm",
+    label: "CRM",
+    tag: "CRM · Clientes",
+    activeBg: "bg-blue-50",
+    activeText: "text-blue-700",
+    activeIcon: "text-blue-600",
     nav: [
-      { href: '/admin/crm/dashboard', label: 'Dashboard', icon: ChartBar },
-      { href: '/admin/crm/pipeline', label: 'Pipeline', icon: Target },
-      { href: '/admin/crm/deals', label: 'Deals', icon: Briefcase },
-      { href: '/admin/crm/actividades', label: 'Actividades', icon: ListChecks },
-      { href: '/admin/crm/clientes', label: 'Clientes', icon: Buildings },
-      { href: '/admin/crm/configuracion', label: 'Configuración', icon: GearSix },
+      { href: "/admin/crm/dashboard", label: "Dashboard", icon: ChartBar },
+      { href: "/admin/crm/pipeline", label: "Pipeline", icon: Target },
+      { href: "/admin/crm/deals", label: "Deals", icon: Briefcase },
+      {
+        href: "/admin/crm/actividades",
+        label: "Actividades",
+        icon: ListChecks,
+      },
+      { href: "/admin/crm/clientes", label: "Clientes", icon: Buildings },
+      {
+        href: "/admin/crm/configuracion",
+        label: "Configuración",
+        icon: GearSix,
+      },
     ],
   },
   {
-    key: 'inventario',
-    label: 'Inventario',
-    tag: 'Inventario',
-    activeBg: 'bg-amber-50',
-    activeText: 'text-amber-700',
-    activeIcon: 'text-amber-600',
+    key: "inventario",
+    label: "Inventario",
+    tag: "Inventario",
+    activeBg: "bg-amber-50",
+    activeText: "text-amber-700",
+    activeIcon: "text-amber-600",
     nav: [
-      { href: '/admin/inventario/stock', label: 'Stock', icon: Package },
-      { href: '/admin/inventario/movimientos', label: 'Movimientos', icon: ArrowsLeftRight },
+      { href: "/admin/inventario/stock", label: "Stock", icon: Package },
+      {
+        href: "/admin/inventario/movimientos",
+        label: "Movimientos",
+        icon: ArrowsLeftRight,
+      },
     ],
   },
-]
+];
 
-// Qué módulo le corresponde a cada rol no-admin. ADMIN ve los tres.
-const ROLE_MODULE: Partial<Record<AppRole, ModuleKey>> = {
-  VENTAS: 'crm',
-  BODEGA: 'inventario',
-}
+// Convierte la key del módulo (minúscula, uso interno) al valor del enum
+// ModuleAccess en la base de datos (mayúscula).
+const MODULE_ACCESS_KEY: Record<ModuleKey, string> = {
+  operaciones: "OPERACIONES",
+  crm: "CRM",
+  inventario: "INVENTARIO",
+};
 
 // ── Component ────────────────────────────────────────────────────────────────
 
@@ -104,41 +122,45 @@ export default function AdminSidebar({
   userName,
   email,
   role,
+  moduleAccess,
   discrepanciasCount = 0,
 }: {
-  userName: string
-  email: string
-  role: string
-  discrepanciasCount?: number
+  userName: string;
+  email: string;
+  role: string;
+  moduleAccess: string[];
+  discrepanciasCount?: number;
 }) {
-  const path = usePathname()
-  const router = useRouter()
+  const path = usePathname();
+  const router = useRouter();
 
-  const isAdmin = role === 'ADMIN'
+  const isAdmin = role === "ADMIN";
   const visibleModules = isAdmin
     ? MODULES
-    : MODULES.filter((m) => m.key === ROLE_MODULE[role as AppRole])
+    : MODULES.filter((m) => moduleAccess.includes(MODULE_ACCESS_KEY[m.key]));
 
-  const [active, setActive] = useState<ModuleKey>(visibleModules[0]?.key ?? 'operaciones')
+  const [active, setActive] = useState<ModuleKey>(
+    visibleModules[0]?.key ?? "operaciones"
+  );
 
   // El sidebar persiste entre navegaciones dentro de (admin); sincroniza el
   // módulo resaltado con la ruta real en vez de quedarse en el estado inicial.
   useEffect(() => {
-    if (path.startsWith('/admin/crm')) setActive('crm')
-    else if (path.startsWith('/admin/inventario')) setActive('inventario')
-    else setActive('operaciones')
-  }, [path])
+    if (path.startsWith("/admin/crm")) setActive("crm");
+    else if (path.startsWith("/admin/inventario")) setActive("inventario");
+    else setActive("operaciones");
+  }, [path]);
 
-  const mod = visibleModules.find((m) => m.key === active) ?? visibleModules[0]
+  const mod = visibleModules.find((m) => m.key === active) ?? visibleModules[0];
 
   const initials = userName
-    .split(' ')
+    .split(" ")
     .slice(0, 2)
     .map((p) => p[0])
-    .join('')
-    .toUpperCase()
+    .join("")
+    .toUpperCase();
 
-  if (!mod) return null
+  if (!mod) return null;
 
   return (
     <aside className="hidden lg:flex w-64 shrink-0 flex-col bg-white border-r border-zinc-200/70 min-h-[100dvh] sticky top-0">
@@ -149,7 +171,9 @@ export default function AdminSidebar({
             <Recycle size={16} weight="bold" className="text-white" />
           </div>
           <div className="leading-none">
-            <p className="text-sm font-semibold text-zinc-900 tracking-tight">Central Coopera</p>
+            <p className="text-sm font-semibold text-zinc-900 tracking-tight">
+              Central Coopera
+            </p>
             <p className="text-[11px] text-zinc-500 mt-1">{mod.tag}</p>
           </div>
         </div>
@@ -158,9 +182,13 @@ export default function AdminSidebar({
       {/* Module switcher — solo cuando hay más de un módulo disponible (ADMIN) */}
       {visibleModules.length > 1 && (
         <div className="px-4 pb-3">
-          <div className="flex gap-0.5 p-1 rounded-xl bg-zinc-100/80" role="tablist" aria-label="Módulos">
+          <div
+            className="flex gap-0.5 p-1 rounded-xl bg-zinc-100/80"
+            role="tablist"
+            aria-label="Módulos"
+          >
             {visibleModules.map((m) => {
-              const on = m.key === active
+              const on = m.key === active;
               return (
                 <button
                   key={m.key}
@@ -169,13 +197,13 @@ export default function AdminSidebar({
                   onClick={() => router.push(m.nav[0].href)}
                   className={`flex-1 px-2 py-1.5 rounded-lg text-[12px] font-medium transition-all duration-200 ${
                     on
-                      ? 'bg-white text-zinc-900 shadow-[0_1px_2px_-1px_rgba(24,24,27,0.12)]'
-                      : 'text-zinc-500 hover:text-zinc-800'
+                      ? "bg-white text-zinc-900 shadow-[0_1px_2px_-1px_rgba(24,24,27,0.12)]"
+                      : "text-zinc-500 hover:text-zinc-800"
                   }`}
                 >
                   {m.label}
                 </button>
-              )
+              );
             })}
           </div>
         </div>
@@ -184,8 +212,8 @@ export default function AdminSidebar({
       {/* Nav */}
       <nav className="flex-1 px-3 py-1 space-y-0.5">
         {mod.nav.map(({ href, label, icon: Icon, badge }) => {
-          const itemActive = path.startsWith(href)
-          const showCount = badge === 'discrepancias' && discrepanciasCount > 0
+          const itemActive = path.startsWith(href);
+          const showCount = badge === "discrepancias" && discrepanciasCount > 0;
 
           return (
             <Link
@@ -194,13 +222,13 @@ export default function AdminSidebar({
               className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm transition-all duration-200 ${
                 itemActive
                   ? `${mod.activeBg} ${mod.activeText} font-medium`
-                  : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50'
+                  : "text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50"
               }`}
             >
               <Icon
                 size={17}
-                weight={itemActive ? 'fill' : 'regular'}
-                className={itemActive ? mod.activeIcon : 'text-zinc-400'}
+                weight={itemActive ? "fill" : "regular"}
+                className={itemActive ? mod.activeIcon : "text-zinc-400"}
               />
               {label}
               {showCount && (
@@ -209,7 +237,7 @@ export default function AdminSidebar({
                 </span>
               )}
             </Link>
-          )
+          );
         })}
       </nav>
 
@@ -217,15 +245,17 @@ export default function AdminSidebar({
       <div className="px-3 pb-4 pt-3 border-t border-zinc-200/70 mt-2 space-y-1">
         <div className="flex items-center gap-2.5 px-2 py-1.5">
           <div className="w-8 h-8 rounded-full bg-zinc-100 flex items-center justify-center text-[11px] font-semibold text-zinc-600 shrink-0">
-            {initials || 'CC'}
+            {initials || "CC"}
           </div>
           <div className="min-w-0">
-            <p className="text-[13px] font-medium text-zinc-900 truncate leading-tight">{userName}</p>
+            <p className="text-[13px] font-medium text-zinc-900 truncate leading-tight">
+              {userName}
+            </p>
             <p className="text-[11px] text-zinc-500 truncate">{email}</p>
           </div>
         </div>
         <button
-          onClick={() => signOut({ callbackUrl: '/login' })}
+          onClick={() => signOut({ callbackUrl: "/login" })}
           aria-label="Cerrar sesión"
           className="flex items-center gap-2 w-full px-3 py-2.5 rounded-xl text-sm text-zinc-600 hover:bg-red-50 hover:text-red-600 transition-colors"
         >
@@ -234,5 +264,5 @@ export default function AdminSidebar({
         </button>
       </div>
     </aside>
-  )
+  );
 }

@@ -1,0 +1,250 @@
+"use client";
+
+import { useState } from "react";
+import { createPortal } from "react-dom";
+import { useRouter } from "next/navigation";
+import { X, SpinnerGap, Warning } from "@phosphor-icons/react";
+
+const ROLES = [
+  { value: "CHOFER", label: "Chofer" },
+  { value: "RECEPCION", label: "Recepcionista" },
+  { value: "VENTAS", label: "Encargada de Ventas (CRM)" },
+  { value: "BODEGA", label: "Bodeguero encargado (Inventario)" },
+  { value: "ADMIN", label: "Administrador" },
+];
+
+const MODULES = [
+  { value: "OPERACIONES", label: "Operaciones" },
+  { value: "CRM", label: "CRM" },
+  { value: "INVENTARIO", label: "Inventario" },
+];
+
+// Roles cuyo acceso a módulos se puede personalizar. CHOFER/RECEPCION no
+// usan el panel admin; ADMIN ya ve todo sin importar moduleAccess.
+const CUSTOMIZABLE_ROLES = ["VENTAS", "BODEGA"];
+
+function defaultModulesForRole(role: string): string[] {
+  if (role === "VENTAS") return ["CRM"];
+  if (role === "BODEGA") return ["INVENTARIO"];
+  return [];
+}
+
+export interface EditableUser {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  moduleAccess: string[];
+}
+
+export default function EditarUsuarioModal({
+  user,
+  onClose,
+}: {
+  user: EditableUser;
+  onClose: () => void;
+}) {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const router = useRouter();
+
+  const [form, setForm] = useState({
+    name: user.name,
+    email: user.email,
+    password: "",
+    role: user.role,
+    moduleAccess: user.moduleAccess,
+  });
+
+  const set = (k: "name" | "email" | "password", v: string) =>
+    setForm((f) => ({ ...f, [k]: v }));
+
+  const setRole = (role: string) =>
+    setForm((f) => ({ ...f, role, moduleAccess: defaultModulesForRole(role) }));
+
+  const toggleModule = (module: string) =>
+    setForm((f) => ({
+      ...f,
+      moduleAccess: f.moduleAccess.includes(module)
+        ? f.moduleAccess.filter((m) => m !== module)
+        : [...f.moduleAccess, module],
+    }));
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    try {
+      const res = await fetch("/api/usuarios", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: user.id,
+          name: form.name,
+          email: form.email,
+          ...(form.password.trim() ? { password: form.password } : {}),
+          role: form.role,
+          moduleAccess: form.moduleAccess,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      router.refresh();
+      onClose();
+    } catch (e: any) {
+      setError(e.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (typeof document === "undefined") return null;
+
+  return createPortal(
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-black/30 backdrop-blur-sm"
+        onClick={onClose}
+      />
+
+      {/* Modal */}
+      <div className="relative z-10 bg-white rounded-2xl shadow-[0_24px_48px_-12px_rgba(0,0,0,0.18)] w-full max-w-md p-6 animate-fade-up">
+        <div className="flex items-center justify-between mb-5">
+          <h2 className="text-lg font-semibold text-zinc-900">
+            Editar usuario
+          </h2>
+          <button
+            onClick={onClose}
+            aria-label="Cerrar"
+            className="w-7 h-7 rounded-lg hover:bg-zinc-100 flex items-center justify-center transition-colors"
+          >
+            <X size={16} className="text-zinc-500" />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-1.5">
+            <label className="block text-sm font-medium text-zinc-700">
+              Nombre completo
+            </label>
+            <input
+              type="text"
+              value={form.name}
+              onChange={(e) => set("name", e.target.value)}
+              className="input-base"
+              autoCapitalize="words"
+              required
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="block text-sm font-medium text-zinc-700">
+              Correo electrónico
+            </label>
+            <input
+              type="email"
+              value={form.email}
+              onChange={(e) => set("email", e.target.value)}
+              className="input-base"
+              required
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="block text-sm font-medium text-zinc-700">
+              Nueva contraseña
+            </label>
+            <input
+              type="password"
+              value={form.password}
+              onChange={(e) => set("password", e.target.value)}
+              placeholder="Dejar en blanco para no cambiarla"
+              className="input-base"
+              minLength={8}
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="block text-sm font-medium text-zinc-700">
+              Rol
+            </label>
+            <select
+              value={form.role}
+              onChange={(e) => setRole(e.target.value)}
+              className="input-base"
+              required
+            >
+              {ROLES.map((r) => (
+                <option key={r.value} value={r.value}>
+                  {r.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {CUSTOMIZABLE_ROLES.includes(form.role) && (
+            <div className="space-y-1.5">
+              <label className="block text-sm font-medium text-zinc-700">
+                Acceso a módulos
+              </label>
+              <div className="flex flex-wrap gap-2">
+                {MODULES.map((m) => {
+                  const checked = form.moduleAccess.includes(m.value);
+                  return (
+                    <button
+                      key={m.value}
+                      type="button"
+                      onClick={() => toggleModule(m.value)}
+                      aria-pressed={checked}
+                      className={`px-3 py-1.5 rounded-lg text-sm border transition-colors ${
+                        checked
+                          ? "bg-emerald-50 border-emerald-200 text-emerald-700 font-medium"
+                          : "bg-white border-zinc-200 text-zinc-500 hover:border-zinc-300"
+                      }`}
+                    >
+                      {m.label}
+                    </button>
+                  );
+                })}
+              </div>
+              <p className="text-xs text-zinc-400">
+                Puede combinar más de un módulo (ej: Operaciones + CRM para un
+                supervisor).
+              </p>
+            </div>
+          )}
+
+          {error && (
+            <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-red-50 border border-red-100 text-sm text-red-600">
+              <Warning size={15} weight="fill" />
+              {error}
+            </div>
+          )}
+
+          <div className="flex gap-3 pt-1">
+            <button
+              type="button"
+              onClick={onClose}
+              className="btn-secondary flex-1"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              disabled={loading || !form.name || !form.email}
+              className="btn-primary flex-1"
+            >
+              {loading ? (
+                <SpinnerGap size={16} className="animate-spin" />
+              ) : (
+                "Guardar cambios"
+              )}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>,
+    document.body
+  );
+}

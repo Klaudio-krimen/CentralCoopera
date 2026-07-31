@@ -18,6 +18,16 @@ enum UserRole {
   BODEGA  // Bodeguero encargado — módulo Inventario
 }
 
+// Qué secciones del panel admin puede ver un usuario, independiente de su rol.
+// ADMIN siempre ve todo (no depende de esta lista). Para el resto, define
+// exactamente qué módulos puede pisar — permite combinaciones tipo "Supervisor"
+// (Operaciones + CRM) sin necesidad de un rol nuevo por cada combinación.
+enum ModuleAccess {
+  OPERACIONES
+  CRM
+  INVENTARIO
+}
+
 enum PickupOrderStatus {
   BORRADOR
   EN_RETIRO
@@ -47,14 +57,15 @@ enum DiscrepancyStatus {
 // ── Models ───────────────────────────────────────────────────────────────────
 
 model User {
-  id        String   @id @default(cuid())
-  name      String
-  email     String   @unique
-  password  String
-  role      UserRole
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String         @id @default(cuid())
+  name         String
+  email        String         @unique
+  password     String
+  role         UserRole
+  moduleAccess ModuleAccess[] @default([])
+  isActive     Boolean        @default(true)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
 
   ordersAsDriver    PickupOrder[] @relation("Driver")
   evidencesUploaded Evidence[]   @relation("Uploader")

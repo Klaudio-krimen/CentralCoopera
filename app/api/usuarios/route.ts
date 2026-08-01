@@ -90,6 +90,19 @@ export async function POST(req: NextRequest) {
     },
   });
 
+  if (user.role === "CHOFER") {
+    await prisma.tracker.upsert({
+      where: { userId: user.id },
+      update: { label: user.name, isActive: true },
+      create: {
+        label: user.name,
+        type: "USUARIO",
+        kind: "CHOFER",
+        userId: user.id,
+      },
+    });
+  }
+
   return NextResponse.json(user, { status: 201 });
 }
 
@@ -140,6 +153,12 @@ export async function PATCH(req: NextRequest) {
     data.moduleAccess = moduleAccess;
   }
 
+  const previousUser = await prisma.user.findUnique({
+    where: { id },
+    select: { role: true },
+  });
+  if (!previousUser) return apiError("Usuario no encontrado", 404);
+
   const user = await prisma.user.update({
     where: { id },
     data,
@@ -152,6 +171,27 @@ export async function PATCH(req: NextRequest) {
       isActive: true,
     },
   });
+
+  // Un chofer solo debe verse en el mapa mientras sea CHOFER y esté activo —
+  // ya sea que cambió de rol o que simplemente se desactivó su cuenta.
+  const shouldTrackAsChofer = user.role === "CHOFER" && user.isActive;
+  if (shouldTrackAsChofer) {
+    await prisma.tracker.upsert({
+      where: { userId: user.id },
+      update: { label: user.name, isActive: true },
+      create: {
+        label: user.name,
+        type: "USUARIO",
+        kind: "CHOFER",
+        userId: user.id,
+      },
+    });
+  } else if (user.role === "CHOFER" || previousUser.role === "CHOFER") {
+    await prisma.tracker.updateMany({
+      where: { userId: user.id },
+      data: { isActive: false },
+    });
+  }
 
   return NextResponse.json(user);
 }
@@ -193,8 +233,17 @@ export async function DELETE(req: NextRequest) {
   try {
     await prisma.user.delete({ where: { id } });
   } catch (e: any) {
-    // Foreign key: el usuario tiene historial (órdenes, evidencias, discrepancias, etc.)
-    if (e?.code === "P2003" || e?.code === "P2014") {
+    // Foreign key: el usuario tiene historial (órdenes, evidencias, discrepancias, etc.).
+    // Prisma mapea la mayoría de estas violaciones a P2003/P2014, pero las relaciones
+    // requeridas (ej. PickupOrder.driverId) generan un RESTRICT que Postgres reporta con
+    // el código 23001 en vez de 23503 — Prisma no lo reconoce como "known error" y lo
+    // envuelve en PrismaClientUnknownRequestError sin `.code`, así que hay que detectarlo
+    // también por el mensaje.
+    const isForeignKeyViolation =
+      e?.code === "P2003" ||
+      e?.code === "P2014" ||
+      /foreign key constraint/i.test(e?.message ?? "");
+    if (isForeignKeyViolation) {
       return apiError(
         "No se puede eliminar: este usuario tiene actividad registrada (órdenes, evidencias u otro historial). Desactívalo en su lugar.",
         409

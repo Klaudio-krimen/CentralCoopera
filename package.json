@@ -13,6 +13,8 @@
     "db:push": "prisma db push",
     "db:seed": "ts-node prisma/seed.ts",
     "db:studio": "prisma studio",
+    "trackers:cleanup-demo": "ts-node scripts/cleanup-demo-trackers.ts",
+    "trackers:backfill": "ts-node scripts/backfill-trackers.ts",
     "prepare": "husky"
   },
   "dependencies": {

@@ -1,7 +1,7 @@
-import { prisma } from '@/lib/db'
-import { Plus } from 'lucide-react'
-import DealsTable from '@/components/crm/DealsTable'
-import DealModal from '@/components/ui/DealModal'
+import { prisma } from "@/lib/db";
+import { Plus } from "lucide-react";
+import DealsTable from "@/components/crm/DealsTable";
+import DealModal from "@/components/ui/DealModal";
 
 async function getData() {
   const [deals, companies] = await Promise.all([
@@ -11,31 +11,36 @@ async function getData() {
         contact: { select: { name: true } },
         stage: { select: { name: true, color: true } },
       },
-      orderBy: { updatedAt: 'desc' },
+      orderBy: { updatedAt: "desc" },
     }),
     prisma.company.findMany({
       where: { isActive: true },
       select: {
         id: true,
         name: true,
-        contacts: { where: { isActive: true }, select: { id: true, name: true } },
+        contacts: {
+          where: { isActive: true },
+          select: { id: true, name: true },
+        },
       },
-      orderBy: { name: 'asc' },
+      orderBy: { name: "asc" },
     }),
-  ])
-  return { deals, companies }
+  ]);
+  return { deals, companies };
 }
 
 export default async function DealsPage() {
-  const { deals, companies } = await getData()
+  const { deals, companies } = await getData();
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-crm-foreground">Deals</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-crm-foreground">
+            Cierre
+          </h1>
           <p className="text-crm-muted text-sm mt-1">
-            {deals.length} deal{deals.length !== 1 ? 's' : ''} en total
+            {deals.length} deal{deals.length !== 1 ? "s" : ""} en total
           </p>
         </div>
         <DealModal
@@ -51,5 +56,5 @@ export default async function DealsPage() {
 
       <DealsTable deals={deals as any} />
     </div>
-  )
+  );
 }

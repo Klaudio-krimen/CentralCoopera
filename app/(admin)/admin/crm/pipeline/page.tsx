@@ -53,7 +53,7 @@ export default async function PipelinePage() {
       <div className="flex items-start justify-between animate-fade-up">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-crm-foreground">
-            Pipeline
+            Pizarra
           </h1>
           <p className="text-crm-muted text-sm mt-1">
             {openCount} deal{openCount !== 1 ? "s" : ""} abierto

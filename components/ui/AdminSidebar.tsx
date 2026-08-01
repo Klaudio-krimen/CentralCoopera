@@ -53,7 +53,7 @@ const MODULES: ModuleDef[] = [
     activeText: "text-emerald-700",
     activeIcon: "text-emerald-600",
     nav: [
-      { href: "/admin/dashboard", label: "Dashboard", icon: ChartBar },
+      { href: "/admin/dashboard", label: "Panel De Control", icon: ChartBar },
       { href: "/admin/ordenes", label: "Órdenes", icon: Truck },
       { href: "/admin/mapa", label: "Mapa", icon: MapPin },
       {
@@ -74,15 +74,19 @@ const MODULES: ModuleDef[] = [
     activeText: "text-blue-700",
     activeIcon: "text-blue-600",
     nav: [
-      { href: "/admin/crm/dashboard", label: "Dashboard", icon: ChartBar },
-      { href: "/admin/crm/pipeline", label: "Pipeline", icon: Target },
-      { href: "/admin/crm/deals", label: "Deals", icon: Briefcase },
+      {
+        href: "/admin/crm/dashboard",
+        label: "Panel de control",
+        icon: ChartBar,
+      },
+      { href: "/admin/crm/clientes", label: "Clientes", icon: Buildings },
+      { href: "/admin/crm/pipeline", label: "Pizarra", icon: Target },
+      { href: "/admin/crm/deals", label: "Cierre", icon: Briefcase },
       {
         href: "/admin/crm/actividades",
         label: "Actividades",
         icon: ListChecks,
       },
-      { href: "/admin/crm/clientes", label: "Clientes", icon: Buildings },
       {
         href: "/admin/crm/configuracion",
         label: "Configuración",

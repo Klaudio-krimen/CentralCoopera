@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useRef } from "react";
+import { useRouter } from "next/navigation";
 import {
   DndContext,
   DragOverlay,
@@ -29,6 +30,7 @@ export default function KanbanBoard({
 }: {
   initialColumns: PipelineColumn[];
 }) {
+  const router = useRouter();
   const [columns, setColumns] = useState(initialColumns);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [error, setError] = useState("");
@@ -48,6 +50,20 @@ export default function KanbanBoard({
       setActiveId(event.active.id as string);
       columnsSnapshot.current = columns;
       setError("");
+
+      // Las DealCard son <Link>. dnd-kit captura el puntero durante el
+      // drag, así que al soltar el navegador igual dispara un "click"
+      // sobre el link original y navega a la ficha del deal. Se lo
+      // tragamos una sola vez para que soltar la tarjeta no te saque
+      // de la Pizarra.
+      const swallowClick = (e: MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+      };
+      document.addEventListener("click", swallowClick, {
+        capture: true,
+        once: true,
+      });
     },
     [columns]
   );
@@ -104,12 +120,13 @@ export default function KanbanBoard({
           body: JSON.stringify({ dealId: activeId, stageId: overColumn.id }),
         });
         if (!res.ok) throw new Error();
+        router.refresh();
       } catch {
         setColumns(columnsSnapshot.current);
         setError("No se pudo mover el deal. Se revirtió el cambio.");
       }
     },
-    [columns]
+    [columns, router]
   );
 
   return (

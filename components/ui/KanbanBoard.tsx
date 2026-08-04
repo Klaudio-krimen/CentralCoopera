@@ -108,16 +108,25 @@ export default function KanbanBoard({
       if (!over) return;
 
       const activeId = active.id as string;
-      const overColumn =
-        columns.find((c) => c.id === over.id) ||
-        columns.find((c) => c.deals.some((d) => d.id === over.id));
-      if (!overColumn) return;
+
+      // No recalculamos la columna destino desde over.id: closestCorners
+      // es inestable en tableros multi-columna y en el instante del drop
+      // puede resolver a un id distinto del que el usuario vio durante el
+      // arrastre. handleDragOver ya movió la tarjeta a la columna correcta
+      // en el estado local — esa es la fuente de verdad de a dónde va.
+      const currentColumn = columns.find((c) =>
+        c.deals.some((d) => d.id === activeId)
+      );
+      const originalColumn = columnsSnapshot.current.find((c) =>
+        c.deals.some((d) => d.id === activeId)
+      );
+      if (!currentColumn || currentColumn.id === originalColumn?.id) return;
 
       try {
         const res = await fetch("/api/pipeline", {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ dealId: activeId, stageId: overColumn.id }),
+          body: JSON.stringify({ dealId: activeId, stageId: currentColumn.id }),
         });
         if (!res.ok) throw new Error();
         router.refresh();

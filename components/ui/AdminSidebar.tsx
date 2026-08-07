@@ -20,6 +20,7 @@ import {
   GearSix,
   Package,
   ArrowsLeftRight,
+  PaperPlaneTilt,
   type Icon,
 } from "@phosphor-icons/react";
 
@@ -86,6 +87,11 @@ const MODULES: ModuleDef[] = [
         href: "/admin/crm/actividades",
         label: "Actividades",
         icon: ListChecks,
+      },
+      {
+        href: "/admin/crm/outreach",
+        label: "Outreach",
+        icon: PaperPlaneTilt,
       },
       {
         href: "/admin/crm/configuracion",

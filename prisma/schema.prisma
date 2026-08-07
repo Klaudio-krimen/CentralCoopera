@@ -89,12 +89,32 @@ model Company {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  orders     PickupOrder[]
-  contacts   Contact[]
-  deals      Deal[]
-  activities Activity[]
+  // ── Prospección: campos de enriquecimiento (ver PROSPECCION_OUTREACH.md §5) ──
+  website  String?
+  commune  String? // comuna — clave para segmentar por corredor industrial
+  category String? // rubro crudo de Google Places
+  segment  ProspectSegment?
+  placeId  String? @unique // identificador de Google Places → dedupe
+  lat      Float?
+  lng      Float?
+  rating   Float?
+  reviews  Int?
+
+  orders        PickupOrder[]
+  contacts      Contact[]
+  deals         Deal[]
+  activities    Activity[]
+  outreachSends OutreachSend[]
 
   @@index([isActive])
+  @@index([segment])
+  @@index([commune])
+}
+
+enum ProspectSegment {
+  LOGISTICA
+  FARMACEUTICA
+  OTRO
 }
 
 model MaterialType {
@@ -338,14 +358,29 @@ model Contact {
   score       Int                @default(0) // 0-100
   source      ContactSource      @default(OTRO)
 
+  // ── Prospección: consentimiento y salud del correo (ver PROSPECCION_OUTREACH.md §5) ──
+  optOut      Boolean     @default(false)
+  optOutAt    DateTime?
+  optOutToken String?     @unique // token del link de baja
+  emailStatus EmailStatus @default(DESCONOCIDO)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  deals      Deal[]
-  activities Activity[]
+  deals         Deal[]
+  activities    Activity[]
+  outreachSends OutreachSend[]
 
   @@index([companyId])
   @@index([temperature])
+  @@index([optOut, emailStatus])
+}
+
+enum EmailStatus {
+  DESCONOCIDO
+  VALIDO
+  REBOTADO
+  INVALIDO
 }
 
 model PipelineStage {
@@ -430,4 +465,54 @@ model CrmWebhookConfig {
   enabled   Boolean  @default(false)
   secret    String
   updatedAt DateTime @updatedAt
+}
+
+// ── Prospección y Outreach (ver PROSPECCION_OUTREACH.md) ──
+
+model OutreachCampaign {
+  id          String          @id @default(cuid())
+  name        String
+  segment     ProspectSegment
+  subject     String
+  templateKey String // apunta a lib/outreach/templates/<key>.ts
+  pdfBlobUrl  String? // PDF único adjunto — mismo archivo para todos los segmentos
+  dailyCap    Int             @default(25)
+  isActive    Boolean         @default(false)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  sends OutreachSend[]
+
+  @@index([isActive, segment])
+}
+
+enum SendStatus {
+  EN_COLA
+  ENVIADO
+  FALLIDO
+  REBOTADO
+}
+
+// Libro contable de envíos: idempotencia + diagnóstico. Activity es la línea
+// de tiempo que lee un humano; esta tabla es la que garantiza que el cron
+// nunca reenvíe (constraint único campaignId+contactId).
+model OutreachSend {
+  id         String           @id @default(cuid())
+  campaignId String
+  campaign   OutreachCampaign @relation(fields: [campaignId], references: [id])
+  contactId  String
+  contact    Contact          @relation(fields: [contactId], references: [id])
+  companyId  String
+  company    Company          @relation(fields: [companyId], references: [id])
+
+  status    SendStatus @default(EN_COLA)
+  sentAt    DateTime?
+  messageId String? // id devuelto por Graph
+  error     String?
+  attempts  Int        @default(0)
+
+  createdAt DateTime @default(now())
+
+  @@unique([campaignId, contactId])
+  @@index([status, sentAt])
 }

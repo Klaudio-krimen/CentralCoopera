@@ -15,6 +15,9 @@
     "db:studio": "prisma studio",
     "trackers:cleanup-demo": "ts-node scripts/cleanup-demo-trackers.ts",
     "trackers:backfill": "ts-node scripts/backfill-trackers.ts",
+    "enrich:emails": "ts-node scripts/enrich-emails.ts",
+    "import:prospects": "ts-node --project tsconfig.scripts.json scripts/import-prospects.ts",
+    "seed:outreach-campaigns": "ts-node --project tsconfig.scripts.json scripts/seed-outreach-campaigns.ts",
     "prepare": "husky"
   },
   "dependencies": {
@@ -33,6 +36,7 @@
     "lucide-react": "^1.27.0",
     "next": "^14.2.35",
     "next-auth": "^4.24.7",
+    "nodemailer": "^7.0.13",
     "react": "^18",
     "react-dom": "^18",
     "react-leaflet": "^4.2.1",
@@ -46,6 +50,7 @@
     "@types/bcryptjs": "^2.4.6",
     "@types/leaflet": "^1.9.21",
     "@types/node": "^20",
+    "@types/nodemailer": "^8.0.1",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "autoprefixer": "^10",

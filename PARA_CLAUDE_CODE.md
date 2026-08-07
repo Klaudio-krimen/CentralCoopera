@@ -3,6 +3,7 @@
 Este documento es el punto de entrada para que Claude Code implemente el proyecto TrackResiduos.
 
 ## ¿Qué es este proyecto?
+
 Una app web (Next.js 14) para Coopera Pro que registra la cadena de custodia de materiales reciclables, previniendo el robo hormiga en los retiros de choferes.
 
 ## Lee estos archivos en orden antes de escribir código
@@ -19,6 +20,7 @@ Cada carpeta tiene archivos `.spec.md` que describen qué debe hacer cada compon
 ## Orden de implementación recomendado
 
 ### Fase 1 — Base
+
 1. Inicializar proyecto Next.js 14 con App Router y TypeScript
 2. Instalar dependencias: `prisma`, `@prisma/client`, `next-auth`, `bcryptjs`, `signature_pad`, `sharp`, `tailwindcss`
 3. Crear `prisma/schema.prisma` según `prisma/schema.spec.md` y `ESQUEMA_BASE_DATOS.md`
@@ -26,6 +28,7 @@ Cada carpeta tiene archivos `.spec.md` que describen qué debe hacer cada compon
 5. Configurar NextAuth en `lib/auth.ts` y middleware en `middleware.ts`
 
 ### Fase 2 — Backend (API Routes)
+
 6. `/api/auth/[...nextauth]`
 7. `/api/empresas`
 8. `/api/ordenes` (GET y POST)
@@ -36,6 +39,7 @@ Cada carpeta tiene archivos `.spec.md` que describen qué debe hacer cada compon
 13. `/api/reportes`
 
 ### Fase 3 — Frontend Chofer (prioridad máxima)
+
 14. Layout y Login
 15. Dashboard del chofer
 16. Wizard nueva orden (el flujo más complejo — ver `nueva-orden/page.spec.md`)
@@ -44,10 +48,12 @@ Cada carpeta tiene archivos `.spec.md` que describen qué debe hacer cada compon
 19. Detalle de orden e historial
 
 ### Fase 4 — Frontend Recepción
+
 20. Dashboard de recepción
 21. Página de registro de recepción con cálculo de discrepancias en tiempo real
 
 ### Fase 5 — Frontend Admin
+
 22. Dashboard admin
 23. Gestión de discrepancias
 24. Gestión de choferes y empresas
@@ -79,3 +85,17 @@ tailwindcss: latest
 postcss: latest
 autoprefixer: latest
 ```
+
+## Nota de vigencia (2026-08-04)
+
+Este documento describe la **construcción inicial** del proyecto, ya completada.
+Para trabajo nuevo, el punto de entrada es:
+
+- **`CLAUDE.md`** — memoria viva del proyecto: stack, convenciones, reglas duras y estado actual.
+  Se carga automáticamente en Claude Code. **Empieza por ahí.**
+- **`PROSPECCION_OUTREACH.md`** — iniciativa activa: captación de clientes para el taller
+  de pallets mediante correo frío automatizado desde el CRM.
+
+Los archivos de este documento (README, ESQUEMA_BASE_DATOS, FLUJOS_DE_USUARIO,
+ESPECIFICACION_API, ARQUITECTURA, VARIABLES_ENTORNO) siguen siendo la referencia válida
+del sistema construido.

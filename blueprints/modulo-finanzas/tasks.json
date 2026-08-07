@@ -1,0 +1,640 @@
+[
+  {
+    "id": "E1-T1",
+    "title": "Esquema de Finanzas y db push con respaldo verificado",
+    "epic": "01-seguridad",
+    "dependencies": [],
+    "priority": "p0",
+    "acceptance": [
+      "CUANDO `test -s backups/pre-finanzas.sql` corre EL SISTEMA DEBERÁ salir 0, probando que el respaldo existe y no está vacío antes de tocar la base.",
+      "CUANDO `npx prisma validate` corre sobre `prisma/schema.prisma` EL SISTEMA DEBERÁ salir 0.",
+      "CUANDO se busca cada modelo nuevo en `prisma/schema.prisma` EL SISTEMA DEBERÁ encontrar `Employee`, `Supplier`, `FinanceCategory`, `FinanceTransaction`, `Advance`, `PayrollRun`, `PayrollItem`, `FinanceAuditLog`, `RateLimitCounter` y `PasswordResetToken`.",
+      "CUANDO `npm run db:push` corre EL SISTEMA DEBERÁ salir 0 sin pedir `--accept-data-loss`.",
+      "CUANDO se lee `tsconfig.json` EL SISTEMA DEBERÁ tener `\"blueprints\"` dentro del arreglo `exclude`.",
+      "CUANDO `npm run typecheck` corre después de `npx prisma generate` EL SISTEMA DEBERÁ salir 0."
+    ],
+    "verify": [
+      "test -s backups/pre-finanzas.sql",
+      "export DATABASE_URL=\"$(grep -m1 '^DATABASE_URL=' .env.local | cut -d= -f2- | tr -d '\"')\"; export DIRECT_URL=\"$(grep -m1 '^DIRECT_URL=' .env.local | cut -d= -f2- | tr -d '\"')\"; npx prisma validate",
+      "for m in Employee Supplier FinanceCategory FinanceTransaction Advance PayrollRun PayrollItem FinanceAuditLog RateLimitCounter PasswordResetToken; do grep -q \"^model $m \" prisma/schema.prisma || exit 1; done",
+      "grep -q '^  FINANZAS_LECTURA$' prisma/schema.prisma",
+      "node -e \"const t=require('./tsconfig.json'); process.exit(t.exclude.includes('blueprints')?0:1)\"",
+      "export DATABASE_URL=\"$(grep -m1 '^DATABASE_URL=' .env.local | cut -d= -f2- | tr -d '\"')\"; export DIRECT_URL=\"$(grep -m1 '^DIRECT_URL=' .env.local | cut -d= -f2- | tr -d '\"')\"; npm run db:push",
+      "export DATABASE_URL=\"$(grep -m1 '^DATABASE_URL=' .env.local | cut -d= -f2- | tr -d '\"')\"; export DIRECT_URL=\"$(grep -m1 '^DIRECT_URL=' .env.local | cut -d= -f2- | tr -d '\"')\"; npx prisma generate",
+      "npm run typecheck"
+    ],
+    "checkpoint": "step-01-schema-finanzas",
+    "files": [
+      "prisma/schema.prisma",
+      "tsconfig.json"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E1-T2",
+    "title": "Porteros de Finanzas sin bypass de ADMIN",
+    "epic": "01-seguridad",
+    "dependencies": [
+      "E1-T1"
+    ],
+    "priority": "p0",
+    "acceptance": [
+      "CUANDO se evalúa `hasFinanceAccess({ role: \"ADMIN\", moduleAccess: [] })` EL SISTEMA DEBERÁ devolver `false`.",
+      "CUANDO se evalúa `canWriteFinance({ role: \"ADMIN\", moduleAccess: [] })` EL SISTEMA DEBERÁ devolver `false`.",
+      "CUANDO se evalúa `canWriteFinance` sobre un usuario con `moduleAccess: [\"FINANZAS_LECTURA\"]` EL SISTEMA DEBERÁ devolver `false` mientras `hasFinanceAccess` devuelve `true`.",
+      "CUANDO se evalúa `hasModuleAccess({ role: \"ADMIN\", moduleAccess: [] }, \"CRM\")` EL SISTEMA DEBERÁ seguir devolviendo `true`, porque el bypass de los otros tres módulos no se toca.",
+      "CUANDO `npx vitest run lib/access.test.ts` corre EL SISTEMA DEBERÁ salir 0 con 0 tests fallidos y 0 omitidos."
+    ],
+    "verify": [
+      "npx vitest run lib/access.test.ts",
+      "grep -q 'user.role === \"ADMIN\"' lib/access.ts",
+      "npm run typecheck"
+    ],
+    "checkpoint": "step-02-porteros-acceso",
+    "files": [
+      "lib/access.ts",
+      "lib/access.test.ts"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E1-T3",
+    "title": "Ramas de middleware para Finanzas, en el orden correcto",
+    "epic": "01-seguridad",
+    "dependencies": [
+      "E1-T2"
+    ],
+    "priority": "p0",
+    "acceptance": [
+      "CUANDO se lee `middleware.ts` EL SISTEMA DEBERÁ contener una rama que evalúa `pathname.startsWith(\"/api/finanzas\")`.",
+      "CUANDO se comparan las posiciones de las ramas en `middleware.ts` EL SISTEMA DEBERÁ tener la rama de `/api/finanzas` en una línea anterior a la rama genérica de `/api/`.",
+      "CUANDO se comparan las posiciones de las ramas en `middleware.ts` EL SISTEMA DEBERÁ tener la rama de `/admin/finanzas` en una línea anterior a la rama genérica de `/admin`.",
+      "CUANDO se lee la rama de `/api/finanzas` EL SISTEMA DEBERÁ responder con `NextResponse.json` y status `403`, y no con `NextResponse.redirect`.",
+      "CUANDO `npm run typecheck` y `npm run test` corren EL SISTEMA DEBERÁ salir 0 en ambos."
+    ],
+    "verify": [
+      "grep -q 'pathname.startsWith(\"/api/finanzas\")' middleware.ts",
+      "grep -q 'pathname.startsWith(\"/admin/finanzas\")' middleware.ts",
+      "test \"$(grep -n '\"/api/finanzas\"' middleware.ts | head -1 | cut -d: -f1)\" -lt \"$(grep -n 'startsWith(\"/api/\")' middleware.ts | head -1 | cut -d: -f1)\"",
+      "test \"$(grep -n '\"/admin/finanzas\"' middleware.ts | head -1 | cut -d: -f1)\" -lt \"$(grep -n 'startsWith(\"/admin\")' middleware.ts | head -1 | cut -d: -f1)\"",
+      "grep -A4 'pathname.startsWith(\"/api/finanzas\")' middleware.ts | grep -q 'NextResponse.json'",
+      "npm run typecheck"
+    ],
+    "checkpoint": "step-03-middleware-finanzas",
+    "files": [
+      "middleware.ts"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E1-T4",
+    "title": "Auditoría transaccional withAudit()",
+    "epic": "01-seguridad",
+    "dependencies": [
+      "E1-T1",
+      "E1-T2"
+    ],
+    "priority": "p0",
+    "acceptance": [
+      "CUANDO `withAudit` recibe una entrada válida EL SISTEMA DEBERÁ llamar exactamente una vez a `tx.financeAuditLog.create` con `actorEmail`, `actorRole`, `action` y `entityType` presentes.",
+      "CUANDO `before` o `after` contienen las claves `bankAccountEnc` o `password` EL SISTEMA DEBERÁ escribir el literal `\"[redactado]\"` en su lugar y nunca el valor original.",
+      "CUANDO `mutarConAuditoria` corre una mutación cuya escritura de auditoría lanza EL SISTEMA DEBERÁ rechazar la promesa, para que el `prisma.$transaction` que la envuelve aborte.",
+      "CUANDO `withAudit` recibe una entrada con `actorEmail` vacío EL SISTEMA DEBERÁ lanzar y no llamar a `create`.",
+      "CUANDO `npx vitest run lib/finanzas/audit.test.ts` corre EL SISTEMA DEBERÁ salir 0 con 0 tests fallidos y 0 omitidos."
+    ],
+    "verify": [
+      "npx vitest run lib/finanzas/audit.test.ts",
+      "! grep -q 'from \"@prisma/client\"' lib/finanzas/audit.ts",
+      "! grep -q '@/lib' lib/finanzas/audit.ts",
+      "npm run typecheck"
+    ],
+    "checkpoint": "step-04-auditoria",
+    "files": [
+      "lib/finanzas/audit.ts",
+      "lib/finanzas/audit.test.ts"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E1-T5",
+    "title": "Cifrado AES-256-GCM con rotación de clave",
+    "epic": "01-seguridad",
+    "dependencies": [
+      "E1-T1"
+    ],
+    "priority": "p0",
+    "acceptance": [
+      "CUANDO se cifra un texto y se descifra el resultado EL SISTEMA DEBERÁ devolver el texto original idéntico.",
+      "CUANDO se cifra el mismo texto dos veces EL SISTEMA DEBERÁ producir dos cadenas distintas, porque el IV es aleatorio por llamada.",
+      "CUANDO se inspecciona el valor cifrado EL SISTEMA DEBERÁ empezar con `v1:` y tener exactamente cuatro segmentos separados por `:`.",
+      "CUANDO un valor cifrado con la clave anterior se descifra con `FINANZAS_ENCRYPTION_KEY` nueva y `FINANZAS_ENCRYPTION_KEY_PREVIOUS` vieja EL SISTEMA DEBERÁ devolver el texto original.",
+      "CUANDO se altera un solo carácter del ciphertext EL SISTEMA DEBERÁ lanzar y nunca devolver texto parcial, porque GCM autentica.",
+      "CUANDO se importa `lib/finanzas/crypto.ts` sin `FINANZAS_ENCRYPTION_KEY` definida EL SISTEMA DEBERÁ importar sin error y lanzar sólo al llamar a `cifrar`."
+    ],
+    "verify": [
+      "npx vitest run lib/finanzas/crypto.test.ts",
+      "grep -q 'FINANZAS_ENCRYPTION_KEY' VARIABLES_ENTORNO.md",
+      "grep -q 'FINANZAS_ENCRYPTION_KEY_PREVIOUS' VARIABLES_ENTORNO.md",
+      "! grep -q '@/lib' lib/finanzas/crypto.ts",
+      "npm run typecheck"
+    ],
+    "checkpoint": "step-05-cifrado",
+    "files": [
+      "lib/finanzas/crypto.ts",
+      "lib/finanzas/crypto.test.ts",
+      "VARIABLES_ENTORNO.md"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E1-T6",
+    "title": "Validación de RUT chileno y esquemas zod",
+    "epic": "01-seguridad",
+    "dependencies": [
+      "E1-T1"
+    ],
+    "priority": "p0",
+    "acceptance": [
+      "CUANDO `esRutValido` recibe un RUT con dígito verificador correcto EL SISTEMA DEBERÁ devolver `true`, y `false` si el dígito no corresponde.",
+      "CUANDO `normalizarRut` recibe `\"12.345.678-9\"` o `\"123456789\"` EL SISTEMA DEBERÁ devolver `\"12345678-9\"` en ambos casos.",
+      "CUANDO `enmascararRut` recibe `\"12345678-9\"` EL SISTEMA DEBERÁ devolver exactamente `\"12.345.***-*\"`.",
+      "CUANDO un esquema de monto recibe `1500.5` o `-100` o `0` EL SISTEMA DEBERÁ rechazarlo, porque todo monto es entero positivo en pesos.",
+      "CUANDO se lee `package.json` EL SISTEMA DEBERÁ tener `zod` en `dependencies` con el valor exacto `4.4.3`, sin rango.",
+      "CUANDO `npx vitest run lib/finanzas/rut.test.ts` y `npx vitest run lib/finanzas/schemas.test.ts` corren EL SISTEMA DEBERÁ salir 0 en ambos."
+    ],
+    "verify": [
+      "node -e \"process.exit(require('./package.json').dependencies.zod === '4.4.3' ? 0 : 1)\"",
+      "npx vitest run lib/finanzas/rut.test.ts",
+      "npx vitest run lib/finanzas/schemas.test.ts",
+      "npm run typecheck"
+    ],
+    "checkpoint": "step-06-validacion-zod-rut",
+    "files": [
+      "package.json",
+      "lib/finanzas/rut.ts",
+      "lib/finanzas/rut.test.ts",
+      "lib/finanzas/schemas.ts",
+      "lib/finanzas/schemas.test.ts"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E1-T7",
+    "title": "Serialización con enmascarado por rol",
+    "epic": "01-seguridad",
+    "dependencies": [
+      "E1-T2",
+      "E1-T5",
+      "E1-T6"
+    ],
+    "priority": "p0",
+    "acceptance": [
+      "CUANDO `serializeEmployee` recibe un viewer con `moduleAccess: [\"FINANZAS_LECTURA\"]` EL SISTEMA DEBERÁ devolver el RUT enmascarado como `\"12.345.***-*\"` y omitir `bankName` y `bankAccountType`.",
+      "CUANDO `serializeEmployee` recibe un viewer con `moduleAccess: [\"FINANZAS\"]` EL SISTEMA DEBERÁ devolver el RUT completo y `bankAccountLast4`.",
+      "CUANDO `serializeEmployee` corre con cualquier viewer EL SISTEMA DEBERÁ omitir siempre la propiedad `bankAccountEnc` del objeto devuelto.",
+      "CUANDO `serializeSupplier` recibe un viewer con `moduleAccess: [\"FINANZAS_LECTURA\"]` EL SISTEMA DEBERÁ omitir `bankName` y devolver sólo `bankAccountLast4`.",
+      "CUANDO `npx vitest run lib/finanzas/serialize.test.ts` corre EL SISTEMA DEBERÁ salir 0 con 0 tests fallidos y 0 omitidos."
+    ],
+    "verify": [
+      "npx vitest run lib/finanzas/serialize.test.ts",
+      "! grep -q '@/lib' lib/finanzas/serialize.ts",
+      "npm run typecheck"
+    ],
+    "checkpoint": "step-07-serializacion",
+    "files": [
+      "lib/finanzas/serialize.ts",
+      "lib/finanzas/serialize.test.ts"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E1-T8",
+    "title": "Rate limiting sobre Postgres y bloqueo de login",
+    "epic": "01-seguridad",
+    "dependencies": [
+      "E1-T1"
+    ],
+    "priority": "p0",
+    "acceptance": [
+      "CUANDO se llama `checkRateLimit` con `limit: 5` cinco veces dentro de la ventana EL SISTEMA DEBERÁ devolver `ok: true` en las cinco.",
+      "CUANDO se llama una sexta vez dentro de la misma ventana EL SISTEMA DEBERÁ devolver `ok: false` con `retryAfterSec` mayor que 0.",
+      "CUANDO se llama después de que la ventana expiró EL SISTEMA DEBERÁ devolver `ok: true` y reiniciar el contador a 1.",
+      "CUANDO `authorize()` recibe un intento con una clave de login ya bloqueada EL SISTEMA DEBERÁ devolver `null` sin invocar `compare` de bcrypt.",
+      "CUANDO `npx vitest run lib/finanzas/rate-limit.test.ts` corre EL SISTEMA DEBERÁ salir 0 con 0 tests fallidos y 0 omitidos."
+    ],
+    "verify": [
+      "npx vitest run lib/finanzas/rate-limit.test.ts",
+      "grep -q 'checkRateLimit' lib/auth.ts",
+      "npm run typecheck"
+    ],
+    "checkpoint": "step-08-rate-limit",
+    "files": [
+      "lib/finanzas/rate-limit.ts",
+      "lib/finanzas/rate-limit.test.ts",
+      "lib/auth.ts"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E1-T9",
+    "title": "Recuperación por enlace y bloqueo del reset por ADMIN",
+    "epic": "01-seguridad",
+    "dependencies": [
+      "E1-T4",
+      "E1-T8"
+    ],
+    "priority": "p0",
+    "acceptance": [
+      "CUANDO `esTokenUtilizable` recibe una fila con `usedAt` no nulo EL SISTEMA DEBERÁ devolver `false` aunque `expiresAt` esté en el futuro.",
+      "CUANDO `esTokenUtilizable` recibe una fila cuyo `expiresAt` ya pasó EL SISTEMA DEBERÁ devolver `false`.",
+      "CUANDO `hashToken` recibe el mismo token dos veces EL SISTEMA DEBERÁ devolver el mismo hash, y uno distinto para un token distinto.",
+      "CUANDO se lee `app/api/usuarios/route.ts` EL SISTEMA DEBERÁ tener `FINANZAS` y `FINANZAS_LECTURA` en `VALID_MODULES` y `FINANZAS` en las listas de roles válidos.",
+      "CUANDO un `PATCH /api/usuarios` trae `password` sobre una cuenta con módulos de Finanzas EL SISTEMA DEBERÁ responder `403` y no escribir ningún hash nuevo.",
+      "CUANDO `npx vitest run lib/finanzas/reset.test.ts` corre EL SISTEMA DEBERÁ salir 0 con 0 tests fallidos y 0 omitidos."
+    ],
+    "verify": [
+      "npx vitest run lib/finanzas/reset.test.ts",
+      "grep -q 'FINANZAS_LECTURA' app/api/usuarios/route.ts",
+      "grep -q '\"FINANZAS\"' app/api/usuarios/route.ts",
+      "grep -q 'Usa el enlace de recuperación' app/api/usuarios/route.ts",
+      "test -f app/api/auth/recuperar/route.ts",
+      "test -f app/api/auth/recuperar/confirmar/route.ts",
+      "npm run typecheck"
+    ],
+    "checkpoint": "step-09-recuperacion-clave",
+    "files": [
+      "lib/finanzas/reset.ts",
+      "lib/finanzas/reset.test.ts",
+      "app/api/auth/recuperar/route.ts",
+      "app/api/auth/recuperar/confirmar/route.ts",
+      "app/api/usuarios/route.ts"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E1-T10",
+    "title": "Guardia mecánico de porteros en rutas de Finanzas",
+    "epic": "01-seguridad",
+    "dependencies": [
+      "E1-T2"
+    ],
+    "priority": "p0",
+    "acceptance": [
+      "CUANDO `rutasSinPortero` recorre un directorio temporal con un `route.ts` que contiene `hasFinanceAccess` y otro que no contiene ningún portero EL SISTEMA DEBERÁ devolver un arreglo con exactamente la ruta del segundo archivo.",
+      "CUANDO `rutasSinPortero` recibe una ruta de directorio que no existe EL SISTEMA DEBERÁ devolver un arreglo vacío y no lanzar.",
+      "CUANDO `rutasSinPortero` recorre un `route.ts` que contiene sólo `canWriteFinance` EL SISTEMA DEBERÁ considerarlo protegido y no incluirlo en el resultado.",
+      "CUANDO se ejecuta `rutasSinPortero(\"app/api/finanzas\")` sobre el repo EL SISTEMA DEBERÁ devolver un arreglo vacío.",
+      "CUANDO `npm run test` corre la suite completa EL SISTEMA DEBERÁ salir 0 con 0 tests fallidos y 0 omitidos, incluidos los tests preexistentes de `lib/tracking.test.ts` y `lib/outreach/smtp.test.ts`."
+    ],
+    "verify": [
+      "npx vitest run lib/finanzas/routes.test.ts",
+      "npm run test",
+      "npm run typecheck"
+    ],
+    "checkpoint": "step-10-guardia-rutas",
+    "files": [
+      "lib/finanzas/routes.ts",
+      "lib/finanzas/routes.test.ts"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E2-T1",
+    "title": "CRUD de trabajadores (API y pantallas)",
+    "epic": "02-datos-maestros",
+    "dependencies": [
+      "E1-T4",
+      "E1-T7",
+      "E1-T10"
+    ],
+    "priority": "p0",
+    "acceptance": [
+      "CUANDO `GET /api/finanzas/empleados` recibe una sesión sin `FINANZAS` ni `FINANZAS_LECTURA` EL SISTEMA DEBERÁ responder `403` con el cuerpo `{ \"error\": \"Acceso denegado\" }`.",
+      "CUANDO `POST /api/finanzas/empleados` recibe un RUT con dígito verificador incorrecto EL SISTEMA DEBERÁ responder `400` y no escribir ninguna fila.",
+      "CUANDO `POST /api/finanzas/empleados` crea un trabajador con cuenta bancaria EL SISTEMA DEBERÁ guardar `bankAccountEnc` con el prefijo `v1:` y `bankAccountLast4` con los últimos 4 dígitos en claro.",
+      "CUANDO `PATCH /api/finanzas/empleados/[id]` lo llama una sesión con sólo `FINANZAS_LECTURA` EL SISTEMA DEBERÁ responder `403` y no modificar la fila.",
+      "CUANDO `rutasSinPortero(\"app/api/finanzas\")` corre EL SISTEMA DEBERÁ devolver un arreglo vacío, es decir las dos rutas nuevas llaman a un portero.",
+      "CUANDO `npm run build` corre EL SISTEMA DEBERÁ salir 0."
+    ],
+    "verify": [
+      "npx vitest run lib/finanzas/routes.test.ts",
+      "npm run test",
+      "npm run typecheck",
+      "npm run build",
+      "grep -q 'serializeEmployee' app/api/finanzas/empleados/route.ts && grep -q 'serializeEmployee' 'app/api/finanzas/empleados/[id]/route.ts'"
+    ],
+    "checkpoint": "step-11-trabajadores",
+    "files": [
+      "app/api/finanzas/empleados/route.ts",
+      "app/api/finanzas/empleados/[id]/route.ts",
+      "app/(admin)/admin/finanzas/layout.tsx",
+      "app/(admin)/admin/finanzas/trabajadores/page.tsx",
+      "app/(admin)/admin/finanzas/trabajadores/[id]/page.tsx"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E2-T2",
+    "title": "Proveedores y categorías",
+    "epic": "02-datos-maestros",
+    "dependencies": [
+      "E2-T1"
+    ],
+    "priority": "p1",
+    "acceptance": [
+      "CUANDO `POST /api/finanzas/categorias` recibe un nombre y un `kind` que ya existen EL SISTEMA DEBERÁ responder `409` y no crear una segunda fila.",
+      "CUANDO `PATCH /api/finanzas/proveedores/[id]` fija `isActive: false` EL SISTEMA DEBERÁ conservar la fila y todas sus transacciones asociadas.",
+      "CUANDO cualquiera de las tres rutas nuevas recibe una sesión con sólo `FINANZAS_LECTURA` y un método de mutación EL SISTEMA DEBERÁ responder `403`.",
+      "CUANDO `POST /api/finanzas/proveedores` crea un proveedor con cuenta bancaria EL SISTEMA DEBERÁ guardar `bankAccountEnc` con el prefijo `v1:` y escribir una fila de auditoría `CREAR`.",
+      "CUANDO `rutasSinPortero(\"app/api/finanzas\")` corre EL SISTEMA DEBERÁ devolver un arreglo vacío.",
+      "CUANDO `npm run build` corre EL SISTEMA DEBERÁ salir 0."
+    ],
+    "verify": [
+      "npx vitest run lib/finanzas/routes.test.ts",
+      "npm run test",
+      "npm run typecheck",
+      "npm run build",
+      "grep -q 'serializeSupplier' app/api/finanzas/proveedores/route.ts"
+    ],
+    "checkpoint": "step-12-proveedores-categorias",
+    "files": [
+      "app/api/finanzas/proveedores/route.ts",
+      "app/api/finanzas/proveedores/[id]/route.ts",
+      "app/api/finanzas/categorias/route.ts",
+      "app/(admin)/admin/finanzas/proveedores/page.tsx"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E3-T1",
+    "title": "Movimientos con paginación en servidor",
+    "epic": "03-movimientos",
+    "dependencies": [
+      "E2-T2"
+    ],
+    "priority": "p0",
+    "acceptance": [
+      "CUANDO `resolverPaginacion` recibe `pageSize: \"500\"` EL SISTEMA DEBERÁ devolver `take: 100`, aplicando el tope duro.",
+      "CUANDO `resolverPaginacion` recibe `page: \"0\"` o `page: \"abc\"` EL SISTEMA DEBERÁ devolver `page: 1` y `skip: 0`.",
+      "CUANDO `resolverPaginacion` recibe `page: 3` y `pageSize: 25` EL SISTEMA DEBERÁ devolver `skip: 50` y `take: 25`.",
+      "CUANDO `GET /api/finanzas/transacciones` responde EL SISTEMA DEBERÁ incluir `take` y `skip` en la consulta de Prisma y nunca devolver la tabla completa.",
+      "CUANDO `PATCH /api/finanzas/transacciones/[id]` anula un movimiento EL SISTEMA DEBERÁ fijar `status: \"ANULADO\"` y conservar la fila, sin exponer ningún método `DELETE`.",
+      "CUANDO `npx vitest run lib/finanzas/paginacion.test.ts` corre EL SISTEMA DEBERÁ salir 0 con 0 tests fallidos y 0 omitidos."
+    ],
+    "verify": [
+      "npx vitest run lib/finanzas/paginacion.test.ts",
+      "npx vitest run lib/finanzas/routes.test.ts",
+      "npm run test",
+      "! grep -q 'export async function DELETE' 'app/api/finanzas/transacciones/[id]/route.ts'",
+      "grep -q 'skip' app/api/finanzas/transacciones/route.ts",
+      "npm run typecheck",
+      "npm run build"
+    ],
+    "checkpoint": "step-13-transacciones",
+    "files": [
+      "lib/finanzas/paginacion.ts",
+      "lib/finanzas/paginacion.test.ts",
+      "app/api/finanzas/transacciones/route.ts",
+      "app/api/finanzas/transacciones/[id]/route.ts",
+      "app/(admin)/admin/finanzas/movimientos/page.tsx"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E3-T2",
+    "title": "Anticipos a trabajadores",
+    "epic": "03-movimientos",
+    "dependencies": [
+      "E2-T1",
+      "E3-T1"
+    ],
+    "priority": "p1",
+    "acceptance": [
+      "CUANDO `PATCH /api/finanzas/anticipos/[id]` marca un anticipo como `PAGADO` EL SISTEMA DEBERÁ fijar `paidAt` con la hora del servidor y nunca con una fecha enviada por el cliente.",
+      "CUANDO `PATCH /api/finanzas/anticipos/[id]` intenta llevar un anticipo `DESCONTADO` de vuelta a `PENDIENTE` EL SISTEMA DEBERÁ responder `409` y no modificar la fila.",
+      "CUANDO `POST /api/finanzas/anticipos` recibe un monto que no es entero positivo EL SISTEMA DEBERÁ responder `400` y no escribir ninguna fila.",
+      "CUANDO una sesión con sólo `FINANZAS_LECTURA` llama a `POST` o `PATCH` de anticipos EL SISTEMA DEBERÁ responder `403`.",
+      "CUANDO `rutasSinPortero(\"app/api/finanzas\")` corre EL SISTEMA DEBERÁ devolver un arreglo vacío.",
+      "CUANDO `npm run build` corre EL SISTEMA DEBERÁ salir 0."
+    ],
+    "verify": [
+      "npx vitest run lib/finanzas/routes.test.ts",
+      "npm run test",
+      "npm run typecheck",
+      "npm run build"
+    ],
+    "checkpoint": "step-14-anticipos",
+    "files": [
+      "app/api/finanzas/anticipos/route.ts",
+      "app/api/finanzas/anticipos/[id]/route.ts",
+      "app/(admin)/admin/finanzas/anticipos/page.tsx"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E4-T1",
+    "title": "Nóminas mensuales y cálculo de líquido",
+    "epic": "04-nominas",
+    "dependencies": [
+      "E3-T2"
+    ],
+    "priority": "p0",
+    "acceptance": [
+      "CUANDO `calcularLiquido` recibe bruto 800000 con AFP 80000, salud 56000, otras deducciones 0 y anticipos 100000 EL SISTEMA DEBERÁ devolver 564000.",
+      "CUANDO `calcularLiquido` recibe deducciones que superan al bruto EL SISTEMA DEBERÁ devolver 0 y nunca un número negativo.",
+      "CUANDO `totalizarNomina` recibe un arreglo vacío EL SISTEMA DEBERÁ devolver `totalGross: 0` y `totalNet: 0`.",
+      "CUANDO `POST /api/finanzas/nominas` recibe un período que ya tiene un `PayrollRun` EL SISTEMA DEBERÁ responder `409` y no crear una segunda cabecera.",
+      "CUANDO `POST /api/finanzas/nominas` genera la nómina EL SISTEMA DEBERÁ pasar a `DESCONTADO` cada anticipo en estado `PAGADO` del trabajador y enlazarlo al `payrollItemId` correspondiente.",
+      "CUANDO `npx vitest run lib/finanzas/payroll.test.ts` corre EL SISTEMA DEBERÁ salir 0 con 0 tests fallidos y 0 omitidos."
+    ],
+    "verify": [
+      "npx vitest run lib/finanzas/payroll.test.ts",
+      "npx vitest run lib/finanzas/routes.test.ts",
+      "npm run test",
+      "! grep -qE 'parseFloat|toFixed' lib/finanzas/payroll.ts",
+      "npm run typecheck",
+      "npm run build"
+    ],
+    "checkpoint": "step-15-nominas",
+    "files": [
+      "lib/finanzas/payroll.ts",
+      "lib/finanzas/payroll.test.ts",
+      "app/api/finanzas/nominas/route.ts",
+      "app/api/finanzas/nominas/[id]/route.ts",
+      "app/(admin)/admin/finanzas/nominas/page.tsx"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E4-T2",
+    "title": "Nómina de pago con descifrado auditado",
+    "epic": "04-nominas",
+    "dependencies": [
+      "E1-T5",
+      "E4-T1"
+    ],
+    "priority": "p0",
+    "acceptance": [
+      "CUANDO `GET /api/finanzas/nominas/[id]/pago` lo llama una sesión con sólo `FINANZAS_LECTURA` EL SISTEMA DEBERÁ responder `403` y no descifrar ninguna cuenta.",
+      "CUANDO la nómina está en estado `BORRADOR` EL SISTEMA DEBERÁ responder `409` con el mensaje `\"La nómina debe estar aprobada antes de generar el pago\"`.",
+      "CUANDO la ruta devuelve las cuentas descifradas EL SISTEMA DEBERÁ haber escrito exactamente una fila de `FinanceAuditLog` con `action: \"DESCIFRAR\"` y el conteo de cuentas en `after`.",
+      "CUANDO se inspecciona la fila de auditoría escrita EL SISTEMA DEBERÁ no contener ningún número de cuenta, ni cifrado ni en claro.",
+      "CUANDO `rutasSinPortero(\"app/api/finanzas\")` corre EL SISTEMA DEBERÁ devolver un arreglo vacío.",
+      "CUANDO `npm run build` corre EL SISTEMA DEBERÁ salir 0."
+    ],
+    "verify": [
+      "npx vitest run lib/finanzas/routes.test.ts",
+      "grep -q 'canWriteFinance' 'app/api/finanzas/nominas/[id]/pago/route.ts'",
+      "! grep -q 'hasFinanceAccess' 'app/api/finanzas/nominas/[id]/pago/route.ts'",
+      "grep -q 'DESCIFRAR' 'app/api/finanzas/nominas/[id]/pago/route.ts'",
+      "npm run test",
+      "npm run typecheck",
+      "npm run build"
+    ],
+    "checkpoint": "step-16-pago-nomina",
+    "files": [
+      "app/api/finanzas/nominas/[id]/pago/route.ts",
+      "app/(admin)/admin/finanzas/nominas/[id]/page.tsx"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E5-T1",
+    "title": "Reportes y resumen del mes",
+    "epic": "05-reportes-cierre",
+    "dependencies": [
+      "E3-T1"
+    ],
+    "priority": "p1",
+    "acceptance": [
+      "CUANDO `resumirPeriodo` recibe transacciones que incluyen una en estado `ANULADO` EL SISTEMA DEBERÁ excluirla de los tres totales.",
+      "CUANDO `resumirPeriodo` recibe sólo egresos EL SISTEMA DEBERÁ devolver `ingresos: 0` y un `saldo` negativo igual al total de egresos con signo invertido.",
+      "CUANDO `agruparPorCategoria` recibe transacciones sin `categoryId` EL SISTEMA DEBERÁ agruparlas bajo la etiqueta `\"Sin categoría\"` en vez de descartarlas.",
+      "CUANDO `agruparPorCategoria` devuelve el arreglo EL SISTEMA DEBERÁ entregarlo ordenado de mayor a menor por monto.",
+      "CUANDO `npx vitest run lib/finanzas/reportes.test.ts` corre EL SISTEMA DEBERÁ salir 0 con 0 tests fallidos y 0 omitidos.",
+      "CUANDO `npm run build` corre EL SISTEMA DEBERÁ salir 0."
+    ],
+    "verify": [
+      "npx vitest run lib/finanzas/reportes.test.ts",
+      "npx vitest run lib/finanzas/routes.test.ts",
+      "! grep -q 'formatCurrency' lib/finanzas/reportes.test.ts",
+      "npm run test",
+      "npm run typecheck",
+      "npm run build"
+    ],
+    "checkpoint": "step-17-reportes",
+    "files": [
+      "lib/finanzas/reportes.ts",
+      "lib/finanzas/reportes.test.ts",
+      "app/api/finanzas/reportes/route.ts",
+      "app/(admin)/admin/finanzas/page.tsx"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E5-T2",
+    "title": "Visor de auditoría",
+    "epic": "05-reportes-cierre",
+    "dependencies": [
+      "E1-T4",
+      "E3-T1"
+    ],
+    "priority": "p0",
+    "acceptance": [
+      "CUANDO se inspecciona `app/api/finanzas/auditoria/route.ts` EL SISTEMA DEBERÁ exportar únicamente `GET`, sin `POST`, `PATCH`, `PUT` ni `DELETE`.",
+      "CUANDO `GET /api/finanzas/auditoria` lo llama una sesión con `FINANZAS_LECTURA` EL SISTEMA DEBERÁ responder `200` con las filas paginadas.",
+      "CUANDO `GET /api/finanzas/auditoria` lo llama una sesión sin ningún módulo de Finanzas EL SISTEMA DEBERÁ responder `403`.",
+      "CUANDO `GET /api/finanzas/auditoria` se llama sin parámetros EL SISTEMA DEBERÁ devolver como máximo 25 filas, aplicando el `pageSize` por defecto.",
+      "CUANDO `rutasSinPortero(\"app/api/finanzas\")` corre EL SISTEMA DEBERÁ devolver un arreglo vacío.",
+      "CUANDO `npm run build` corre EL SISTEMA DEBERÁ salir 0."
+    ],
+    "verify": [
+      "npx vitest run lib/finanzas/routes.test.ts",
+      "! grep -qE 'export async function (POST|PATCH|PUT|DELETE)' app/api/finanzas/auditoria/route.ts",
+      "grep -q 'resolverPaginacion' app/api/finanzas/auditoria/route.ts",
+      "npm run test",
+      "npm run typecheck",
+      "npm run build"
+    ],
+    "checkpoint": "step-18-visor-auditoria",
+    "files": [
+      "app/api/finanzas/auditoria/route.ts",
+      "app/(admin)/admin/finanzas/auditoria/page.tsx"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E5-T3",
+    "title": "Exportación CSV limitada y auditada",
+    "epic": "05-reportes-cierre",
+    "dependencies": [
+      "E1-T8",
+      "E3-T1"
+    ],
+    "priority": "p1",
+    "acceptance": [
+      "CUANDO `escaparCampoCsv` recibe un valor que contiene una coma EL SISTEMA DEBERÁ devolverlo envuelto en comillas dobles.",
+      "CUANDO `escaparCampoCsv` recibe un valor que contiene una comilla doble EL SISTEMA DEBERÁ duplicarla dentro del campo entrecomillado.",
+      "CUANDO `escaparCampoCsv` recibe un valor que empieza con `=` EL SISTEMA DEBERÁ anteponerle una comilla simple para neutralizar la inyección de fórmulas.",
+      "CUANDO `GET /api/finanzas/export` se llama por sexta vez dentro de una hora por el mismo usuario EL SISTEMA DEBERÁ responder `429` con la cabecera `Retry-After`.",
+      "CUANDO `GET /api/finanzas/export` devuelve un CSV EL SISTEMA DEBERÁ haber escrito una fila de auditoría `EXPORTAR` con el rango y el conteo de filas.",
+      "CUANDO `npx vitest run lib/finanzas/csv.test.ts` corre EL SISTEMA DEBERÁ salir 0 con 0 tests fallidos y 0 omitidos."
+    ],
+    "verify": [
+      "npx vitest run lib/finanzas/csv.test.ts",
+      "npx vitest run lib/finanzas/routes.test.ts",
+      "grep -q 'checkRateLimit' app/api/finanzas/export/route.ts",
+      "grep -q 'EXPORTAR' app/api/finanzas/export/route.ts",
+      "npm run test",
+      "npm run typecheck",
+      "npm run build"
+    ],
+    "checkpoint": "step-19-export-csv",
+    "files": [
+      "lib/finanzas/csv.ts",
+      "lib/finanzas/csv.test.ts",
+      "app/api/finanzas/export/route.ts"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E5-T4",
+    "title": "Sidebar, desvinculación con purga, specs y barrido final",
+    "epic": "05-reportes-cierre",
+    "dependencies": [
+      "E4-T2",
+      "E5-T1",
+      "E5-T2",
+      "E5-T3"
+    ],
+    "priority": "p0",
+    "acceptance": [
+      "CUANDO se lee `components/ui/AdminSidebar.tsx` EL SISTEMA DEBERÁ filtrar el módulo Finanzas por `moduleAccess` incluso cuando `isAdmin` es `true`, y conservar el bypass para los otros tres módulos.",
+      "CUANDO `POST /api/finanzas/empleados/[id]/desvincular` corre EL SISTEMA DEBERÁ dejar `bankAccountEnc`, `bankAccountLast4`, `bankName`, `bankAccountType`, `email` y `phone` en `null`, y `purgedAt` con la hora del servidor.",
+      "CUANDO se desvincula a un trabajador EL SISTEMA DEBERÁ conservar todas sus filas de `PayrollItem` y `Advance` sin modificarlas.",
+      "CUANDO se listan los archivos de ruta y de página creados por este cambio EL SISTEMA DEBERÁ tener un `*.spec.md` al lado de cada uno.",
+      "CUANDO se lee el `CLAUDE.md` del repo EL SISTEMA DEBERÁ contener el marcador `<!-- FINANZAS:INICIO -->` una sola vez.",
+      "CUANDO `npm run typecheck && npm run test && npm run build` corre EL SISTEMA DEBERÁ salir 0 en los tres comandos."
+    ],
+    "verify": [
+      "npx vitest run lib/finanzas/routes.test.ts",
+      "test \"$(grep -c '<!-- FINANZAS:INICIO -->' CLAUDE.md)\" -eq 1",
+      "grep -q 'FINANZAS' components/ui/AdminSidebar.tsx",
+      "test -f 'app/api/finanzas/empleados/[id]/desvincular/route.ts'",
+      "test -f 'app/api/finanzas/empleados/[id]/desvincular/route.spec.md'",
+      "for f in $(find app/api/finanzas 'app/(admin)/admin/finanzas' -name 'route.ts' -o -name 'page.tsx'); do test -f \"${f%.*}.spec.md\" || exit 1; done",
+      "npm run typecheck",
+      "npm run test",
+      "npm run build"
+    ],
+    "checkpoint": "step-20-cierre-finanzas",
+    "files": [
+      "components/ui/AdminSidebar.tsx",
+      "app/api/finanzas/empleados/[id]/desvincular/route.ts",
+      "app/api/finanzas/**/*.spec.md",
+      "app/(admin)/admin/finanzas/**/*.spec.md",
+      "CLAUDE.md"
+    ],
+    "status": "pending"
+  }
+]

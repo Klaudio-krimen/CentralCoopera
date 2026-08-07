@@ -51,3 +51,6 @@ next-env.d.ts
 .vercel
 
 .env*.local
+
+# Respaldos de base de datos (nunca se commitean)
+backups/

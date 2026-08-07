@@ -1,0 +1,20 @@
+# Prettier ignore — TrackResiduos
+#
+# Este archivo lo agrega el módulo de Finanzas y NO existía antes en el repo.
+# Copiarlo a la raíz del proyecto es parte del paso de Bootstrap de §10.
+#
+# Por qué existe:
+#
+# `.husky/pre-commit` corre `lint-staged`, cuya configuración (`.lintstagedrc`) es
+# `{"*": "prettier --ignore-unknown --write"}` — es decir, TODO archivo que entre al índice
+# se reformatea. Cada `Checkpoint` de §9 hace `git add -A && git commit`, así que sin esta
+# exclusión Prettier reescribiría el propio blueprint y los archivos de epic a mitad del
+# build: reflujo de líneas a 80 columnas sobre tablas y bloques que están escritos a mano.
+#
+# El bundle es la especificación del cambio. Una herramienta del proyecto que reformatea su
+# propia especificación mientras la ejecuta es exactamente la clase de defecto que sólo
+# aparece corriendo el build, no leyéndolo.
+blueprints/
+
+# Salida de herramientas: no es código fuente y no se formatea.
+graphify-out/

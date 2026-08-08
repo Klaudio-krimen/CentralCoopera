@@ -9,7 +9,7 @@ import AdminSidebar from "@/components/ui/AdminSidebar";
 // Roles que comparten el shell del panel admin (sidebar + module switcher).
 // Qué módulos ve cada uno dentro del shell lo decide moduleAccess (ver lib/access.ts);
 // esto solo filtra quién entra al shell en general.
-const ADMIN_SHELL_ROLES = ["ADMIN", "VENTAS", "BODEGA"];
+const ADMIN_SHELL_ROLES = ["ADMIN", "VENTAS", "BODEGA", "FINANZAS"];
 
 export default async function AdminLayout({
   children,

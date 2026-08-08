@@ -4,6 +4,8 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { apiError } from "@/lib/utils";
 import { hash } from "bcryptjs";
+import { withAudit } from "@/lib/finanzas/audit";
+import { sendMail } from "@/lib/outreach/smtp";
 
 // GET /api/usuarios?role=CHOFER
 export async function GET(req: NextRequest) {
@@ -32,7 +34,50 @@ export async function GET(req: NextRequest) {
   return NextResponse.json(users);
 }
 
-const VALID_MODULES = ["OPERACIONES", "CRM", "INVENTARIO"];
+const VALID_MODULES = [
+  "OPERACIONES",
+  "CRM",
+  "INVENTARIO",
+  "FINANZAS",
+  "FINANZAS_LECTURA",
+];
+
+const FINANCE_MODULES = ["FINANZAS", "FINANZAS_LECTURA"];
+
+/** true si moduleAccess tiene FINANZAS y/o FINANZAS_LECTURA. */
+function tieneModulosFinanzas(moduleAccess: string[]): boolean {
+  return moduleAccess.some((m) => FINANCE_MODULES.includes(m));
+}
+
+/** Envía el aviso de cambio de permisos de Finanzas. No lanza si falla el
+ *  envío — la auditoría ya quedó escrita, que es la garantía dura; el
+ *  correo es el aviso, no la evidencia. */
+async function notificarCambioPermisosFinanzas(
+  actorEmail: string,
+  targetEmail: string,
+  antes: string[],
+  despues: string[]
+) {
+  const destinatarios = (process.env.FINANZAS_NOTIFY_EMAILS ?? "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+
+  for (const destinatario of destinatarios) {
+    try {
+      await sendMail({
+        to: destinatario,
+        subject: "Cambio de permisos de Finanzas — Coopera Pro",
+        text: `${actorEmail} cambió los permisos de Finanzas de ${targetEmail}.\nAntes: ${antes.join(", ") || "ninguno"}\nAhora: ${despues.join(", ") || "ninguno"}`,
+        html: `<p><strong>${actorEmail}</strong> cambió los permisos de Finanzas de <strong>${targetEmail}</strong>.</p><p>Antes: ${antes.join(", ") || "ninguno"}<br/>Ahora: ${despues.join(", ") || "ninguno"}</p>`,
+      });
+    } catch {
+      console.warn("[finanzas] fallo al notificar cambio de permisos", {
+        destinatario,
+      });
+    }
+  }
+}
 
 /** true si `input` es un array donde cada valor es un módulo válido (array vacío incluido). */
 function isValidModuleAccess(input: unknown): input is string[] {
@@ -58,7 +103,11 @@ export async function POST(req: NextRequest) {
   if (!password?.trim()) return apiError("Contraseña requerida");
   if (password.length < 8)
     return apiError("La contraseña debe tener al menos 8 caracteres");
-  if (!["CHOFER", "RECEPCION", "ADMIN", "VENTAS", "BODEGA"].includes(role)) {
+  if (
+    !["CHOFER", "RECEPCION", "ADMIN", "VENTAS", "BODEGA", "FINANZAS"].includes(
+      role
+    )
+  ) {
     return apiError("Rol inválido");
   }
   const modules = moduleAccess ?? [];
@@ -132,6 +181,22 @@ export async function PATCH(req: NextRequest) {
     return apiError("No puedes quitarte el rol de administrador a ti mismo");
   }
 
+  const previousUser = await prisma.user.findUnique({
+    where: { id },
+    select: { role: true, email: true, moduleAccess: true },
+  });
+  if (!previousUser) return apiError("Usuario no encontrado", 404);
+
+  // Cierra el hallazgo #4: un ADMIN no elige la contraseña de una cuenta de
+  // Finanzas. Puede disparar el enlace de /api/auth/recuperar; no puede
+  // fijarla él mismo.
+  if (password?.trim() && tieneModulosFinanzas(previousUser.moduleAccess)) {
+    return apiError(
+      "No puedes fijar la contraseña de una cuenta de Finanzas. Usa el enlace de recuperación.",
+      403
+    );
+  }
+
   const data: any = {};
   if (name !== undefined) data.name = name.trim();
   if (email !== undefined) data.email = email.trim().toLowerCase();
@@ -142,7 +207,16 @@ export async function PATCH(req: NextRequest) {
     data.password = await hash(password, 12);
   }
   if (role !== undefined) {
-    if (!["CHOFER", "RECEPCION", "ADMIN", "VENTAS", "BODEGA"].includes(role)) {
+    if (
+      ![
+        "CHOFER",
+        "RECEPCION",
+        "ADMIN",
+        "VENTAS",
+        "BODEGA",
+        "FINANZAS",
+      ].includes(role)
+    ) {
       return apiError("Rol inválido");
     }
     data.role = role;
@@ -153,23 +227,45 @@ export async function PATCH(req: NextRequest) {
     data.moduleAccess = moduleAccess;
   }
 
-  const previousUser = await prisma.user.findUnique({
-    where: { id },
-    select: { role: true },
-  });
-  if (!previousUser) return apiError("Usuario no encontrado", 404);
+  const antesFinanzas = previousUser.moduleAccess.filter((m) =>
+    FINANCE_MODULES.includes(m)
+  );
+  const despuesFinanzas = (moduleAccess ?? previousUser.moduleAccess).filter(
+    (m: string) => FINANCE_MODULES.includes(m)
+  );
+  const cambioPermisosFinanzas =
+    moduleAccess !== undefined &&
+    JSON.stringify([...antesFinanzas].sort()) !==
+      JSON.stringify([...despuesFinanzas].sort());
 
-  const user = await prisma.user.update({
-    where: { id },
-    data,
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      role: true,
-      moduleAccess: true,
-      isActive: true,
-    },
+  const user = await prisma.$transaction(async (tx) => {
+    const actualizado = await tx.user.update({
+      where: { id },
+      data,
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        moduleAccess: true,
+        isActive: true,
+      },
+    });
+
+    if (cambioPermisosFinanzas) {
+      await withAudit(tx, {
+        actorId: session.user.id,
+        actorEmail: session.user.email ?? "",
+        actorRole: session.user.role,
+        action: "CAMBIAR_PERMISOS",
+        entityType: "User",
+        entityId: id,
+        before: { moduleAccess: previousUser.moduleAccess },
+        after: { moduleAccess: actualizado.moduleAccess },
+      });
+    }
+
+    return actualizado;
   });
 
   // Un chofer solo debe verse en el mapa mientras sea CHOFER y esté activo —
@@ -191,6 +287,17 @@ export async function PATCH(req: NextRequest) {
       where: { userId: user.id },
       data: { isActive: false },
     });
+  }
+
+  // Después de que la transacción confirmó, nunca antes: el aviso no debe
+  // salir si el cambio termina revirtiéndose por un error posterior.
+  if (cambioPermisosFinanzas) {
+    await notificarCambioPermisosFinanzas(
+      session.user.email ?? "",
+      user.email,
+      antesFinanzas,
+      despuesFinanzas
+    );
   }
 
   return NextResponse.json(user);

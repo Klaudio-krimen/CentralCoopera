@@ -57,6 +57,10 @@ FINANZAS_ENCRYPTION_KEY=""
 # Clave anterior, sólo mientras dura una rotación (procedimiento sin downtime
 # en el blueprint §14). Vacía en régimen normal.
 FINANZAS_ENCRYPTION_KEY_PREVIOUS=""
+
+# Finanzas — destinatarios del aviso de cambio de permisos (separados por coma).
+# Los correos de Marcela y Elizabeth. No van al repo.
+FINANZAS_NOTIFY_EMAILS=""
 ```
 
 ## Archivo `.env.production` (producción)

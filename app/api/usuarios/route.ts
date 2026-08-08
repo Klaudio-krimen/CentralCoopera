@@ -187,10 +187,23 @@ export async function PATCH(req: NextRequest) {
   });
   if (!previousUser) return apiError("Usuario no encontrado", 404);
 
+  if (moduleAccess !== undefined && !isValidModuleAccess(moduleAccess)) {
+    return apiError("Módulos inválidos");
+  }
+  // Estado resultante tras este PATCH — se calcula ANTES del chequeo de
+  // contraseña de más abajo. Mirar sólo el estado previo dejaría colar el
+  // caso "otorgar FINANZAS y fijar password en la misma llamada".
+  const moduleAccessFinal: string[] = moduleAccess ?? previousUser.moduleAccess;
+
   // Cierra el hallazgo #4: un ADMIN no elige la contraseña de una cuenta de
-  // Finanzas. Puede disparar el enlace de /api/auth/recuperar; no puede
-  // fijarla él mismo.
-  if (password?.trim() && tieneModulosFinanzas(previousUser.moduleAccess)) {
+  // Finanzas, ni de una que esté por pasar a serlo en esta misma llamada.
+  // Puede disparar el enlace de /api/auth/recuperar; no puede fijarla él
+  // mismo.
+  if (
+    password?.trim() &&
+    (tieneModulosFinanzas(previousUser.moduleAccess) ||
+      tieneModulosFinanzas(moduleAccessFinal))
+  ) {
     return apiError(
       "No puedes fijar la contraseña de una cuenta de Finanzas. Usa el enlace de recuperación.",
       403
@@ -222,16 +235,14 @@ export async function PATCH(req: NextRequest) {
     data.role = role;
   }
   if (moduleAccess !== undefined) {
-    if (!isValidModuleAccess(moduleAccess))
-      return apiError("Módulos inválidos");
     data.moduleAccess = moduleAccess;
   }
 
   const antesFinanzas = previousUser.moduleAccess.filter((m) =>
     FINANCE_MODULES.includes(m)
   );
-  const despuesFinanzas = (moduleAccess ?? previousUser.moduleAccess).filter(
-    (m: string) => FINANCE_MODULES.includes(m)
+  const despuesFinanzas = moduleAccessFinal.filter((m) =>
+    FINANCE_MODULES.includes(m)
   );
   const cambioPermisosFinanzas =
     moduleAccess !== undefined &&

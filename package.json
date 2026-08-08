@@ -44,7 +44,8 @@
     "sharp": "^0.33.5",
     "signature_pad": "^4.2.0",
     "sonner": "^2.0.7",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "zod": "4.4.3"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",

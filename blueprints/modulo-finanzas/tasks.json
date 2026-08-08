@@ -28,7 +28,7 @@
       "prisma/schema.prisma",
       "tsconfig.json"
     ],
-    "status": "pending"
+    "status": "done"
   },
   {
     "id": "E1-T2",

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { hasModuleAccess } from "./access";
+import { hasModuleAccess, hasFinanceAccess, canWriteFinance } from "./access";
 
 describe("hasModuleAccess", () => {
   it("ADMIN siempre tiene acceso, sin importar moduleAccess", () => {
@@ -34,5 +34,43 @@ describe("hasModuleAccess", () => {
     expect(
       hasModuleAccess({ role: "CHOFER", moduleAccess: [] }, "OPERACIONES")
     ).toBe(false);
+  });
+});
+
+describe("hasFinanceAccess / canWriteFinance", () => {
+  it("ADMIN sin grant NO entra a Finanzas", () => {
+    expect(hasFinanceAccess({ role: "ADMIN", moduleAccess: [] })).toBe(false);
+    expect(canWriteFinance({ role: "ADMIN", moduleAccess: [] })).toBe(false);
+  });
+
+  it("FINANZAS entra y puede escribir", () => {
+    const marcela = { role: "FINANZAS", moduleAccess: ["FINANZAS"] };
+    expect(hasFinanceAccess(marcela)).toBe(true);
+    expect(canWriteFinance(marcela)).toBe(true);
+  });
+
+  it("FINANZAS_LECTURA entra pero no puede escribir", () => {
+    const elizabeth = { role: "ADMIN", moduleAccess: ["FINANZAS_LECTURA"] };
+    expect(hasFinanceAccess(elizabeth)).toBe(true);
+    expect(canWriteFinance(elizabeth)).toBe(false);
+  });
+
+  it("CHOFER sin grant no entra a Finanzas", () => {
+    expect(hasFinanceAccess({ role: "CHOFER", moduleAccess: [] })).toBe(false);
+    expect(canWriteFinance({ role: "CHOFER", moduleAccess: [] })).toBe(false);
+  });
+
+  it("un ADMIN que además tiene FINANZAS_LECTURA sigue sin poder escribir", () => {
+    const adminConLectura = {
+      role: "ADMIN",
+      moduleAccess: ["FINANZAS_LECTURA"],
+    };
+    expect(canWriteFinance(adminConLectura)).toBe(false);
+  });
+
+  it("hasModuleAccess conserva su bypass de ADMIN para los otros módulos", () => {
+    expect(hasModuleAccess({ role: "ADMIN", moduleAccess: [] }, "CRM")).toBe(
+      true
+    );
   });
 });

@@ -1,6 +1,6 @@
 import { withAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
-import { hasModuleAccess } from "@/lib/access";
+import { hasModuleAccess, hasFinanceAccess } from "@/lib/access";
 
 export default withAuth(
   function middleware(req) {
@@ -10,6 +10,19 @@ export default withAuth(
       role: token?.role ?? "",
       moduleAccess: token?.moduleAccess ?? [],
     };
+
+    // Finanzas va antes del retorno genérico de /api/ (línea de abajo), que
+    // hace NextResponse.next() y dejaría esta rama sin evaluar si fuera después.
+    // El orden importa.
+    if (pathname.startsWith("/api/finanzas")) {
+      if (!token) {
+        return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+      }
+      if (!hasFinanceAccess(user)) {
+        return NextResponse.json({ error: "Acceso denegado" }, { status: 403 });
+      }
+      return NextResponse.next();
+    }
 
     // Rutas API sin token → 401 JSON (no redirect)
     if (pathname.startsWith("/api/")) {
@@ -34,8 +47,15 @@ export default withAuth(
       return NextResponse.redirect(new URL("/login", req.url));
     }
     // Módulos del panel admin: se gatean por moduleAccess (ADMIN siempre pasa).
-    // El orden importa — crm/inventario se evalúan antes que el fallback genérico /admin.
-    if (pathname.startsWith("/admin/crm")) {
+    // El orden importa — crm/inventario/finanzas se evalúan antes que el
+    // fallback genérico /admin. Finanzas usa hasFinanceAccess(), sin bypass
+    // de ADMIN: a diferencia de los otros tres módulos, un ADMIN sin grant
+    // explícito no entra.
+    if (pathname.startsWith("/admin/finanzas")) {
+      if (!hasFinanceAccess(user)) {
+        return NextResponse.redirect(new URL("/login", req.url));
+      }
+    } else if (pathname.startsWith("/admin/crm")) {
       if (!hasModuleAccess(user, "CRM")) {
         return NextResponse.redirect(new URL("/login", req.url));
       }

@@ -46,6 +46,17 @@ OUTREACH_PDF_BLOB_URL=       # URL del PDF único en Vercel Blob (ver scripts/se
 OUTREACH_SENDER_LEGAL_NAME=  # razón social exacta
 OUTREACH_SENDER_RUT=
 OUTREACH_SENDER_ADDRESS=
+
+# Finanzas — cifrado de cuentas bancarias (ver blueprints/modulo-finanzas/blueprint.md §14)
+# Generar con: node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
+# PERDER FINANZAS_ENCRYPTION_KEY HACE IRRECUPERABLES LOS DATOS BANCARIOS CIFRADOS.
+# No hay puerta trasera ni recuperación: el respaldo de la base contiene el
+# ciphertext, no la clave. Guardarla en un gestor de contraseñas fuera del
+# computador que la generó, ANTES de cifrar la primera cuenta real.
+FINANZAS_ENCRYPTION_KEY=""
+# Clave anterior, sólo mientras dura una rotación (procedimiento sin downtime
+# en el blueprint §14). Vacía en régimen normal.
+FINANZAS_ENCRYPTION_KEY_PREVIOUS=""
 ```
 
 ## Archivo `.env.production` (producción)

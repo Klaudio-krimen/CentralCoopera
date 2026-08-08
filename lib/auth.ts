@@ -2,6 +2,10 @@ import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcryptjs";
 import { prisma } from "./db";
+import { checkRateLimit, reiniciarRateLimit } from "./finanzas/rate-limit";
+
+const LOGIN_RATE_LIMIT = 5;
+const LOGIN_RATE_WINDOW_MS = 15 * 60 * 1000;
 
 const SESSION_MAX_AGE = 8 * 60 * 60; // 8 horas
 
@@ -16,6 +20,20 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials.password) return null;
+
+        const claveLimite = `login:${credentials.email}`;
+        const limite = await checkRateLimit(
+          prisma,
+          claveLimite,
+          LOGIN_RATE_LIMIT,
+          LOGIN_RATE_WINDOW_MS
+        );
+        if (!limite.ok) {
+          console.warn("[auth] login bloqueado por rate limit", {
+            email: credentials.email,
+          });
+          return null;
+        }
 
         const user = await prisma.user.findUnique({
           where: { email: credentials.email },
@@ -43,6 +61,8 @@ export const authOptions: NextAuthOptions = {
           });
           return null;
         }
+
+        await reiniciarRateLimit(prisma, claveLimite);
 
         return {
           id: user.id,

@@ -121,6 +121,16 @@ export const editarAnticipoSchema = z.object({
 });
 
 // ── Nóminas ─────────────────────────────────────────────────────────────────
+// afpAmount/healthAmount no salen de ninguna tabla: Employee.afp/health son
+// texto libre (nombre de la AFP/isapre), no una tasa. Marcela los escribe al
+// generar cada nómina, una línea por cada trabajador ACTIVO.
+
+export const lineaNominaSchema = z.object({
+  employeeId: z.string().min(1),
+  afpAmount: z.number().int().nonnegative(),
+  healthAmount: z.number().int().nonnegative(),
+  otherDeductions: z.number().int().nonnegative().default(0),
+});
 
 export const crearNominaSchema = z.object({
   period: z
@@ -129,6 +139,7 @@ export const crearNominaSchema = z.object({
       /^\d{4}-(0[1-9]|1[0-2])$/,
       "Formato de período inválido, usa AAAA-MM"
     ),
+  lineas: z.array(lineaNominaSchema).min(1),
 });
 
 export const editarNominaSchema = z.object({

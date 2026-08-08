@@ -82,16 +82,39 @@ describe("crearTransaccionSchema", () => {
 });
 
 describe("crearNominaSchema", () => {
-  it("acepta un período con formato AAAA-MM", () => {
-    expect(crearNominaSchema.safeParse({ period: "2026-08" }).success).toBe(
-      true
-    );
+  it("acepta un período con formato AAAA-MM y al menos una línea", () => {
+    const resultado = crearNominaSchema.safeParse({
+      period: "2026-08",
+      lineas: [{ employeeId: "emp1", afpAmount: 80000, healthAmount: 56000 }],
+    });
+    expect(resultado.success).toBe(true);
+    if (resultado.success) {
+      expect(resultado.data.lineas[0].otherDeductions).toBe(0);
+    }
   });
 
   it("rechaza un período mal formado", () => {
-    expect(crearNominaSchema.safeParse({ period: "agosto-2026" }).success).toBe(
-      false
-    );
+    const resultado = crearNominaSchema.safeParse({
+      period: "agosto-2026",
+      lineas: [{ employeeId: "emp1", afpAmount: 0, healthAmount: 0 }],
+    });
+    expect(resultado.success).toBe(false);
+  });
+
+  it("rechaza sin líneas", () => {
+    const resultado = crearNominaSchema.safeParse({
+      period: "2026-08",
+      lineas: [],
+    });
+    expect(resultado.success).toBe(false);
+  });
+
+  it("rechaza un afpAmount negativo", () => {
+    const resultado = crearNominaSchema.safeParse({
+      period: "2026-08",
+      lineas: [{ employeeId: "emp1", afpAmount: -1, healthAmount: 0 }],
+    });
+    expect(resultado.success).toBe(false);
   });
 });
 

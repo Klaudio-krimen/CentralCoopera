@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { apiError } from "@/lib/utils";
 import { hasModuleAccess } from "@/lib/access";
+import { escaparCampoCsv } from "@/lib/finanzas/csv";
 
 // GET /api/reportes?type=discrepancias&from=2026-01-01&to=2026-12-31&format=json|csv
 export async function GET(req: NextRequest) {
@@ -141,12 +142,11 @@ export async function GET(req: NextRequest) {
   }
 
   if (format === "csv") {
-    const escape = (v: string | number | null) => {
-      const s = String(v ?? "");
-      return s.includes(",") || s.includes('"') || s.includes("\n")
-        ? `"${s.replace(/"/g, '""')}"`
-        : s;
-    };
+    // escaparCampoCsv() también antepone una comilla simple a campos que
+    // empiezan con =, +, - o @ — mitigación de inyección de fórmulas en
+    // Excel/Sheets, que es quien abre este archivo.
+    const escape = (v: string | number | null) =>
+      escaparCampoCsv(String(v ?? ""));
 
     const csv = [
       csvHeaders.map(escape).join(","),

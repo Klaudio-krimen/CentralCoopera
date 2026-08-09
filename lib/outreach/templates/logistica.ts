@@ -4,6 +4,7 @@ import {
   RenderedEmail,
   renderGreeting,
   assembleEmail,
+  escapeHtml,
 } from "./render";
 
 // Segmento LOGISTICA (PROSPECCION_OUTREACH.md §7): operadores, bodegas,
@@ -20,7 +21,7 @@ export function renderLogisticaEmail(
   const subject = `Pallets dañados en su bodega${comunaLine} — se los retiramos y le dejamos reparados`;
 
   const bodyHtml = `
-    <p>${greeting},</p>
+    <p>${escapeHtml(greeting)},</p>
     <p>
       Le escribo de Coopera Pro. Sabemos que en una operación como la de
       <strong>${escapeHtml(input.empresa)}</strong> los pallets dañados se van
@@ -48,12 +49,4 @@ export function renderLogisticaEmail(
   ].join("\n");
 
   return assembleEmail(subject, bodyHtml, bodyText, footer);
-}
-
-function escapeHtml(value: string): string {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
 }

@@ -4,6 +4,7 @@ import {
   RenderedEmail,
   renderGreeting,
   assembleEmail,
+  escapeHtml,
 } from "./render";
 
 // Segmento FARMACEUTICA (PROSPECCION_OUTREACH.md §7): laboratorios,
@@ -21,7 +22,7 @@ export function renderFarmaceuticaEmail(
   const subject = `Retiro de pallets con cadena de custodia documentada — ${input.empresa}`;
 
   const bodyHtml = `
-    <p>${greeting},</p>
+    <p>${escapeHtml(greeting)},</p>
     <p>
       Le escribo de Coopera Pro. En un laboratorio como
       <strong>${escapeHtml(input.empresa)}</strong>${comunaLine ? escapeHtml(comunaLine) : ""},
@@ -50,12 +51,4 @@ export function renderFarmaceuticaEmail(
   ].join("\n");
 
   return assembleEmail(subject, bodyHtml, bodyText, footer);
-}
-
-function escapeHtml(value: string): string {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
 }

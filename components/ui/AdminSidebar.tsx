@@ -21,12 +21,16 @@ import {
   Package,
   ArrowsLeftRight,
   PaperPlaneTilt,
+  HandCoins,
+  Money,
+  MagnifyingGlass,
   type Icon,
 } from "@phosphor-icons/react";
+import { hasFinanceAccess } from "@/lib/access";
 
 // ── Module definitions ───────────────────────────────────────────────────────
 
-type ModuleKey = "operaciones" | "crm" | "inventario";
+type ModuleKey = "operaciones" | "crm" | "inventario" | "finanzas";
 
 interface NavItem {
   href: string;
@@ -116,11 +120,58 @@ const MODULES: ModuleDef[] = [
       },
     ],
   },
+  {
+    key: "finanzas",
+    label: "Finanzas",
+    tag: "Finanzas",
+    activeBg: "bg-indigo-50",
+    activeText: "text-indigo-700",
+    activeIcon: "text-indigo-600",
+    nav: [
+      { href: "/admin/finanzas", label: "Resumen", icon: ChartBar },
+      {
+        href: "/admin/finanzas/movimientos",
+        label: "Movimientos",
+        icon: ArrowsLeftRight,
+      },
+      {
+        href: "/admin/finanzas/proveedores",
+        label: "Proveedores",
+        icon: Buildings,
+      },
+      {
+        href: "/admin/finanzas/trabajadores",
+        label: "Trabajadores",
+        icon: Users,
+      },
+      {
+        href: "/admin/finanzas/anticipos",
+        label: "Anticipos",
+        icon: HandCoins,
+      },
+      { href: "/admin/finanzas/nominas", label: "Nóminas", icon: Money },
+      {
+        href: "/admin/finanzas/auditoria",
+        label: "Auditoría",
+        icon: MagnifyingGlass,
+      },
+    ],
+  },
+];
+
+// Módulos con bypass de ADMIN vía hasModuleAccess(): Operaciones, CRM e
+// Inventario siguen viéndose completos aunque no haya moduleAccess explícito.
+const MODULES_CON_BYPASS_ADMIN: ModuleKey[] = [
+  "operaciones",
+  "crm",
+  "inventario",
 ];
 
 // Convierte la key del módulo (minúscula, uso interno) al valor del enum
-// ModuleAccess en la base de datos (mayúscula).
-const MODULE_ACCESS_KEY: Record<ModuleKey, string> = {
+// ModuleAccess en la base de datos (mayúscula). Finanzas no entra aquí: se
+// resuelve con hasFinanceAccess() porque admite dos grants (FINANZAS y
+// FINANZAS_LECTURA), no uno solo.
+const MODULE_ACCESS_KEY: Record<Exclude<ModuleKey, "finanzas">, string> = {
   operaciones: "OPERACIONES",
   crm: "CRM",
   inventario: "INVENTARIO",
@@ -145,9 +196,27 @@ export default function AdminSidebar({
   const router = useRouter();
 
   const isAdmin = role === "ADMIN";
-  const visibleModules = isAdmin
-    ? MODULES
-    : MODULES.filter((m) => moduleAccess.includes(MODULE_ACCESS_KEY[m.key]));
+
+  // Finanzas se filtra siempre por moduleAccess, incluso para ADMIN — a
+  // diferencia de los otros tres módulos, que conservan el bypass. Partimos
+  // la lista en el grupo con bypass y el grupo sin bypass, y concatenamos.
+  const modulosConBypass = MODULES.filter((m) =>
+    MODULES_CON_BYPASS_ADMIN.includes(m.key)
+  );
+  const modulosSinBypass = MODULES.filter(
+    (m) => !MODULES_CON_BYPASS_ADMIN.includes(m.key)
+  );
+
+  const visibleModules = [
+    ...(isAdmin
+      ? modulosConBypass
+      : modulosConBypass.filter((m) =>
+          moduleAccess.includes(
+            MODULE_ACCESS_KEY[m.key as Exclude<ModuleKey, "finanzas">]
+          )
+        )),
+    ...modulosSinBypass.filter(() => hasFinanceAccess({ role, moduleAccess })),
+  ];
 
   const [active, setActive] = useState<ModuleKey>(
     visibleModules[0]?.key ?? "operaciones"
@@ -158,6 +227,7 @@ export default function AdminSidebar({
   useEffect(() => {
     if (path.startsWith("/admin/crm")) setActive("crm");
     else if (path.startsWith("/admin/inventario")) setActive("inventario");
+    else if (path.startsWith("/admin/finanzas")) setActive("finanzas");
     else setActive("operaciones");
   }, [path]);
 

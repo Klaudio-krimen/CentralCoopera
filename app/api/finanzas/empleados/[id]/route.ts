@@ -52,6 +52,13 @@ export async function PATCH(
     return apiError("RUT inválido", 400);
   }
 
+  if (input.status === "DESVINCULADO" && anterior.status !== "DESVINCULADO") {
+    return apiError(
+      "Usa POST /api/finanzas/empleados/[id]/desvincular para dar de baja: purga los datos bancarios y de contacto en la misma transacción",
+      400
+    );
+  }
+
   const data: Record<string, unknown> = {};
   if (input.fullName !== undefined) data.fullName = input.fullName;
   if (input.rut !== undefined) data.rut = normalizarRut(input.rut);

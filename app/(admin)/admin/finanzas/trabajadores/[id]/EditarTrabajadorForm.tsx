@@ -4,9 +4,9 @@ import { useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import type { EmployeeSerializado } from "@/lib/finanzas/serialize";
+import DesvincularTrabajadorButton from "./DesvincularTrabajadorButton";
 
 const TIPOS_CUENTA = ["CORRIENTE", "VISTA", "AHORRO", "RUT"];
-const ESTADOS = ["ACTIVO", "DESVINCULADO"];
 
 const inputClass =
   "w-full rounded-md border border-[#E2E8F0] px-2.5 py-1.5 text-sm text-[#0F172A] focus:border-[#1D4ED8] focus:outline-none focus:ring-1 focus:ring-[#1D4ED8]";
@@ -72,7 +72,6 @@ export default function EditarTrabajadorForm({
     bankName: empleado.bankName ?? "",
     bankAccountType: empleado.bankAccountType ?? "",
     bankAccount: "",
-    status: empleado.status,
   });
 
   const set = (k: keyof typeof form, v: string) =>
@@ -97,7 +96,6 @@ export default function EditarTrabajadorForm({
           health: form.health || null,
           bankName: form.bankName || null,
           bankAccountType: form.bankAccountType || null,
-          status: form.status,
           ...(form.bankAccount ? { bankAccount: form.bankAccount } : {}),
         }),
       });
@@ -127,12 +125,20 @@ export default function EditarTrabajadorForm({
             </div>
           ))}
         </dl>
-        <button
-          onClick={() => setEditando(true)}
-          className="rounded-md border border-[#E2E8F0] px-3 py-1.5 text-sm font-medium text-[#0F172A] hover:bg-[#F8FAFC]"
-        >
-          Editar
-        </button>
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => setEditando(true)}
+            className="rounded-md border border-[#E2E8F0] px-3 py-1.5 text-sm font-medium text-[#0F172A] hover:bg-[#F8FAFC]"
+          >
+            Editar
+          </button>
+          {empleado.status === "ACTIVO" && (
+            <DesvincularTrabajadorButton
+              id={empleado.id}
+              fullName={empleado.fullName}
+            />
+          )}
+        </div>
       </div>
     );
   }
@@ -159,20 +165,6 @@ export default function EditarTrabajadorForm({
           onChange={(e) => set("rut", e.target.value)}
           className={inputClass}
         />
-      </Campo>
-      <Campo id="et-status" label="Estado">
-        <select
-          id="et-status"
-          value={form.status}
-          onChange={(e) => set("status", e.target.value)}
-          className={inputClass}
-        >
-          {ESTADOS.map((s) => (
-            <option key={s} value={s}>
-              {s}
-            </option>
-          ))}
-        </select>
       </Campo>
       <Campo id="et-hiredAt" label="Fecha de contratación">
         <input

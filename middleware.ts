@@ -74,6 +74,19 @@ export default withAuth(
   },
   {
     callbacks: {
+      // OJO: cuando no hay token en absoluto, withAuth() nunca llega a
+      // ejecutar la función de arriba — resuelve por su cuenta con un
+      // redirect a /api/auth/signin, incluso para rutas /api/*. Las ramas
+      // "if (!token) return NextResponse.json(...)" de la función de arriba
+      // sólo se alcanzan cuando SÍ hay token (p.ej. una sesión válida sin el
+      // módulo requerido): en ese caso el JSON 401/403 funciona como se
+      // espera. El caso "cero sesión contra una ruta de API" es preexistente
+      // a Finanzas y afecta a los cuatro módulos por igual — no es un
+      // regresión de este build. Verificado en vivo: GET /api/finanzas/algo
+      // sin cookie de sesión responde 307 a /api/auth/signin, no 401 JSON.
+      // Cambiar esto significa tocar este wrapper compartido, fuera del
+      // scope fence del blueprint de Finanzas (Operaciones/CRM/Inventario
+      // dependen de este mismo middleware). Documentado, no corregido.
       authorized: ({ token }) => !!token,
     },
   }

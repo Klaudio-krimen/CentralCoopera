@@ -284,32 +284,82 @@ model Position {
 
 // ── Inventario (módulo Bodega) ──────────────────────────────────────────────
 
+// El modelo replica la planilla Excel que la bodega ya lleva a mano, columna por
+// columna: NUMERO · NOMBRE · MARCA-DETALLES · FORMATO · COLOR · LITROS · METROS ·
+// KILOS · CANTIDAD · NUEVO · USADO · COMENTARIO. Es deliberado: los usuarios de
+// bodega no son gente de computadores y el módulo anterior ("un nombre, una
+// cantidad, una unidad") no tenía dónde meter una pintura ni un taladro.
+
 enum InventoryCategory {
   MATERIA_PRIMA
   PALLET
+  PINTURA
+  MATERIAL
+  HERRAMIENTA
   OTRO
+}
+
+// La planilla trae tres columnas de medida y jamás llena más de una: un tarro
+// *es* de 3,7 L, una bolsa *es* de 5 kg. Se guarda el valor una sola vez y este
+// enum decide en qué columna lo pinta la tabla.
+enum InventoryMeasureUnit {
+  LITROS
+  METROS
+  KILOS
+}
+
+// Nullable a propósito donde se usa: en la planilla real hay filas sin ninguna
+// de las dos marcas (las herramientas sueltas). Obligarlo trabaría la carga.
+enum InventoryCondition {
+  NUEVO
+  USADO
 }
 
 enum MovementType {
   ENTRADA // suma cantidad
   SALIDA  // resta cantidad
   AJUSTE  // fija la cantidad a un valor exacto (conteo físico)
+  NIVEL   // cambia el nivel del envase abierto (fillPercent), no las unidades
 }
 
 model InventoryItem {
-  id        String             @id @default(cuid())
-  name      String
-  category  InventoryCategory  @default(OTRO)
-  quantity  Float              @default(0)
-  unit      String             @default("kg")
-  isActive  Boolean            @default(true)
-  createdAt DateTime           @default(now())
-  updatedAt DateTime           @updatedAt
+  id           String                @id @default(cuid())
 
-  movements InventoryMovement[]
+  // Correlativo visible, dato de negocio: la bodega ubica las cosas por número
+  // ("el 23"). Se asigna max+1 dentro de la transacción de creación, nunca se
+  // reutiliza y nunca se renumera. Nullable sólo porque `db push` no puede
+  // agregar una columna única obligatoria sobre filas ya existentes; el
+  // backfill lo deja lleno (scripts/backfill-inventario.ts).
+  numero       Int?                  @unique
+
+  name         String                // NOMBRE
+  details      String?               // MARCA-DETALLES — marca (HILTI) o especificación (20 PULGADAS)
+  format       String?               // FORMATO — TARRO, BOLSA, TINETA, MALETA
+  color        String?               // COLOR
+  measureValue Float?                // el 3,7 del tarro
+  measureUnit  InventoryMeasureUnit?
+
+  quantity     Float                 @default(0) // unidades en existencia
+  fillPercent  Int?                  // 0–100, sólo envases abiertos: el "80%" de la planilla
+
+  condition    InventoryCondition?   // NUEVO / USADO / sin definir
+  notes        String?               // COMENTARIO
+  category     InventoryCategory     @default(OTRO)
+  isActive     Boolean               @default(true)
+
+  /// @deprecated Reemplazada por measureValue + measureUnit. Se elimina en un
+  /// segundo `db push`, recién después de que el backfill confirme que ninguna
+  /// fila perdió su valor. No leer ni escribir desde la aplicación.
+  unit         String?
+
+  createdAt    DateTime              @default(now())
+  updatedAt    DateTime              @updatedAt
+
+  movements    InventoryMovement[]
 
   @@index([isActive])
   @@index([category])
+  @@index([numero])
 }
 
 model InventoryMovement {
@@ -320,6 +370,11 @@ model InventoryMovement {
   type     MovementType
   quantity Float
   reason   String?
+
+  // El historial dice de cuánto a cuánto, no sólo el delta. Sirven igual para
+  // NIVEL, donde el valor es un porcentaje.
+  quantityBefore Float?
+  quantityAfter  Float?
 
   userId   String
   user     User          @relation("InventoryMovementBy", fields: [userId], references: [id])

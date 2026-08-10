@@ -14,11 +14,15 @@ const TIPOS = [
 export default function AjustarStockModal({
   itemId,
   itemName,
-  unit,
+  unit = "un",
 }: {
   itemId: string;
   itemName: string;
-  unit: string;
+  /** Etiqueta corta para la cantidad ("kg", "L", "un"...). Por defecto "un"
+   *  (unidades) — el modelo de Inventario ya no tiene un campo `unit` fijo
+   *  por ítem, cada uno puede tener su propia medida (litros/metros/kilos)
+   *  o ninguna (herramientas). */
+  unit?: string;
 }) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);

@@ -17,6 +17,7 @@
     "trackers:backfill": "ts-node scripts/backfill-trackers.ts",
     "enrich:emails": "ts-node scripts/enrich-emails.ts",
     "import:prospects": "ts-node --project tsconfig.scripts.json scripts/import-prospects.ts",
+    "backfill:inventario": "ts-node --project tsconfig.scripts.json scripts/backfill-inventario.ts",
     "seed:outreach-campaigns": "ts-node --project tsconfig.scripts.json scripts/seed-outreach-campaigns.ts",
     "prepare": "husky"
   },

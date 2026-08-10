@@ -22,7 +22,11 @@ export function toCsv(
 
 // Parser CSV mínimo (soporta campos entre comillas con comas/comillas
 // escapadas). Devuelve filas de texto crudo, sin mapear a columnas.
-export function parseCsv(text: string): string[][] {
+// `delimiter` por defecto es coma, para no cambiar el comportamiento de los
+// llamadores existentes (CRM). Inventario lo llama con "\t": la bodega pega
+// directo desde una selección de Excel, que llega tabulada, no separada por
+// comas.
+export function parseCsv(text: string, delimiter: string = ","): string[][] {
   const rows: string[][] = [];
   let row: string[] = [];
   let field = "";
@@ -43,7 +47,7 @@ export function parseCsv(text: string): string[][] {
       }
     } else if (char === '"') {
       inQuotes = true;
-    } else if (char === ",") {
+    } else if (char === delimiter) {
       row.push(field);
       field = "";
     } else if (char === "\n" || char === "\r") {
@@ -61,4 +65,17 @@ export function parseCsv(text: string): string[][] {
     rows.push(row);
   }
   return rows.filter((r) => r.some((f) => f.trim() !== ""));
+}
+
+/**
+ * Detecta si un bloque pegado viene tabulado (copiar/pegar desde Excel) o
+ * separado por comas (archivo .csv real). Cuenta tabs vs comas en la primera
+ * línea no vacía — quien pega desde Excel nunca escribe comillas ni escapa
+ * nada, así que basta con contar.
+ */
+export function detectarDelimitador(text: string): string {
+  const primeraLinea = text.split(/\r?\n/).find((l) => l.trim() !== "") ?? "";
+  const tabs = (primeraLinea.match(/\t/g) ?? []).length;
+  const comas = (primeraLinea.match(/,/g) ?? []).length;
+  return tabs > comas ? "\t" : ",";
 }

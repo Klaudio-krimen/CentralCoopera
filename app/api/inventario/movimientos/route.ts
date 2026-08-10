@@ -14,7 +14,7 @@ export async function GET() {
 
   const movements = await prisma.inventoryMovement.findMany({
     include: {
-      item: { select: { name: true, unit: true } },
+      item: { select: { name: true, measureUnit: true } },
       user: { select: { name: true } },
     },
     orderBy: { createdAt: "desc" },
@@ -66,6 +66,8 @@ export async function POST(req: NextRequest) {
         itemId,
         type,
         quantity: qty,
+        quantityBefore: item.quantity,
+        quantityAfter: newQuantity,
         reason: reason?.trim() || null,
         userId: session.user.id,
       },

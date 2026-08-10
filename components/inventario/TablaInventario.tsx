@@ -6,6 +6,7 @@ import {
   ArrowsLeftRight,
   MagnifyingGlass,
   Archive,
+  Trash,
   Package,
   Warning,
 } from "@phosphor-icons/react";
@@ -141,6 +142,29 @@ export default function TablaInventario({
     }
   };
 
+  /** Borrado duro — sólo para duplicados que nunca se tocaron. La API rechaza
+   *  si el ítem ya tiene movimientos (ahí corresponde archivar, no eliminar). */
+  const eliminar = async (item: InventoryItemRow) => {
+    if (
+      !confirm(
+        `¿Eliminar "${item.name}" definitivamente? No se puede deshacer. Sólo funciona si el ítem no tiene movimientos — si los tiene, usa Archivar.`
+      )
+    )
+      return;
+    const anterior = items;
+    setItems((prev) => prev.filter((it) => it.id !== item.id));
+    try {
+      const res = await fetch(`/api/inventario/${item.id}`, {
+        method: "DELETE",
+      });
+      if (!res.ok && res.status !== 204)
+        throw new Error((await res.json()).error);
+    } catch (e: any) {
+      setItems(anterior);
+      setError(`No se pudo eliminar "${item.name}". ${e.message ?? ""}`);
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center gap-3 animate-fade-up">
@@ -252,6 +276,7 @@ export default function TablaInventario({
                   isAdmin={isAdmin}
                   onCommit={(patch) => commitField(item, patch)}
                   onArchive={() => archivar(item)}
+                  onDelete={() => eliminar(item)}
                 />
               ))}
             </tbody>
@@ -289,11 +314,13 @@ function FilaInventario({
   isAdmin,
   onCommit,
   onArchive,
+  onDelete,
 }: {
   item: InventoryItemRow;
   isAdmin: boolean;
   onCommit: (patch: Record<string, unknown>) => void;
   onArchive: () => void;
+  onDelete: () => void;
 }) {
   return (
     <tr className="h-10 border-b border-zinc-50 last:border-0 hover:bg-zinc-50/60 group">
@@ -402,14 +429,24 @@ function FilaInventario({
           />
           <ItemFormModal item={item} />
           {isAdmin && (
-            <button
-              onClick={onArchive}
-              aria-label={`Archivar ${item.name}`}
-              className="text-zinc-400 hover:text-red-600 transition-colors"
-              title="Archivar"
-            >
-              <Archive size={15} />
-            </button>
+            <>
+              <button
+                onClick={onArchive}
+                aria-label={`Archivar ${item.name}`}
+                className="text-zinc-400 hover:text-amber-600 transition-colors"
+                title="Archivar"
+              >
+                <Archive size={15} />
+              </button>
+              <button
+                onClick={onDelete}
+                aria-label={`Eliminar ${item.name}`}
+                className="text-zinc-400 hover:text-red-600 transition-colors"
+                title="Eliminar (sólo si no tiene movimientos)"
+              >
+                <Trash size={15} />
+              </button>
+            </>
           )}
         </div>
       </td>

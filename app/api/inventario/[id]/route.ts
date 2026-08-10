@@ -42,8 +42,7 @@ export async function GET(
 // InventoryMovement (AJUSTE / NIVEL respectivamente) en la MISMA transacción,
 // con quantityBefore/After y el usuario del servidor — la bodeguera edita una
 // celda, el libro de movimientos se llena solo, sin que ella tenga que saberlo.
-// isActive:false (archivar) sólo lo puede hacer ADMIN: no hay DELETE porque
-// InventoryMovement.itemId es onDelete: Cascade y borraría el historial.
+// isActive:false (archivar) sólo lo puede hacer ADMIN.
 export async function PATCH(
   req: NextRequest,
   { params }: { params: { id: string } }
@@ -151,4 +150,42 @@ export async function PATCH(
   });
 
   return NextResponse.json(item);
+}
+
+// DELETE /api/inventario/[id] — borrado duro, sólo para duplicados que nunca
+// se tocaron. Sólo ADMIN. Se rechaza si el ítem tiene algún InventoryMovement
+// (InventoryMovement.itemId es onDelete: Cascade — un ítem con historial real
+// se archiva, nunca se borra; borrar destruiría la trazabilidad que es la
+// razón de ser del módulo). Un duplicado recién creado o recién importado, sin
+// ningún ajuste todavía, sí se puede borrar directo.
+export async function DELETE(
+  _req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const session = await getServerSession(authOptions);
+  if (!session) return apiError("No autorizado", 401);
+  if (!hasModuleAccess(session.user, "INVENTARIO"))
+    return apiError("Acceso denegado", 403);
+  if (session.user.role !== "ADMIN") {
+    return apiError("Solo un administrador puede eliminar un ítem", 403);
+  }
+
+  const item = await prisma.inventoryItem.findUnique({
+    where: { id: params.id },
+  });
+  if (!item) return apiError("No encontrado", 404);
+
+  const movimientos = await prisma.inventoryMovement.count({
+    where: { itemId: params.id },
+  });
+  if (movimientos > 0) {
+    return apiError(
+      "Este ítem tiene movimientos registrados, no se puede eliminar. Archívalo en vez de borrarlo.",
+      409
+    );
+  }
+
+  await prisma.inventoryItem.delete({ where: { id: params.id } });
+
+  return new NextResponse(null, { status: 204 });
 }

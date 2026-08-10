@@ -27,13 +27,19 @@ reutiliza ni se renumera, es el número por el que la bodega ubica las cosas.
 
 Edición en línea, campo por campo (todos opcionales en el body). Reglas:
 
-- `isActive: false` (archivar) exige `session.user.role === "ADMIN"`. No existe `DELETE`:
-  `InventoryMovement.itemId` es `onDelete: Cascade` y un borrado duro se llevaría el historial.
+- `isActive: false` (archivar) exige `session.user.role === "ADMIN"`.
 - Si el body cambia `quantity`, se crea un `InventoryMovement` tipo `AJUSTE` en la **misma**
   `prisma.$transaction`, con `quantityBefore`/`quantityAfter` y `userId` del servidor.
 - Si el body cambia `fillPercent`, se crea un `InventoryMovement` tipo `NIVEL`, misma regla.
 - Ninguna otra edición de campo (nombre, marca, formato, color, notas) genera movimiento — sólo
   cantidad y nivel de envase, para que la página de Movimientos siga siendo legible.
+
+## DELETE /api/inventario/[id]
+
+Borrado duro. Exige `session.user.role === "ADMIN"`. Se rechaza con `409` si el ítem tiene algún
+`InventoryMovement` (`InventoryMovement.itemId` es `onDelete: Cascade`, así que borrar un ítem
+con historial real se lo llevaría — para esos casos corresponde archivar, no eliminar). Pensado
+para duplicados recién creados o recién importados que nunca se tocaron.
 
 ## POST /api/inventario/import
 

@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db";
 import { resolverPaginacion, construirMeta } from "@/lib/finanzas/paginacion";
 import TablaInventario from "@/components/inventario/TablaInventario";
 import ItemFormModal from "@/components/inventario/ItemFormModal";
+import ArchivarEliminarBotones from "@/components/inventario/ArchivarEliminarBotones";
 import AjustarStockModal from "@/components/ui/AjustarStockModal";
 import {
   CATEGORIA_LABEL,
@@ -113,6 +114,14 @@ export default async function StockPage() {
                   />
                   <ItemFormModal item={item} />
                 </div>
+                {isAdmin && (
+                  <div className="mt-2 pt-2 border-t border-zinc-100">
+                    <ArchivarEliminarBotones
+                      itemId={item.id}
+                      itemName={item.name}
+                    />
+                  </div>
+                )}
               </div>
             ))}
           </div>

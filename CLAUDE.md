@@ -107,10 +107,12 @@ Tres cosas que debes tener claras antes de empezar:
 
 - `DIRECT_URL` es obligatoria para migraciones de Prisma; `DATABASE_URL` va por pooler.
   Si una migración cuelga, revisa que no estés usando el pooler.
-  **⚠️ Verificado 2026-08-15: la `DIRECT_URL` de Vercel Production está MAL configurada** —
-  apunta al host `-pooler`, idéntica a `DATABASE_URL`. La directa real es la variable
-  `DATABASE_URL_UNPOOLED`. Hasta que se corrija en el dashboard de Vercel, todo `db push`
-  contra producción debe inyectar `DIRECT_URL=$DATABASE_URL_UNPOOLED` a mano.
+  Cómo distinguirlas: la del pooler lleva `-pooler` en el hostname
+  (`ep-raspy-meadow-acqzrucf-pooler...`), la directa no (`ep-raspy-meadow-acqzrucf...`).
+  Neon expone la directa también como `DATABASE_URL_UNPOOLED`.
+  _Histórico: entre el 2026-06 y el 2026-08-15 la `DIRECT_URL` de Vercel Production apuntó al
+  pooler por error, idéntica a `DATABASE_URL`. Corregida el 2026-08-15 y verificada. Si vuelves
+  a ver `-pooler` en `DIRECT_URL`, es una regresión de configuración, no el estado normal._
 - **El CLI de Prisma no lee `.env.local`.** `npx prisma validate` falla con
   "Environment variable not found: DIRECT_URL" aunque el schema esté perfecto. No es un
   error de schema.

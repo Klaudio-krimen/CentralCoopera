@@ -70,6 +70,12 @@ model User {
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
 
+  // Consentimiento de rastreo de ubicación. Vive acá y no en localStorage a
+  // propósito: es por persona (dos choferes pueden compartir el mismo teléfono),
+  // es revocable, y deja constancia de cuándo se otorgó. `null` = nunca aceptó
+  // o revocó. Sin esto, POST /api/turnos rechaza el inicio de turno.
+  locationConsentAt DateTime?
+
   ordersAsDriver    PickupOrder[] @relation("Driver")
   evidencesUploaded Evidence[]   @relation("Uploader")
   discrepanciesFound Discrepancy[] @relation("DetectedBy")
@@ -77,6 +83,7 @@ model User {
   trackers              Tracker[]
   inventoryMovements    InventoryMovement[] @relation("InventoryMovementBy")
   activitiesCreated     Activity[] @relation("ActivityCreatedBy")
+  shifts                Shift[]
 
   // ─── Finanzas (relaciones inversas) ───
   employee            Employee?
@@ -280,6 +287,35 @@ model Position {
   recordedAt DateTime @default(now())
 
   @@index([trackerId, recordedAt])
+}
+
+// Turno de trabajo del chofer. Es el interruptor del rastreo: el GPS sólo envía
+// posición mientras hay un turno abierto, y el mapa de Operaciones sólo muestra
+// choferes con turno abierto. Antes de esto el rastreo arrancaba solo al abrir
+// la app y el mapa mostraba la última posición conocida para siempre — un punto
+// de hace tres días se veía igual que uno en vivo.
+//
+// "Turno abierto" = `endedAt == null`. No hay índice único parcial para eso
+// (Prisma no los expresa), así que la unicidad se garantiza en la transacción
+// de POST /api/turnos, que verifica y crea en la misma operación.
+model Shift {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  startedAt   DateTime        @default(now())
+  endedAt     DateTime?
+  endedReason ShiftEndReason?
+
+  @@index([userId, startedAt])
+  @@index([endedAt])
+}
+
+enum ShiftEndReason {
+  MANUAL // el chofer tocó "Terminar turno"
+  LOGOUT // cerró sesión con el turno abierto
+  INACTIVIDAD // dejó de llegar señal — batería, app cerrada, sin red
+  CONSENTIMIENTO_REVOCADO // revocó el permiso de ubicación con el turno abierto
 }
 
 // ── Inventario (módulo Bodega) ──────────────────────────────────────────────

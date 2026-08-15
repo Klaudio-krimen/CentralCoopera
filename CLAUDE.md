@@ -93,6 +93,12 @@ Tres cosas que debes tener claras antes de empezar:
   Razón: la app corre en Vercel, no en el PC del usuario.
 - Idempotencia de envíos: tabla dedicada `OutreachSend` (ver doc maestro), no `Activity`.
   `Activity` es la línea de tiempo que ve el humano; `OutreachSend` es el libro contable técnico.
+- **El rastreo GPS se gobierna por `Shift`, no por la sesión.** No hay posición sin turno
+  abierto y no hay chofer en el mapa sin turno abierto. `tracker.isActive` es una bandera
+  administrativa y nunca significó "conectado" — confundir las dos cosas era el bug que
+  dejaba a un chofer pintado en el mapa días después de cerrar sesión.
+- Consentimiento de ubicación en `User.locationConsentAt` (por persona, revocable, con
+  fecha), no en `localStorage`. Sin él, `POST /api/turnos` responde `409`.
 
 ## 8. Trampas conocidas
 
@@ -102,6 +108,13 @@ Tres cosas que debes tener claras antes de empezar:
 - Los CSV usan el literal `"sin dato"` como nulo, no string vacío. Tratarlo como `null`.
 - `Company` hoy **no tiene** `website`, `commune` ni identificador externo — se agregan en la
   Fase 2 de la iniciativa activa. Sin eso no hay deduplicación posible.
+- El cierre de turnos por inactividad **no tiene cron**: lo dispara el poll de
+  `/api/posiciones/activas` (mapa, 15 s) y el de `/api/turnos` (chofer, 60 s). Si algún día
+  nadie mira el mapa ni tiene la app abierta, un turno colgado sigue abierto hasta que
+  alguien consulte. Es deliberado — evita una Vercel Cron y una variable de entorno más.
+- `/api/posiciones` está **fuera del matcher de `middleware.ts`** a propósito, junto con
+  `auth` y `webhooks`: los GPS físicos se autentican por `x-device-key`, no por sesión.
+  Por eso esa ruta valida la sesión por su cuenta.
 
 <!-- FINANZAS:INICIO -->
 <!--

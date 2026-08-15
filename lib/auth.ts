@@ -107,6 +107,25 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
   },
+  events: {
+    // Cerrar sesión cierra el turno abierto. Sin esto, el chofer desaparece de
+    // su propia app pero sigue pintado en el mapa de Operaciones hasta que el
+    // cierre por inactividad lo alcance, 15 min después.
+    signOut: async ({ token }) => {
+      const userId = token?.id as string | undefined;
+      if (!userId) return;
+      try {
+        await prisma.shift.updateMany({
+          where: { userId, endedAt: null },
+          data: { endedAt: new Date(), endedReason: "LOGOUT" },
+        });
+      } catch (e) {
+        // Un fallo acá no puede impedir el logout. El cierre por inactividad
+        // recoge el turno de todas formas.
+        console.error("[auth] no se pudo cerrar el turno al cerrar sesión", e);
+      }
+    },
+  },
   cookies: {
     sessionToken: {
       name:

@@ -18,6 +18,9 @@ en los retiros que hacen los choferes. Hoy tiene tres módulos vivos:
 | **Inventario** — stock de materia prima y pallets                   | `BODEGA`              | Productivo                          |
 | **CRM** — empresas, contactos, deals, actividades                   | `VENTAS`              | Base implementada, sin datos reales |
 
+El rastreo GPS de choferes (turnos, consentimiento de ubicación y el mapa en vivo) es un
+subsistema con reglas propias — **fuente única: [`RASTREO_GPS.md`](./RASTREO_GPS.md)**.
+
 El negocio tiene además un **taller de pallets** que necesita clientes.
 De ahí nace la iniciativa activa (ver §6).
 
@@ -104,6 +107,16 @@ Tres cosas que debes tener claras antes de empezar:
 
 - `DIRECT_URL` es obligatoria para migraciones de Prisma; `DATABASE_URL` va por pooler.
   Si una migración cuelga, revisa que no estés usando el pooler.
+  **⚠️ Verificado 2026-08-15: la `DIRECT_URL` de Vercel Production está MAL configurada** —
+  apunta al host `-pooler`, idéntica a `DATABASE_URL`. La directa real es la variable
+  `DATABASE_URL_UNPOOLED`. Hasta que se corrija en el dashboard de Vercel, todo `db push`
+  contra producción debe inyectar `DIRECT_URL=$DATABASE_URL_UNPOOLED` a mano.
+- **El CLI de Prisma no lee `.env.local`.** `npx prisma validate` falla con
+  "Environment variable not found: DIRECT_URL" aunque el schema esté perfecto. No es un
+  error de schema.
+- El recipe de `db push` contra producción usa `grep`/`export`: es **sintaxis de Git Bash**.
+  En la PowerShell del usuario no existen. La herramienta Bash de Claude Code sí es Git Bash,
+  así que ese comando lo corre Claude, no el usuario.
 - Los CSV de Apify vienen con BOM (`utf-8-sig`) y `\r\n`. Normalizar al importar.
 - Los CSV usan el literal `"sin dato"` como nulo, no string vacío. Tratarlo como `null`.
 - `Company` hoy **no tiene** `website`, `commune` ni identificador externo — se agregan en la

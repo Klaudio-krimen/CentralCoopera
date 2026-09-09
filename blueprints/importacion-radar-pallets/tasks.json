@@ -1,0 +1,290 @@
+[
+  {
+    "id": "E1-T1",
+    "title": "Excluir /api/cron y /api/outreach/unsubscribe del matcher de middleware",
+    "epic": "01-ingesta-modelo",
+    "dependencies": [],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN se busca `cron` y `outreach/unsubscribe` en el `config.matcher` de `middleware.ts` THE SYSTEM SHALL encontrarlos dentro del negative-lookahead de la regla `/api/`.",
+      "WHEN se inspecciona el negative-lookahead de la regla `/api/` en `middleware.ts` THE SYSTEM SHALL tener exactamente estas cinco exclusiones: `auth`, `posiciones`, `webhooks`, `cron`, `outreach/unsubscribe`.",
+      "WHEN `npm run typecheck` runs THE SYSTEM SHALL exit 0.",
+      "WHEN `npm run build` runs THE SYSTEM SHALL exit 0."
+    ],
+    "verify": [
+      "grep -Eq 'cron\\|outreach/unsubscribe' middleware.ts",
+      "grep -Eq '\\(\\?!auth\\|posiciones\\|webhooks\\|cron\\|outreach/unsubscribe\\)' middleware.ts",
+      "npm run typecheck",
+      "npm run build"
+    ],
+    "checkpoint": "step-01-middleware-matcher",
+    "files": ["middleware.ts"],
+    "status": "pending"
+  },
+  {
+    "id": "E1-T2",
+    "title": "Schema: INDUSTRIA + enum CallStatus + Contact.callStatus + doc OUTREACH_DAILY_CAP",
+    "epic": "01-ingesta-modelo",
+    "dependencies": ["E1-T1"],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN se lee `prisma/schema.prisma` THE SYSTEM SHALL tener `INDUSTRIA` como último valor del bloque `enum ProspectSegment` y un bloque `enum CallStatus { POR_LLAMAR LLAMADA SIN_RESPUESTA CORREO_CONSEGUIDO }`.",
+      "WHEN se lee `model Contact` en `prisma/schema.prisma` THE SYSTEM SHALL tener el campo `callStatus CallStatus?` (nullable, sin default) y `@@index([callStatus])`.",
+      "WHEN `npx prisma validate` runs con `DATABASE_URL`/`DIRECT_URL` exportadas THE SYSTEM SHALL exit 0.",
+      "WHEN `npm run db:push` runs THE SYSTEM SHALL exit 0 sin pedir `--accept-data-loss`.",
+      "WHEN `npx prisma generate` y luego `npm run typecheck` corren THE SYSTEM SHALL exit 0 con el cliente reconociendo `Contact.callStatus` y `ProspectSegment.INDUSTRIA`.",
+      "WHEN se busca `OUTREACH_DAILY_CAP` en `VARIABLES_ENTORNO.md` THE SYSTEM SHALL encontrarlo documentado como usado por el cron."
+    ],
+    "verify": [
+      "grep -q INDUSTRIA prisma/schema.prisma",
+      "grep -q 'enum CallStatus' prisma/schema.prisma",
+      "grep -Eq 'callStatus +CallStatus\\?' prisma/schema.prisma",
+      "grep -q OUTREACH_DAILY_CAP VARIABLES_ENTORNO.md",
+      "export DATABASE_URL=$(grep -m1 '^DATABASE_URL=' .env.local | cut -d= -f2- | tr -d '\"') && export DIRECT_URL=$(grep -m1 '^DIRECT_URL=' .env.local | cut -d= -f2- | tr -d '\"') && npx prisma validate && mkdir -p backups && pg_dump \"$DIRECT_URL\" > backups/pre-radar-pallets.sql && test -s backups/pre-radar-pallets.sql && npm run db:push && npx prisma generate && npm run typecheck"
+    ],
+    "checkpoint": "step-02-schema-radar",
+    "files": ["prisma/schema.prisma", "VARIABLES_ENTORNO.md"],
+    "status": "pending"
+  },
+  {
+    "id": "E1-T3",
+    "title": "lib/outreach/radar.ts — parseRadarSheet, splitPhones, normalizeCompanyName + tests",
+    "epic": "01-ingesta-modelo",
+    "dependencies": ["E1-T2"],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN `normalizeCompanyName(\"Transportes Peñaflor Ltda.\")` se evalúa THE SYSTEM SHALL devolver `\"transportes peñaflor\"`.",
+      "WHEN `normalizeCompanyName(\"Novofarma Service S.A.\")` y `normalizeCompanyName(\"Laboratorio Novofarma Service S.A.\")` se evalúan THE SYSTEM SHALL devolver strings distintos.",
+      "WHEN `splitPhones(\"+56 2 2333 2126 / +56 9 9689 7446\")` se evalúa THE SYSTEM SHALL devolver un array de dos strings, cada uno sin espacios sobrantes.",
+      "WHEN una celda del CSV vale `\"sin dato\"` THE SYSTEM SHALL producir `null` en el campo correspondiente.",
+      "WHEN `parseRadarSheet(csv, \"PROSPECTOS\")` recibe una fila sin nombre de empresa THE SYSTEM SHALL omitir esa fila.",
+      "WHEN `npx vitest run lib/outreach/radar.test.ts` runs THE SYSTEM SHALL exit 0 con 0 fallidos y 0 omitidos."
+    ],
+    "verify": [
+      "npx vitest run lib/outreach/radar.test.ts",
+      "npm run typecheck"
+    ],
+    "checkpoint": "step-03-radar-parse",
+    "files": ["lib/outreach/radar.ts", "lib/outreach/radar.test.ts"],
+    "status": "pending"
+  },
+  {
+    "id": "E1-T4",
+    "title": "lib/outreach/radar.ts — classifySegment, consolidateRows, toRadarProspect + tests",
+    "epic": "01-ingesta-modelo",
+    "dependencies": ["E1-T3"],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN un texto contiene `\"laboratorio\"` THE SYSTEM SHALL clasificar `\"FARMACEUTICA\"`.",
+      "WHEN un texto contiene `\"bodega\"` y ninguna keyword farmacéutica THE SYSTEM SHALL clasificar `\"LOGISTICA\"`.",
+      "WHEN un texto no contiene ninguna keyword THE SYSTEM SHALL clasificar `\"INDUSTRIA\"`.",
+      "WHEN la misma empresa aparece en dos hojas con distinto conteo de campos con valor THE SYSTEM SHALL quedarse con la fila de más campos; si empatan, con la de la hoja de mayor prioridad (PROSPECTOS antes que TOP20 antes que TOP25).",
+      "WHEN `toRadarProspect` recibe una fila con tres teléfonos THE SYSTEM SHALL poner el primero en `phone` y los otros dos en `phonesExtra`.",
+      "WHEN `npx vitest run lib/outreach/radar.test.ts` runs THE SYSTEM SHALL exit 0 con 0 fallidos y 0 omitidos."
+    ],
+    "verify": [
+      "npx vitest run lib/outreach/radar.test.ts",
+      "npm run typecheck"
+    ],
+    "checkpoint": "step-04-radar-classify",
+    "files": ["lib/outreach/radar.ts", "lib/outreach/radar.test.ts"],
+    "status": "pending"
+  },
+  {
+    "id": "E1-T5",
+    "title": "scripts/import-radar-pallets.ts + spec + alias import:radar",
+    "epic": "01-ingesta-modelo",
+    "dependencies": ["E1-T4"],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN `npm run typecheck` y `npm run build` corren THE SYSTEM SHALL exit 0.",
+      "WHEN se busca la clave `\"import:radar\"` en `package.json` THE SYSTEM SHALL encontrarla apuntando a `ts-node --project tsconfig.scripts.json scripts/import-radar-pallets.ts`.",
+      "WHEN se lee `scripts/import-radar-pallets.ts` THE SYSTEM SHALL manejar el flag `--dry-run` (no escribe, imprime el plan), acumular `bySegment` en el `ImportStats`, y setear `callStatus: \"POR_LLAMAR\"` sólo cuando el contacto tiene teléfono y no tiene correo.",
+      "WHEN `test -f scripts/import-radar-pallets.spec.md` runs THE SYSTEM SHALL exit 0.",
+      "WHEN el importador enriquece una `Company` o un `Contact` existente THE SYSTEM SHALL rellenar sólo campos hoy vacíos y nunca sobrescribir un valor presente."
+    ],
+    "verify": [
+      "npm run typecheck",
+      "npm run build",
+      "grep -q '\"import:radar\"' package.json",
+      "grep -q dry-run scripts/import-radar-pallets.ts",
+      "grep -q bySegment scripts/import-radar-pallets.ts",
+      "grep -q POR_LLAMAR scripts/import-radar-pallets.ts",
+      "test -f scripts/import-radar-pallets.spec.md"
+    ],
+    "checkpoint": "step-05-importer",
+    "files": ["scripts/import-radar-pallets.ts", "scripts/import-radar-pallets.spec.md", "package.json"],
+    "status": "pending"
+  },
+  {
+    "id": "E1-T6",
+    "title": "Plantilla industria-v1 + registro en TEMPLATES + tests de render",
+    "epic": "01-ingesta-modelo",
+    "dependencies": ["E1-T2"],
+    "priority": "p1",
+    "acceptance": [
+      "WHEN `getTemplate(\"industria-v1\")` se llama THE SYSTEM SHALL devolver `renderIndustriaEmail`.",
+      "WHEN `renderIndustriaEmail({ empresa: \"X\", comuna: null, rubro: null, contacto: null }, footer)` se llama THE SYSTEM SHALL producir el saludo `\"Estimados\"` y ningún `\"sin dato\"`, `\"null\"` ni `\"{{\"` en `html` ni en `text`.",
+      "WHEN se inspecciona el `html` producido THE SYSTEM SHALL no contener `<img`.",
+      "WHEN se inspecciona el `subject` producido THE SYSTEM SHALL no contener `\"GRATIS\"`.",
+      "WHEN el pie se arma THE SYSTEM SHALL contener `footer.legalName`, `footer.rut` y `footer.unsubscribeUrl` (vía `assembleEmail`).",
+      "WHEN `npx vitest run lib/outreach/templates/render.test.ts` runs THE SYSTEM SHALL exit 0 con 0 fallidos y 0 omitidos."
+    ],
+    "verify": [
+      "npx vitest run lib/outreach/templates/render.test.ts",
+      "npm run typecheck",
+      "npm run build"
+    ],
+    "checkpoint": "step-06-industria-template",
+    "files": ["lib/outreach/templates/industria.ts", "lib/outreach/templates/index.ts", "lib/outreach/templates/render.test.ts"],
+    "status": "pending"
+  },
+  {
+    "id": "E2-T1",
+    "title": "Seed de la campaña Industria + INDUSTRIA en SEGMENT_LABEL del panel",
+    "epic": "02-envio-llamadas",
+    "dependencies": ["E1-T6"],
+    "priority": "p1",
+    "acceptance": [
+      "WHEN se lee el array `CAMPAIGNS` de `scripts/seed-outreach-campaigns.ts` THE SYSTEM SHALL tener una tercera entrada con `segment: \"INDUSTRIA\" as const` y `templateKey: \"industria-v1\"`.",
+      "WHEN se lee `SEGMENT_LABEL` en `app/(admin)/admin/crm/outreach/page.tsx` THE SYSTEM SHALL incluir la clave `INDUSTRIA` con etiqueta `\"Industria\"`.",
+      "WHEN `npm run typecheck` runs THE SYSTEM SHALL exit 0 (`segment: \"INDUSTRIA\" as const` compila contra el enum ya extendido).",
+      "WHEN `npm run build` runs THE SYSTEM SHALL exit 0."
+    ],
+    "verify": [
+      "grep -q '\"industria-v1\"' scripts/seed-outreach-campaigns.ts",
+      "grep -Eq 'INDUSTRIA:\\s*\"Industria\"' 'app/(admin)/admin/crm/outreach/page.tsx'",
+      "npm run typecheck",
+      "npm run build"
+    ],
+    "checkpoint": "step-07-seed-industria",
+    "files": ["scripts/seed-outreach-campaigns.ts", "app/(admin)/admin/crm/outreach/page.tsx"],
+    "status": "pending"
+  },
+  {
+    "id": "E2-T2",
+    "title": "lib/outreach/eligibility.ts — allocateDailyBudget, pickCompanyContact, isCompanyPhoneManaged + tests",
+    "epic": "02-envio-llamadas",
+    "dependencies": ["E1-T2"],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN `allocateDailyBudget` recibe tres campañas con `dailyCap` 25 c/u, pools 60/10/5 y `globalCap` 25 THE SYSTEM SHALL devolver un objeto cuya suma de valores es ≤ 25 y donde la campaña de pool 60 recibe estrictamente más que las otras dos.",
+      "WHEN una campaña tiene pool 0 THE SYSTEM SHALL asignarle 0 y repartir su cuota entre las demás.",
+      "WHEN `sum(pools) <= globalCap` y ninguna campaña llega a su `dailyCap` THE SYSTEM SHALL asignar a cada campaña exactamente su pool.",
+      "WHEN `pickCompanyContact` recibe un contacto genérico nuevo y uno nominativo viejo THE SYSTEM SHALL devolver el id del genérico; si todos son nominativos THE SYSTEM SHALL devolver el de menor `createdAt`.",
+      "WHEN `isCompanyPhoneManaged` recibe algún contacto con `callStatus` distinto de `null` y de `\"POR_LLAMAR\"` THE SYSTEM SHALL devolver `true`; en otro caso THE SYSTEM SHALL devolver `false`.",
+      "WHEN `npx vitest run lib/outreach/eligibility.test.ts` runs THE SYSTEM SHALL exit 0 con 0 fallidos y 0 omitidos."
+    ],
+    "verify": [
+      "npx vitest run lib/outreach/eligibility.test.ts",
+      "npm run typecheck"
+    ],
+    "checkpoint": "step-08-eligibility",
+    "files": ["lib/outreach/eligibility.ts", "lib/outreach/eligibility.test.ts"],
+    "status": "pending"
+  },
+  {
+    "id": "E2-T3",
+    "title": "Reescritura del cron: tope global, 1 correo por empresa, exclusión por gestión telefónica",
+    "epic": "02-envio-llamadas",
+    "dependencies": ["E1-T6", "E2-T2"],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN se lee `app/api/cron/outreach/route.ts` THE SYSTEM SHALL leer `process.env.OUTREACH_DAILY_CAP` (default 25), usar `allocateDailyBudget` de `lib/outreach/eligibility.ts`, y excluir de la query toda empresa con un contacto cuyo `callStatus` no sea `null` ni `\"POR_LLAMAR\"`.",
+      "WHEN el handler recibe un GET sin `Authorization: Bearer $CRON_SECRET` ni `x-cron-secret` THE SYSTEM SHALL responder 401 (`isAuthorized` intacto).",
+      "WHEN no hay campañas activas THE SYSTEM SHALL responder 200 con `sent: 0`.",
+      "WHEN se lee `PROSPECCION_OUTREACH.md` §11 THE SYSTEM SHALL contener una línea con `OUTREACH_DAILY_CAP` que documenta el tope global repartido entre las 3 campañas.",
+      "WHEN `npm run typecheck` y `npm run build` corren THE SYSTEM SHALL exit 0."
+    ],
+    "verify": [
+      "grep -q OUTREACH_DAILY_CAP app/api/cron/outreach/route.ts",
+      "grep -Eq 'allocateDailyBudget|lib/outreach/eligibility' app/api/cron/outreach/route.ts",
+      "grep -q callStatus app/api/cron/outreach/route.ts",
+      "grep -q isAuthorized app/api/cron/outreach/route.ts",
+      "grep -q OUTREACH_DAILY_CAP PROSPECCION_OUTREACH.md",
+      "npm run typecheck",
+      "npm run build"
+    ],
+    "checkpoint": "step-09-cron-rewrite",
+    "files": ["app/api/cron/outreach/route.ts", "app/api/cron/outreach/route.spec.md", "PROSPECCION_OUTREACH.md"],
+    "status": "pending"
+  },
+  {
+    "id": "E2-T4",
+    "title": "app/api/llamadas — GET + PATCH del estado de gestión telefónica",
+    "epic": "02-envio-llamadas",
+    "dependencies": ["E1-T2"],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN se lee `app/api/llamadas/route.ts` THE SYSTEM SHALL abrir GET y PATCH con el prólogo `getServerSession(authOptions)` -> `apiError(\"No autorizado\", 401)` -> `!hasModuleAccess(session.user, \"CRM\")` -> `apiError(\"Acceso denegado\", 403)`, sin ningún `NextResponse.redirect`.",
+      "WHEN un usuario con sesión válida pero sin `\"CRM\"` en `moduleAccess` y sin rol `ADMIN` hace GET THE SYSTEM SHALL responder 403 con `{ error: \"Acceso denegado\" }` en JSON.",
+      "WHEN un GET trae `?callStatus=SIN_RESPUESTA` THE SYSTEM SHALL devolver sólo contactos con teléfono en ese estado.",
+      "WHEN un PATCH trae `callStatus` fuera de `[\"POR_LLAMAR\",\"LLAMADA\",\"SIN_RESPUESTA\",\"CORREO_CONSEGUIDO\"]` THE SYSTEM SHALL responder 400 con `{ error: \"Estado de gestión telefónica inválido\" }` y no escribir.",
+      "WHEN un PATCH válido `{ id, callStatus }` llega THE SYSTEM SHALL actualizar sólo `callStatus` del contacto y devolverlo; con un `id` inexistente THE SYSTEM SHALL responder 404.",
+      "WHEN `npm run typecheck` y `npm run build` corren THE SYSTEM SHALL exit 0."
+    ],
+    "verify": [
+      "grep -q hasModuleAccess app/api/llamadas/route.ts",
+      "grep -q CALL_STATUSES app/api/llamadas/route.ts",
+      "grep -q apiError app/api/llamadas/route.ts",
+      "test -f app/api/llamadas/route.spec.md",
+      "npm run typecheck",
+      "npm run build"
+    ],
+    "checkpoint": "step-10-llamadas-api",
+    "files": ["app/api/llamadas/route.ts", "app/api/llamadas/route.spec.md"],
+    "status": "pending"
+  },
+  {
+    "id": "E2-T5",
+    "title": "CallStatusBadge + CallStatusSelect (editor in-line del estado telefónico)",
+    "epic": "02-envio-llamadas",
+    "dependencies": ["E2-T4"],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN `CallStatusBadge` recibe un `callStatus` desconocido o `null` THE SYSTEM SHALL renderizar el estilo y la etiqueta de `POR_LLAMAR` (fallback), con la etiqueta de texto presente además del color.",
+      "WHEN `CallStatusSelect` cambia de valor THE SYSTEM SHALL hacer `PATCH /api/llamadas` con `{ id, callStatus }` y, si responde ok, llamar `router.refresh()`.",
+      "WHEN el PATCH de `CallStatusSelect` falla THE SYSTEM SHALL mostrar `toast.error` y dejar el control fuera de estado de carga.",
+      "WHEN `npm run typecheck` y `npm run build` corren THE SYSTEM SHALL exit 0."
+    ],
+    "verify": [
+      "test -f components/ui/CallStatusBadge.tsx",
+      "test -f components/crm/CallStatusSelect.tsx",
+      "test -f components/ui/CallStatusBadge.spec.md",
+      "test -f components/crm/CallStatusSelect.spec.md",
+      "grep -q '/api/llamadas' components/crm/CallStatusSelect.tsx",
+      "grep -q router.refresh components/crm/CallStatusSelect.tsx",
+      "npm run typecheck",
+      "npm run build"
+    ],
+    "checkpoint": "step-11-callstatus-components",
+    "files": ["components/ui/CallStatusBadge.tsx", "components/ui/CallStatusBadge.spec.md", "components/crm/CallStatusSelect.tsx", "components/crm/CallStatusSelect.spec.md"],
+    "status": "pending"
+  },
+  {
+    "id": "E2-T6",
+    "title": "Vista /admin/crm/llamadas + ítem de nav en AdminSidebar",
+    "epic": "02-envio-llamadas",
+    "dependencies": ["E2-T5"],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN un usuario con `\"CRM\"` visita `/admin/crm/llamadas` THE SYSTEM SHALL renderizar la lista de contactos con teléfono, cada uno con su `callStatus` editable in-line.",
+      "WHEN se activa el filtro `SIN_RESPUESTA` en la lista THE SYSTEM SHALL mostrar sólo contactos en ese estado.",
+      "WHEN se hace click en una fila fuera del `<Select>` THE SYSTEM SHALL navegar a `/admin/crm/clientes/<companyId>`.",
+      "WHEN no hay contactos con teléfono THE SYSTEM SHALL mostrar un empty state, no una tabla vacía sin encabezado.",
+      "WHEN se busca `/admin/crm/llamadas` en `components/ui/AdminSidebar.tsx` THE SYSTEM SHALL encontrar el ítem de nav dentro del módulo CRM.",
+      "WHEN `npm run typecheck` y `npm run build` corren THE SYSTEM SHALL exit 0."
+    ],
+    "verify": [
+      "grep -q '/admin/crm/llamadas' components/ui/AdminSidebar.tsx",
+      "test -f 'app/(admin)/admin/crm/llamadas/page.tsx'",
+      "test -f 'app/(admin)/admin/crm/llamadas/page.spec.md'",
+      "test -f components/crm/ListaLlamadas.tsx",
+      "npm run typecheck",
+      "npm run build"
+    ],
+    "checkpoint": "step-12-llamadas-page",
+    "files": ["app/(admin)/admin/crm/llamadas/page.tsx", "app/(admin)/admin/crm/llamadas/page.spec.md", "components/crm/ListaLlamadas.tsx", "components/ui/AdminSidebar.tsx"],
+    "status": "pending"
+  }
+]

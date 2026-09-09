@@ -19,7 +19,7 @@
     ],
     "checkpoint": "step-01-middleware-matcher",
     "files": ["middleware.ts"],
-    "status": "pending"
+    "status": "done"
   },
   {
     "id": "E1-T2",

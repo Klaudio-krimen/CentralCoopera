@@ -97,6 +97,6 @@ export const config = {
     "/chofer/:path*",
     "/recepcion/:path*",
     "/admin/:path*",
-    "/api/((?!auth|posiciones|webhooks).*)",
+    "/api/((?!auth|posiciones|webhooks|cron|outreach/unsubscribe).*)",
   ],
 };

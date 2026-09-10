@@ -357,9 +357,12 @@ de Pallets 2.pdf`, 1.21MB) subido a Vercel Blob. Las 2 campañas
 
 ### Fase 4 — Visibilidad
 
-- [ ] Vista en el panel CRM: campañas, enviados, rebotes, bajas
-- [ ] `Activity(type=EMAIL)` visible en la ficha de cada empresa
+- [x] Vista en el panel CRM: campañas, enviados, rebotes, bajas — `/api/outreach/stats` + panel `/admin/crm/outreach` (ya existen y funcionan; verificado 2026-09-10)
+- [x] `Activity(type=EMAIL)` visible en la ficha de cada empresa — lo escribe el cron en cada envío
 - **Aceptación:** Ventas puede responder "¿a quién le escribimos y qué pasó?" sin pedir ayuda
+
+> El tope de envío es global: `OUTREACH_DAILY_CAP` correos/día (default 25) repartidos entre las 3 campañas proporcionalmente al pool de elegibles, vía `lib/outreach/eligibility.ts`.
+> Cambio respecto del comportamiento original (`dailyCap` por campaña). La selección es **por empresa** (un solo correo por empresa, `pickCompanyContact` elige el contacto) y excluye toda empresa con gestión telefónica iniciada (`callStatus` distinto de `null` y de `POR_LLAMAR`). Ver `blueprints/importacion-radar-pallets/` E2-T3 y `app/api/cron/outreach/route.spec.md`.
 
 ---
 

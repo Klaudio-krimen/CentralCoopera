@@ -18,24 +18,39 @@ cerrado, no abierto).
 1. Busca todas las `OutreachCampaign` con `isActive=true`. Si no hay
    ninguna, responde `200` igual (`{ campaigns: 0, sent: 0 }`) — nunca hay
    que hacer que Vercel reintente esto.
-2. Por cada campaña activa, arma la query de elegibilidad exacta de
-   `PROSPECCION_OUTREACH.md` §4: `email != null`, `optOut = false`,
-   `emailStatus != REBOTADO`, `company.isActive = true`, `company.segment`
-   igual al segmento de la campaña, y sin `OutreachSend` previo para esa
-   `campaignId` (`outreachSends: { none: { campaignId } } }` — el `NOT
-EXISTS` de la spec expresado como filtro de relación de Prisma).
-3. Toma como máximo `campaign.dailyCap` contactos.
-4. Descarga el PDF de `campaign.pdfBlobUrl` una sola vez por campaña (no por
-   contacto) y lo adjunta a cada envío.
-5. Por contacto: genera `optOutToken` si no tiene uno, renderiza la
-   plantilla de `lib/outreach/templates`, envía vía
-   `lib/outreach/smtp.ts`, y escribe `OutreachSend` (idempotencia dura por
-   el `@@unique([campaignId, contactId])` del schema) + `Activity(type=EMAIL)`
-   para que quede en la ficha de la empresa.
-6. Espera un jitter aleatorio (3–7s) entre cada envío — nunca dispara todos
-   en el mismo segundo.
-7. Si un envío falla, registra `OutreachSend(status=FALLIDO, error=...)` y
-   sigue con el resto — un correo roto no debe frenar el lote completo.
+2. Si faltan los datos legales del remitente (`OUTREACH_PUBLIC_URL`,
+   `OUTREACH_SENDER_LEGAL_NAME`, `OUTREACH_SENDER_RUT`,
+   `OUTREACH_SENDER_ADDRESS`) responde `200` sin enviar — es un error de
+   config, no algo que reintentar (Ley 19.496 art. 28 B).
+3. **Query de elegibilidad por `Company`** (no por `Contact`), por cada
+   campaña activa: `isActive = true`, `segment` = el de la campaña, sin
+   `OutreachSend` previo para esa `campaignId`
+   (`outreachSends: { none: { campaignId } }`), **sin gestión telefónica
+   iniciada** (`NOT: { contacts: { some: { callStatus: { not: null, notIn:
+["POR_LLAMAR"] } } } }` — la regla de `isCompanyPhoneManaged` como filtro),
+   y con al menos un contacto enviable (`email != null`, `optOut = false`,
+   `emailStatus != REBOTADO`). El `include` trae sólo esos contactos.
+   `orderBy: createdAt asc` — los prospectos más antiguos primero.
+4. **Tope global.** `globalCap = Number(process.env.OUTREACH_DAILY_CAP ?? 25)`.
+   `presupuesto = max(0, globalCap - <OutreachSend con sentAt de hoy UTC>)`.
+   `allocateDailyBudget(campañas, poolSizes, presupuesto)` de
+   `lib/outreach/eligibility.ts` reparte ese presupuesto entre las campañas
+   proporcionalmente a su pool de empresas elegibles, respetando el
+   `dailyCap` de cada una como techo. `dailyCap` dejó de ser la meta por
+   campaña; el tope real es global y compartido.
+5. Por campaña toma sus primeras `allocation[campaignId]` empresas. Descarga
+   el PDF de `campaign.pdfBlobUrl` una sola vez por campaña (si hay
+   objetivo) y lo adjunta a cada envío.
+6. **Un solo correo por empresa.** `pickCompanyContact(contactosElegibles)`
+   elige el destinatario: casilla genérica (`info@`, `contacto@`, …) antes
+   que nominativa; a igualdad, el `createdAt` menor. Los demás contactos
+   quedan como respaldo manual para Ventas.
+7. Por empresa elegida: genera `optOutToken` si falta, renderiza la
+   plantilla de `lib/outreach/templates`, envía vía `lib/outreach/smtp.ts`,
+   y escribe `OutreachSend` (`ENVIADO`) + `Activity(type=EMAIL)` en la ficha
+   de la empresa. Jitter aleatorio (3–7s) entre envíos.
+8. Si un envío falla, registra `OutreachSend(status=FALLIDO, error=...)` y
+   sigue con el resto — un correo roto no frena el lote.
 
 ## Por qué el usuario "sistema" (`lib/outreach/system-user.ts`)
 
@@ -49,11 +64,15 @@ cron. Alternativa descartada: aflojar `createdById` a opcional en el schema
 ## Idempotencia
 
 Correr el cron dos veces el mismo día no reenvía nada: la query de
-elegibilidad de la segunda corrida excluye automáticamente a cualquier
-contacto que ya tenga un `OutreachSend` para esa campaña. El
-`@@unique([campaignId, contactId])` es la garantía dura por si dos
-ejecuciones corrieran en paralelo (constraint de BD, no solo lógica de
-aplicación).
+elegibilidad de la segunda corrida excluye toda **empresa** que ya tenga un
+`OutreachSend` para esa campaña (`company: { outreachSends: { none: {
+campaignId } } }`). El `@@unique([campaignId, contactId])` es la garantía
+dura por si dos ejecuciones corrieran en paralelo (constraint de BD, no sólo
+lógica de aplicación). El "1 correo por empresa" **no** se implementa
+tocando ese constraint — sale de que la query es por `Company` y
+`pickCompanyContact` elige uno. Además, el tope global descuenta lo ya
+enviado hoy (`sentAt >= inicio del día UTC`), así que una segunda corrida el
+mismo día arranca con `presupuesto` ya consumido.
 
 ## Envío: SMTP, no Microsoft Graph
 

@@ -259,7 +259,7 @@
     ],
     "checkpoint": "step-11-callstatus-components",
     "files": ["components/ui/CallStatusBadge.tsx", "components/ui/CallStatusBadge.spec.md", "components/crm/CallStatusSelect.tsx", "components/crm/CallStatusSelect.spec.md"],
-    "status": "pending"
+    "status": "done"
   },
   {
     "id": "E2-T6",

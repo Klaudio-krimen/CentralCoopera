@@ -7,6 +7,7 @@ import {
 } from "./render";
 import { renderLogisticaEmail } from "./logistica";
 import { renderFarmaceuticaEmail } from "./farmaceutica";
+import { renderIndustriaEmail } from "./industria";
 import { getTemplate, TEMPLATES } from "./index";
 
 const footer = {
@@ -118,10 +119,72 @@ describe("plantillas de segmento", () => {
   });
 });
 
+describe("plantilla industria", () => {
+  const baseInput = {
+    empresa: "Planta Alfa",
+    comuna: "Maipú",
+    rubro: "Alimentos",
+    contacto: null,
+  };
+
+  it("saluda 'Estimados' y no filtra 'sin dato' / 'null' / '{{' cuando falta el contacto", () => {
+    // Acceptance E1-T6 #2 — contacto/comuna/rubro null no dejan basura visible.
+    const email = renderIndustriaEmail(
+      { empresa: "X", comuna: null, rubro: null, contacto: null },
+      footer
+    );
+    for (const salida of [email.html, email.text]) {
+      expect(salida).toContain("Estimados");
+      expect(salida).not.toContain("sin dato");
+      expect(salida).not.toContain("null");
+      expect(salida).not.toContain("{{");
+    }
+  });
+
+  it("interpola la empresa y la comuna, y saluda por nombre si hay contacto", () => {
+    const email = renderIndustriaEmail(
+      { ...baseInput, contacto: "Sra. Rojas" },
+      footer
+    );
+    expect(email.html).toContain("Planta Alfa");
+    expect(email.subject).toContain("Maipú");
+    expect(email.html).toContain("Hola Sra. Rojas");
+  });
+
+  it("funciona igual si la comuna es null (sin el literal 'null' en el texto)", () => {
+    const email = renderIndustriaEmail({ ...baseInput, comuna: null }, footer);
+    expect(email.html).toContain("Planta Alfa");
+    expect(email.text).not.toContain("null");
+  });
+
+  it("no incluye <img en el html (regla de entregabilidad §10)", () => {
+    // Acceptance E1-T6 #3.
+    expect(renderIndustriaEmail(baseInput, footer).html).not.toMatch(/<img/i);
+  });
+
+  it("no usa la palabra GRATIS en el asunto (regla de entregabilidad §10)", () => {
+    // Acceptance E1-T6 #4.
+    expect(
+      renderIndustriaEmail(baseInput, footer).subject.toUpperCase()
+    ).not.toContain("GRATIS");
+  });
+
+  it("arma el pie legal (razón social + RUT + link de baja) vía assembleEmail", () => {
+    // Acceptance E1-T6 #5 — Ley 19.496 art. 28 B.
+    const email = renderIndustriaEmail(baseInput, footer);
+    expect(email.html).toContain(footer.legalName);
+    expect(email.html).toContain(footer.rut);
+    expect(email.html).toContain(footer.unsubscribeUrl);
+    expect(email.text).toContain(footer.unsubscribeUrl);
+  });
+});
+
 describe("registro de plantillas", () => {
-  it("resuelve logistica-v1 y farmaceutica-v1", () => {
+  it("resuelve logistica-v1, farmaceutica-v1 e industria-v1", () => {
     expect(getTemplate("logistica-v1")).toBe(TEMPLATES["logistica-v1"]);
     expect(getTemplate("farmaceutica-v1")).toBe(TEMPLATES["farmaceutica-v1"]);
+    expect(getTemplate("industria-v1")).toBe(TEMPLATES["industria-v1"]);
+    expect(getTemplate("industria-v1")).toBe(renderIndustriaEmail);
   });
 
   it("lanza un error legible ante una clave desconocida", () => {

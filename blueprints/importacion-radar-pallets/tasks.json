@@ -137,7 +137,7 @@
     ],
     "checkpoint": "step-06-industria-template",
     "files": ["lib/outreach/templates/industria.ts", "lib/outreach/templates/index.ts", "lib/outreach/templates/render.test.ts"],
-    "status": "pending"
+    "status": "done"
   },
   {
     "id": "E2-T1",

@@ -1,5 +1,6 @@
 import { renderLogisticaEmail } from "./logistica";
 import { renderFarmaceuticaEmail } from "./farmaceutica";
+import { renderIndustriaEmail } from "./industria";
 import type {
   ProspectEmailInput,
   SenderFooterInfo,
@@ -17,6 +18,7 @@ export const TEMPLATES: Record<
 > = {
   "logistica-v1": renderLogisticaEmail,
   "farmaceutica-v1": renderFarmaceuticaEmail,
+  "industria-v1": renderIndustriaEmail,
 };
 
 export function getTemplate(templateKey: string) {

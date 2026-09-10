@@ -21,6 +21,7 @@ import {
   Package,
   ArrowsLeftRight,
   PaperPlaneTilt,
+  PhoneCall,
   HandCoins,
   Money,
   MagnifyingGlass,
@@ -97,6 +98,7 @@ const MODULES: ModuleDef[] = [
         label: "Outreach",
         icon: PaperPlaneTilt,
       },
+      { href: "/admin/crm/llamadas", label: "Llamadas", icon: PhoneCall },
       {
         href: "/admin/crm/configuracion",
         label: "Configuración",

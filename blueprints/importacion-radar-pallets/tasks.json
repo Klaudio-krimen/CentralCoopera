@@ -285,6 +285,6 @@
     ],
     "checkpoint": "step-12-llamadas-page",
     "files": ["app/(admin)/admin/crm/llamadas/page.tsx", "app/(admin)/admin/crm/llamadas/page.spec.md", "components/crm/ListaLlamadas.tsx", "components/ui/AdminSidebar.tsx"],
-    "status": "pending"
+    "status": "done"
   }
 ]

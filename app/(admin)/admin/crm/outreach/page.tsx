@@ -39,6 +39,7 @@ const STATUS_VARIANT: Record<
 const SEGMENT_LABEL: Record<string, string> = {
   LOGISTICA: "Logística",
   FARMACEUTICA: "Farmacéutica",
+  INDUSTRIA: "Industria",
   OTRO: "Otro",
 };
 

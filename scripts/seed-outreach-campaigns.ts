@@ -48,6 +48,13 @@ const CAMPAIGNS = [
     subject: "Retiro de pallets con cadena de custodia documentada",
     templateKey: "farmaceutica-v1",
   },
+  {
+    name: "Outreach frío — Industria",
+    segment: "INDUSTRIA" as const,
+    subject:
+      "Pallets fuera de norma en su planta — los retiramos y reponemos con reparados certificados",
+    templateKey: "industria-v1",
+  },
 ];
 
 async function main() {

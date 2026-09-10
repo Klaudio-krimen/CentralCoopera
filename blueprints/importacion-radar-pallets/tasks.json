@@ -181,7 +181,7 @@
     ],
     "checkpoint": "step-08-eligibility",
     "files": ["lib/outreach/eligibility.ts", "lib/outreach/eligibility.test.ts"],
-    "status": "pending"
+    "status": "done"
   },
   {
     "id": "E2-T3",

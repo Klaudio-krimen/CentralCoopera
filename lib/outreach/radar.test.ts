@@ -5,7 +5,28 @@ import {
   parseRadarSheet,
   splitPhones,
   normalizeCompanyName,
+  classifySegment,
+  consolidateRows,
+  toRadarProspect,
+  type RadarRow,
 } from "./radar";
+
+// Fila del Radar ya parseada, con todos los campos en su valor "vacío" salvo
+// `empresa` y `sheetTag`. Cada test la sobrescribe con lo que le importa.
+function radarRow(over: Partial<RadarRow> = {}): RadarRow {
+  return {
+    empresa: "ACME",
+    telefonos: [],
+    email: null,
+    tipo: null,
+    perfilOperacional: null,
+    evidenciaOperacional: null,
+    proximoPaso: null,
+    observacion: null,
+    sheetTag: "PROSPECTOS",
+    ...over,
+  };
+}
 
 // Cabecera canónica de las 3 hojas del "Radar de Clientes Pallets V7"
 // (IMPORTACION_RADAR_PALLETS.md §3 — el único identificador común es "Nombre").
@@ -250,5 +271,194 @@ describe("parseRadarSheet", () => {
     expect(row.proximoPaso).toBeNull();
     expect(row.observacion).toBeNull();
     expect(row.email).toBeNull();
+  });
+});
+
+describe("classifySegment", () => {
+  it("clasifica FARMACEUTICA cuando el texto contiene 'laboratorio'", () => {
+    // Acceptance E1-T4 #1.
+    expect(classifySegment("Laboratorio farmacéutico", null, null)).toBe(
+      "FARMACEUTICA"
+    );
+  });
+
+  it("reconoce las 4 keywords farmacéuticas de la spec §6.2, sin importar acento ni caja", () => {
+    expect(classifySegment("FARMACÉUTICO", null, null)).toBe("FARMACEUTICA");
+    expect(classifySegment(null, "droguería regional", null)).toBe(
+      "FARMACEUTICA"
+    );
+    expect(classifySegment(null, null, "distribuye medicamentos")).toBe(
+      "FARMACEUTICA"
+    );
+  });
+
+  it("clasifica LOGISTICA cuando hay 'bodega' y ninguna keyword farmacéutica", () => {
+    // Acceptance E1-T4 #2.
+    expect(classifySegment("Bodega de terceros", null, null)).toBe("LOGISTICA");
+  });
+
+  it("reconoce las 5 keywords logísticas de la spec §6.2", () => {
+    expect(classifySegment("Operador logístico", null, null)).toBe("LOGISTICA");
+    expect(classifySegment(null, "almacenamiento seco", null)).toBe(
+      "LOGISTICA"
+    );
+    expect(classifySegment(null, null, "depósito aduanero")).toBe("LOGISTICA");
+    expect(classifySegment("empresa de transporte", null, null)).toBe(
+      "LOGISTICA"
+    );
+  });
+
+  it("clasifica INDUSTRIA cuando no hay ninguna keyword (fallback)", () => {
+    // Acceptance E1-T4 #3.
+    expect(
+      classifySegment("Planta de alimentos", "manufactura", "retail")
+    ).toBe("INDUSTRIA");
+    expect(classifySegment(null, null, null)).toBe("INDUSTRIA");
+  });
+
+  it("da prioridad a FARMACEUTICA si un texto trae keywords de ambos segmentos", () => {
+    // blueprint §9 Step 4: farmacéutica se evalúa antes que logística.
+    expect(
+      classifySegment("Laboratorio con bodega y transporte propio", null, null)
+    ).toBe("FARMACEUTICA");
+  });
+
+  it("concatena los 3 campos — una keyword en cualquiera de ellos basta", () => {
+    expect(classifySegment(null, null, "opera un depósito refrigerado")).toBe(
+      "LOGISTICA"
+    );
+  });
+});
+
+describe("consolidateRows", () => {
+  it("colapsa la misma empresa a la fila con más campos con valor", () => {
+    // Acceptance E1-T4 #4 (parte 1).
+    const pobre = radarRow({ empresa: "ACME S.A.", telefonos: ["+56 1"] });
+    const rica = radarRow({
+      empresa: "ACME SPA",
+      telefonos: ["+56 2"],
+      email: "v@acme.cl",
+      tipo: "Bodega",
+      perfilOperacional: "Almacena",
+    });
+    expect(consolidateRows([pobre, rica])).toEqual([rica]);
+    // El orden de entrada no cambia el ganador.
+    expect(consolidateRows([rica, pobre])).toEqual([rica]);
+  });
+
+  it("ante empate de completitud gana la hoja de mayor prioridad (PROSPECTOS < TOP20 < TOP25)", () => {
+    // Acceptance E1-T4 #4 (parte 2). Misma empresa, mismo conteo (sólo teléfono).
+    const top25 = radarRow({
+      empresa: "Beta Ltda",
+      telefonos: ["+56 9"],
+      sheetTag: "TOP25",
+    });
+    const prospectos = radarRow({
+      empresa: "Beta Ltda",
+      telefonos: ["+56 8"],
+      sheetTag: "PROSPECTOS",
+    });
+    const top20 = radarRow({
+      empresa: "Beta Ltda",
+      telefonos: ["+56 7"],
+      sheetTag: "TOP20",
+    });
+    expect(consolidateRows([top25, prospectos, top20])).toEqual([prospectos]);
+    expect(consolidateRows([top20, top25])).toEqual([top20]);
+  });
+
+  it("NO fusiona empresas que sólo comparten el sufijo (match exacto, no substring)", () => {
+    // epic Pitfalls: "Novofarma Service" ≠ "Laboratorio Novofarma Service".
+    const a = radarRow({
+      empresa: "Novofarma Service S.A.",
+      sheetTag: "TOP20",
+    });
+    const b = radarRow({
+      empresa: "Laboratorio Novofarma Service S.A.",
+      sheetTag: "TOP25",
+    });
+    const out = consolidateRows([a, b]);
+    expect(out).toHaveLength(2);
+    expect(out.map((r) => r.empresa)).toEqual([
+      "Novofarma Service S.A.",
+      "Laboratorio Novofarma Service S.A.",
+    ]);
+  });
+
+  it("agrupa por nombre normalizado — variantes de caja/espacios/sufijo caen juntas", () => {
+    const rows = [
+      radarRow({ empresa: "NOVOFARMA  SERVICE   S.A.", telefonos: ["+56 1"] }),
+      radarRow({ empresa: "novofarma service spa", email: "x@x.cl" }),
+    ];
+    expect(consolidateRows(rows)).toHaveLength(1);
+  });
+
+  it("devuelve [] para una lista vacía y respeta una lista sin duplicados", () => {
+    expect(consolidateRows([])).toEqual([]);
+    const rows = [
+      radarRow({ empresa: "Uno" }),
+      radarRow({ empresa: "Dos" }),
+      radarRow({ empresa: "Tres" }),
+    ];
+    expect(consolidateRows(rows)).toEqual(rows);
+  });
+});
+
+describe("toRadarProspect", () => {
+  it("parte el primer teléfono a phone y el resto a phonesExtra", () => {
+    // Acceptance E1-T4 #5.
+    const p = toRadarProspect(
+      radarRow({ telefonos: ["+56 1", "+56 2", "+56 3"] })
+    );
+    expect(p.phone).toBe("+56 1");
+    expect(p.phonesExtra).toEqual(["+56 2", "+56 3"]);
+  });
+
+  it("phone es null y phonesExtra [] cuando la fila no trae teléfonos", () => {
+    const p = toRadarProspect(radarRow({ telefonos: [] }));
+    expect(p.phone).toBeNull();
+    expect(p.phonesExtra).toEqual([]);
+  });
+
+  it("mapea category desde tipo, deja commune y contactName siempre en null", () => {
+    const p = toRadarProspect(radarRow({ tipo: "Bodega" }));
+    expect(p.category).toBe("Bodega");
+    expect(p.commune).toBeNull();
+    expect(p.contactName).toBeNull();
+    expect(toRadarProspect(radarRow({ tipo: null })).category).toBeNull();
+  });
+
+  it("deriva segment vía classifySegment sobre tipo/perfil/evidencia", () => {
+    expect(toRadarProspect(radarRow({ tipo: "Laboratorio" })).segment).toBe(
+      "FARMACEUTICA"
+    );
+    expect(
+      toRadarProspect(radarRow({ perfilOperacional: "bodega" })).segment
+    ).toBe("LOGISTICA");
+    expect(toRadarProspect(radarRow({ tipo: "Alimentos" })).segment).toBe(
+      "INDUSTRIA"
+    );
+  });
+
+  it("traslada los 4 campos de investigación a notesParts sin tocarlos", () => {
+    const p = toRadarProspect(
+      radarRow({
+        perfilOperacional: "Almacena pallets",
+        evidenciaOperacional: "Galpón con racks",
+        proximoPaso: "Llamar",
+        observacion: "Revisar",
+      })
+    );
+    expect(p.notesParts).toEqual({
+      perfil: "Almacena pallets",
+      evidencia: "Galpón con racks",
+      proximoPaso: "Llamar",
+      observacion: "Revisar",
+    });
+  });
+
+  it("pasa email tal cual (incluido null)", () => {
+    expect(toRadarProspect(radarRow({ email: "a@b.cl" })).email).toBe("a@b.cl");
+    expect(toRadarProspect(radarRow({ email: null })).email).toBeNull();
   });
 });

@@ -236,3 +236,154 @@ export function parseRadarSheet(
   }
   return rows;
 }
+
+// ── classifySegment ────────────────────────────────────────────────────────
+/**
+ * Segmento de outreach de una fila del Radar a partir de sus 3 campos de
+ * investigación. Keywords VERBATIM de la spec §6.2
+ * (IMPORTACION_RADAR_PALLETS.md); el match es sobre la concatenación de `tipo`
+ * + `perfilOperacional` + `evidenciaOperacional`, en minúscula y sin
+ * diacríticos (`stripDiacritics` conserva la `ñ`, acá irrelevante), con
+ * `includes()` — "el texto CONTIENE la palabra" (spec §6.2).
+ *
+ * FARMACEUTICA se evalúa ANTES que LOGISTICA (blueprint §9 Step 4): si un texto
+ * trae keywords de ambos, gana farmacéutica — su propuesta de valor
+ * (trazabilidad / cadena de custodia) es la más específica. `INDUSTRIA` es el
+ * fallback puro: ninguna keyword → INDUSTRIA (spec §6.2 "todo lo demás").
+ * Consumido por `toRadarProspect` y por el importador (E1-T5).
+ */
+const FARMACEUTICA_KEYWORDS = [
+  "farmaceutico",
+  "laboratorio",
+  "drogueria",
+  "medicamento",
+] as const;
+const LOGISTICA_KEYWORDS = [
+  "operador logistico",
+  "almacenamiento",
+  "deposito",
+  "bodega",
+  "transporte",
+] as const;
+
+export function classifySegment(
+  tipo: string | null,
+  perfil: string | null,
+  evidencia: string | null
+): "LOGISTICA" | "FARMACEUTICA" | "INDUSTRIA" {
+  const texto = stripDiacritics(
+    [tipo, perfil, evidencia]
+      .filter((v): v is string => v !== null)
+      .join(" ")
+      .toLowerCase()
+  );
+  if (FARMACEUTICA_KEYWORDS.some((kw) => texto.includes(kw))) {
+    return "FARMACEUTICA";
+  }
+  if (LOGISTICA_KEYWORDS.some((kw) => texto.includes(kw))) {
+    return "LOGISTICA";
+  }
+  return "INDUSTRIA";
+}
+
+// ── consolidateRows ────────────────────────────────────────────────────────
+// Los 7 campos que cuentan para la "completitud" de una fila (blueprint §9
+// Step 4). `telefonos` cuenta por presencia (`.length > 0`), no por cantidad;
+// el resto por `!= null`.
+function completenessScore(row: RadarRow): number {
+  return (
+    (row.telefonos.length > 0 ? 1 : 0) +
+    (row.email !== null ? 1 : 0) +
+    (row.tipo !== null ? 1 : 0) +
+    (row.perfilOperacional !== null ? 1 : 0) +
+    (row.evidenciaOperacional !== null ? 1 : 0) +
+    (row.proximoPaso !== null ? 1 : 0) +
+    (row.observacion !== null ? 1 : 0)
+  );
+}
+
+/**
+ * Colapsa las filas de las 3 hojas a una sola por empresa. Agrupa por
+ * `normalizeCompanyName(row.empresa)` — igualdad EXACTA de la clave normalizada,
+ * nunca substring: "novofarma service" y "laboratorio novofarma service" caen
+ * en grupos distintos (blueprint §10 / epic Pitfalls; spec §8 "empresa en 2-3
+ * hojas → gana la fila más completa").
+ *
+ * Ganador del grupo: mayor `completenessScore`. Empate → menor
+ * `RADAR_SHEETS[sheetTag]` ("Prospectos verificados" 0 gana a "TOP 20" 1 gana a
+ * "TOP 25" 2 — spec §8, criterio de desempate fijado por el blueprint). El
+ * orden de aparición NO desempata. La primera fila vista de cada empresa fija
+ * la posición del grupo en la salida (Map preserva el orden de inserción de la
+ * clave aunque el valor se reemplace).
+ */
+export function consolidateRows(rows: RadarRow[]): RadarRow[] {
+  const ganadora = new Map<string, RadarRow>();
+  for (const fila of rows) {
+    const clave = normalizeCompanyName(fila.empresa);
+    const actual = ganadora.get(clave);
+    if (actual === undefined) {
+      ganadora.set(clave, fila);
+      continue;
+    }
+    const puntajeFila = completenessScore(fila);
+    const puntajeActual = completenessScore(actual);
+    if (puntajeFila > puntajeActual) {
+      ganadora.set(clave, fila);
+    } else if (
+      puntajeFila === puntajeActual &&
+      RADAR_SHEETS[fila.sheetTag] < RADAR_SHEETS[actual.sheetTag]
+    ) {
+      ganadora.set(clave, fila);
+    }
+  }
+  return Array.from(ganadora.values());
+}
+
+// ── toRadarProspect ────────────────────────────────────────────────────────
+/**
+ * La forma que consume `scripts/import-radar-pallets.ts` (E1-T5). Contrato
+ * CONGELADO por blueprint §9 Step 4 ("Produced"): estos 9 miembros con estos
+ * tipos. `commune` y `contactName` son SIEMPRE `null` — las 3 hojas del Radar
+ * no traen comuna ni nombre de persona (spec §3); el importador cae al nombre
+ * de empresa para el `Contact.name`. `notesParts` alimenta las líneas de nota
+ * del contacto ("Perfil operacional: …", etc.) sólo con los campos no-null.
+ */
+export interface RadarProspect {
+  empresa: string;
+  commune: null;
+  category: string | null;
+  segment: "LOGISTICA" | "FARMACEUTICA" | "INDUSTRIA";
+  phone: string | null;
+  phonesExtra: string[];
+  email: string | null;
+  contactName: null;
+  notesParts: {
+    perfil: string | null;
+    evidencia: string | null;
+    proximoPaso: string | null;
+    observacion: string | null;
+  };
+}
+
+export function toRadarProspect(row: RadarRow): RadarProspect {
+  return {
+    empresa: row.empresa,
+    commune: null,
+    category: row.tipo,
+    segment: classifySegment(
+      row.tipo,
+      row.perfilOperacional,
+      row.evidenciaOperacional
+    ),
+    phone: row.telefonos[0] ?? null,
+    phonesExtra: row.telefonos.slice(1),
+    email: row.email,
+    contactName: null,
+    notesParts: {
+      perfil: row.perfilOperacional,
+      evidencia: row.evidenciaOperacional,
+      proximoPaso: row.proximoPaso,
+      observacion: row.observacion,
+    },
+  };
+}

@@ -3,8 +3,12 @@
 ## Archivo `.env.local` (desarrollo)
 
 ```
-# Base de datos
-DATABASE_URL="file:./dev.db"
+# Base de datos — PostgreSQL en Neon (sa-east-1). El proyecto NO usa SQLite.
+# DATABASE_URL: conexión pooled (host con "-pooler") — la usa Prisma en runtime.
+# DIRECT_URL:  conexión directa (host SIN "-pooler"; en Neon = "DATABASE_URL_UNPOOLED")
+#              — obligatoria para `npm run db:push`, `npx prisma validate` y `pg_dump`.
+DATABASE_URL="postgresql://USER:PASS@ep-xxxx-pooler.sa-east-1.aws.neon.tech/DB?sslmode=require"
+DIRECT_URL="postgresql://USER:PASS@ep-xxxx.sa-east-1.aws.neon.tech/DB?sslmode=require"
 
 # NextAuth
 NEXTAUTH_SECRET="una-cadena-aleatoria-muy-larga-aqui"
@@ -38,6 +42,10 @@ SMTP_REPLY_TO="contacto@cooperapro.cl"
 
 # Prospección — cron y cumplimiento legal (ver PROSPECCION_OUTREACH.md §9)
 CRON_SECRET=                 # Vercel lo manda solo como "Authorization: Bearer $CRON_SECRET"
+# OUTREACH_DAILY_CAP: tope GLOBAL de correos que `/api/cron/outreach` envía por día,
+# repartido entre las campañas activas en proporción a su pool de elegibles
+# (ver PROSPECCION_OUTREACH.md §11 e IMPORTACION_RADAR_PALLETS.md). Opcional: si no
+# está seteada, el cron usa 25. `OutreachCampaign.dailyCap` queda como sub-techo por campaña.
 OUTREACH_DAILY_CAP=25
 OUTREACH_PUBLIC_URL=         # base para armar el link de desuscripción, ej: https://intranet.cooperapro.cl
 OUTREACH_PDF_BLOB_URL=       # URL del PDF único en Vercel Blob (ver scripts/seed-outreach-campaigns.ts)
@@ -66,8 +74,9 @@ FINANZAS_NOTIFY_EMAILS=""
 ## Archivo `.env.production` (producción)
 
 ```
-# Base de datos PostgreSQL
-DATABASE_URL="postgresql://usuario:contraseña@host:5432/trackresiduos"
+# Base de datos PostgreSQL en Neon — pooled + directa (misma base)
+DATABASE_URL="postgresql://usuario:contraseña@host-pooler:5432/trackresiduos?sslmode=require"
+DIRECT_URL="postgresql://usuario:contraseña@host:5432/trackresiduos?sslmode=require"
 
 # NextAuth
 NEXTAUTH_SECRET="cadena-secreta-de-produccion-distinta"
@@ -92,4 +101,5 @@ DISCREPANCY_THRESHOLD_PERCENT=2
 - El archivo `.env.local` NUNCA debe subirse al repositorio (está en `.gitignore`)
 - `NEXTAUTH_SECRET` debe ser una cadena aleatoria de al menos 32 caracteres
 - `DISCREPANCY_THRESHOLD_PERCENT` es el porcentaje de diferencia que activa una alerta (default: 2%)
-- Si el `DATABASE_URL` empieza con `file:`, Prisma usará SQLite. Si empieza con `postgresql:`, usará PostgreSQL
+- `DATABASE_URL` (pooled) y `DIRECT_URL` (directa, sin `-pooler`) apuntan a la misma base Postgres en Neon. `DIRECT_URL` es obligatoria para `db:push`, `npx prisma validate` y `pg_dump`. El proyecto ya no usa SQLite.
+- `OUTREACH_DAILY_CAP` es el tope global diario del cron de outreach (default 25); ver la nota junto a la variable arriba.

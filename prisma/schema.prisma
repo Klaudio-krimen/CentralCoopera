@@ -133,6 +133,10 @@ enum ProspectSegment {
   LOGISTICA
   FARMACEUTICA
   OTRO
+  // INDUSTRIA va al final del bloque: insertarlo a mitad puede hacer que Prisma
+  // elija drop-and-recreate del tipo (prisma#16180) → flag de pérdida de datos.
+  // OTRO se conserva; renombrar un valor de enum es destructivo en Postgres.
+  INDUSTRIA
 }
 
 model MaterialType {
@@ -430,6 +434,17 @@ enum ContactTemperature {
   CALIENTE
 }
 
+// Ciclo de gestión telefónica de un Contact (IMPORTACION_RADAR_PALLETS.md §4).
+// Es un estado, como ContactTemperature — NO escribe Activity. `null` = no aplica
+// gestión telefónica; el importador del Radar lo pone en POR_LLAMAR sólo cuando el
+// contacto tiene teléfono y no tiene correo, y sólo si hoy está null.
+enum CallStatus {
+  POR_LLAMAR
+  LLAMADA
+  SIN_RESPUESTA
+  CORREO_CONSEGUIDO
+}
+
 enum ContactSource {
   WEBSITE
   WHATSAPP
@@ -459,6 +474,7 @@ model Contact {
   temperature ContactTemperature @default(FRIO)
   score       Int                @default(0) // 0-100
   source      ContactSource      @default(OTRO)
+  callStatus  CallStatus? // estado de gestión telefónica; null = no aplica (IMPORTACION_RADAR_PALLETS.md §4)
 
   // ── Prospección: consentimiento y salud del correo (ver PROSPECCION_OUTREACH.md §5) ──
   optOut      Boolean     @default(false)
@@ -476,6 +492,7 @@ model Contact {
   @@index([companyId])
   @@index([temperature])
   @@index([optOut, emailStatus])
+  @@index([callStatus])
 }
 
 enum EmailStatus {

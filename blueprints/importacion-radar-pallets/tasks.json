@@ -44,7 +44,7 @@
     ],
     "checkpoint": "step-02-schema-radar",
     "files": ["prisma/schema.prisma", "VARIABLES_ENTORNO.md"],
-    "status": "pending"
+    "status": "done"
   },
   {
     "id": "E1-T3",

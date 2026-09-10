@@ -233,7 +233,7 @@
     ],
     "checkpoint": "step-10-llamadas-api",
     "files": ["app/api/llamadas/route.ts", "app/api/llamadas/route.spec.md"],
-    "status": "pending"
+    "status": "done"
   },
   {
     "id": "E2-T5",

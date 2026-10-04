@@ -36,8 +36,13 @@ v } })`.
    nuevo).
 4. Error (red o `!res.ok`) → `toast.error("No se pudo actualizar el estado")`.
 5. `finally` → `setLoading(false)`.
-6. Mientras `loading`, el componente renderiza `<SpinnerGap className="animate-spin
-text-crm-muted" />` en lugar del `<Select>`.
+6. Mientras `loading`, el `<Select>` **se mantiene montado** con `readOnly`
+   (bloquea el cambio sin perder el foco de teclado, a diferencia de
+   `disabled`) y el ancho fijo de 150 px: no hay salto de layout. Un
+   `<SpinnerGap aria-hidden>` reemplaza visualmente al chevron y un
+   `<span role="status" class="sr-only">` anuncia "Guardando estado…". El
+   trigger lleva `aria-label="Estado de la llamada"` y `aria-busy`.
+7. Un segundo cambio mientras `loading` se ignora (`if (loading) return`).
 
 ## Qué NO hace
 

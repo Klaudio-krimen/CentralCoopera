@@ -3,10 +3,13 @@
 // Tabla cliente de la vista `/admin/crm/llamadas` (E2-T6). Recibe los contactos
 // con teléfono ya materializados por la page (server component); acá sólo se
 // filtra en memoria (búsqueda + estado) y se edita el `callStatus` in-line.
-// Una fila = un contacto; click en la fila (fuera del `<Select>`) abre la ficha
-// de su empresa. Sólo tokens/clases `crm-*` y primitivos de `components/crm/ui/*`.
+// Una fila = un contacto. El nombre de la empresa es un enlace real a su ficha
+// (teclado, clic medio, abrir en otra pestaña); el click en el resto de la fila
+// (fuera del `<Select>` y del enlace) es sólo un atajo para el mouse.
+// Sólo tokens/clases `crm-*` y primitivos de `components/crm/ui/*`.
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { PhoneCall } from "@phosphor-icons/react";
 import {
@@ -87,13 +90,19 @@ export default function ListaLlamadas({ data }: { data: LlamadaContacto[] }) {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Buscar por contacto o empresa…"
+          aria-label="Buscar por contacto o empresa"
           className="crm-input w-full max-w-xs"
         />
-        <div className="flex flex-wrap gap-1.5">
+        <div
+          role="group"
+          aria-label="Filtrar por estado de llamada"
+          className="flex flex-wrap gap-1.5"
+        >
           {FILTROS.map((f) => (
             <Button
               key={f.label}
               size="sm"
+              aria-pressed={callStatusFilter === f.value}
               variant={callStatusFilter === f.value ? "default" : "outline"}
               onClick={() => setCallStatusFilter(f.value)}
             >
@@ -123,7 +132,14 @@ export default function ListaLlamadas({ data }: { data: LlamadaContacto[] }) {
                 }
               >
                 <TableCell className="font-medium text-crm-foreground">
-                  {c.company.name}
+                  {/* stopPropagation: evita el doble push del onClick de la fila. */}
+                  <Link
+                    href={"/admin/crm/clientes/" + c.company.id}
+                    onClick={(e) => e.stopPropagation()}
+                    className="rounded-sm outline-none hover:underline focus-visible:ring-2 focus-visible:ring-crm-ring/50"
+                  >
+                    {c.company.name}
+                  </Link>
                 </TableCell>
                 <TableCell>{c.name}</TableCell>
                 <TableCell className="tabular-nums">{c.phone}</TableCell>

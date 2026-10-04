@@ -18,13 +18,14 @@ Este archivo conserva las reglas técnicas; el registro conserva el historial de
 
 **TrackResiduos** es la app interna de **Coopera Pro** (Santiago, Chile).
 Nació para registrar la cadena de custodia de materiales reciclables y prevenir el robo hormiga
-en los retiros que hacen los choferes. Hoy tiene tres módulos vivos:
+en los retiros que hacen los choferes. Hoy tiene cuatro módulos vivos:
 
 | Módulo                                                              | Rol dueño             | Estado                              |
 | ------------------------------------------------------------------- | --------------------- | ----------------------------------- |
 | **Operaciones** — órdenes de retiro, evidencias, discrepancias, GPS | `CHOFER`, `RECEPCION` | Productivo                          |
 | **Inventario** — stock de materia prima y pallets                   | `BODEGA`              | Productivo                          |
 | **CRM** — empresas, contactos, deals, actividades                   | `VENTAS`              | Base implementada, sin datos reales |
+| **Finanzas** — sueldos, anticipos, proveedores, cuadre (ver §9)     | `moduleAccess` propio | Implementado, sin bypass de ADMIN   |
 
 El rastreo GPS de choferes (turnos, consentimiento de ubicación y el mapa en vivo) es un
 subsistema con reglas propias — **fuente única: [`RASTREO_GPS.md`](./RASTREO_GPS.md)**.
@@ -79,7 +80,7 @@ npm run db:studio    # inspeccionar la BD
 ## 6. Iniciativa activa: Prospección y Outreach (taller de pallets)
 
 **Objetivo:** convertir listados scrapeados de empresas (Apify / Google Places) en clientes
-del taller de pallets, mediante correo frío segmentado y automatizado desde Outlook.
+del taller de pallets, mediante correo frío segmentado y automatizado por SMTP.
 
 **Documento maestro → [`PROSPECCION_OUTREACH.md`](./PROSPECCION_OUTREACH.md)**
 Léelo completo antes de tocar código de este módulo.
@@ -100,8 +101,11 @@ Tres cosas que debes tener claras antes de empezar:
 - Módulo CRM: schema completo (`Company`, `Contact`, `Deal`, `PipelineStage`, `Activity`,
   `CrmWebhookConfig`), sin volumen real de datos todavía.
 - `ContactSource` ya contempla `SCRAPING`, `IMPORT` y `WEBHOOK` — usar esos, no crear nuevos.
-- Envío de correo: **Microsoft Graph API**, no automatización COM local de Outlook.
-  Razón: la app corre en Vercel, no en el PC del usuario.
+- Envío de correo: **SMTP directo vía `nodemailer`** — `lib/outreach/smtp.ts`. Hoy el host es
+  SiteGround (`SMTP_HOST`); la compra de Hostinger está en evaluación, sin decidir (2026-10-04).
+  Ni Microsoft Graph ni automatización COM de Outlook: la app corre en Vercel, no en el PC del
+  usuario, y el correo de Coopera Pro no está en Microsoft 365 (no hay tenant que consultar).
+  Revisado el 2026-08-04; razonamiento completo en `PROSPECCION_OUTREACH.md` §3 y §8.
 - Idempotencia de envíos: tabla dedicada `OutreachSend` (ver doc maestro), no `Activity`.
   `Activity` es la línea de tiempo que ve el humano; `OutreachSend` es el libro contable técnico.
 - **El rastreo GPS se gobierna por `Shift`, no por la sesión.** No hay posición sin turno

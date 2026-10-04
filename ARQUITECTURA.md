@@ -16,35 +16,42 @@ TrackResiduos es una aplicación **monolítica full-stack** construida con Next.
                                     |
                              [Prisma ORM]
                                     |
-                            [PostgreSQL / SQLite]
+                               [PostgreSQL]
                                     |
-                        [Sistema de archivos local]
-                         /public/uploads/ (fotos)
+                          [Vercel Blob] (fotos, firmas)
 ```
+
+> **Alcance de este documento:** describe la arquitectura base y el módulo de Operaciones.
+> CRM, Inventario, Finanzas, el rastreo GPS por turnos y el outreach se documentan en
+> `CLAUDE.md`, `RASTREO_GPS.md` y `PROSPECCION_OUTREACH.md`. Ante contradicciones, el código gana.
 
 ---
 
 ## Módulos principales
 
 ### 1. Autenticación (`app/(auth)/`)
+
 - Login con email y contraseña
 - Sesiones manejadas por NextAuth.js
 - Middleware de Next.js protege todas las rutas según rol
 - No hay registro público — los usuarios son creados por el admin
 
 ### 2. Módulo Chofer (`app/(chofer)/`)
+
 - Interfaz optimizada para uso en celular (pantalla táctil)
 - Flujo principal: crear orden → agregar ítems → tomar fotos → firma cliente → confirmar
 - Guarda borrador automáticamente (localStorage) por si pierde conexión
 - Carga las órdenes del día al abrir el dashboard
 
 ### 3. Módulo Recepción (`app/(recepcion)/`)
+
 - Interfaz para tablet o PC en bodega
 - El receptor busca la orden por código o QR
 - Registra lo que físicamente llegó
 - El sistema calcula automáticamente las discrepancias
 
 ### 4. Módulo Administración (`app/(admin)/`)
+
 - Vista de todas las órdenes con filtros
 - Gestión de usuarios (crear/desactivar choferes, receptores)
 - Gestión de empresas clientes
@@ -52,10 +59,11 @@ TrackResiduos es una aplicación **monolítica full-stack** construida con Next.
 - Vista de discrepancias con estado (pendiente/investigado/resuelto)
 
 ### 5. API Backend (`app/api/`)
+
 - REST API con Next.js Route Handlers
 - Todas las rutas requieren sesión activa
 - Las rutas validan el rol del usuario antes de responder
-- Las fotos se reciben como `multipart/form-data` y se guardan en `/public/uploads/`
+- Las fotos se reciben como `multipart/form-data` y se guardan en Vercel Blob (en desarrollo, sin token, caen a `public/uploads/`)
 
 ---
 
@@ -74,41 +82,51 @@ El sistema cierra el ciclo de custodia con estos controles:
 
 ### Roles y permisos
 
-| Acción | CHOFER | RECEPCION | ADMIN |
-|--------|--------|-----------|-------|
-| Crear orden de retiro | ✓ | — | ✓ |
-| Ver sus propias órdenes | ✓ | — | ✓ |
-| Ver órdenes de otros choferes | — | — | ✓ |
-| Registrar recepción | — | ✓ | ✓ |
-| Ver reportes | — | — | ✓ |
-| Gestionar usuarios | — | — | ✓ |
-| Gestionar empresas | — | — | ✓ |
+Esta tabla cubre solo Operaciones. Además existen los roles `VENTAS` y `BODEGA`, y el acceso por
+módulo se define con `ModuleAccess[]` (`ADMIN` ve Operaciones, Inventario y CRM sin depender de la
+lista; **Finanzas no tiene bypass de ADMIN**). Ver `lib/access.ts`.
+
+| Acción                        | CHOFER | RECEPCION | ADMIN |
+| ----------------------------- | ------ | --------- | ----- |
+| Crear orden de retiro         | ✓      | —         | ✓     |
+| Ver sus propias órdenes       | ✓      | —         | ✓     |
+| Ver órdenes de otros choferes | —      | —         | ✓     |
+| Registrar recepción           | —      | ✓         | ✓     |
+| Ver reportes                  | —      | —         | ✓     |
+| Gestionar usuarios            | —      | —         | ✓     |
+| Gestionar empresas            | —      | —         | ✓     |
 
 ---
 
 ## Decisiones de diseño
 
 ### Por qué Next.js y no una API separada
+
 - Simplifica el despliegue (un solo proceso)
 - Reduce la complejidad para un equipo pequeño
 - Se puede separar en el futuro si escala
 
 ### Por qué no app nativa (React Native)
+
 - El chofer ya tiene un celular con navegador
 - No requiere publicar en App Store/Play Store
 - Actualizaciones instantáneas sin que el usuario descargue nada
 - Limitación: no funciona offline (se asume conectividad en terreno)
 
 ### Por qué Prisma y PostgreSQL
+
 - Prisma provee type-safety y migraciones controladas
 - PostgreSQL es robusto para datos de auditoría
-- SQLite para desarrollo local (configurado con variable de entorno)
+- El schema declara `provider = "postgresql"`; no hay SQLite. Producción y desarrollo usan Postgres (Neon)
 
 ### Almacenamiento de fotos
-- Por simplicidad inicial: carpeta `/public/uploads/`
+
+- Producción: **Vercel Blob** (`app/api/evidencias/route.ts`, `app/api/ordenes/[id]/route.ts`). En
+  desarrollo, sin token, se cae a la carpeta `public/uploads/` (`UPLOAD_DIR`)
 - Nombres de archivo: `{ordenId}_{timestamp}_{random}.jpg`
-- Para producción en servidor real, migrar a S3 o similar
-- Las rutas se guardan en la base de datos como paths relativos
+- **Trampa de seguridad:** los blobs se suben con `access: 'public'`; cualquiera con el link lee el
+  archivo sin sesión. Aceptable para evidencias de Operaciones hoy; **no** reutilizar para Finanzas
+- La base guarda la URL del blob (o el path relativo en desarrollo)
 
 ---
 

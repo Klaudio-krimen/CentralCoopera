@@ -37,40 +37,58 @@ export default function CallStatusSelect({
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  if (loading) {
-    return <SpinnerGap size={14} className="animate-spin text-crm-muted" />;
-  }
-
+  // El control NO se desmonta mientras guarda: conserva ancho (sin saltos de
+  // layout) y foco de teclado. `readOnly` bloquea el cambio sin quitar el foco
+  // (a diferencia de `disabled`); el spinner reemplaza visualmente al chevron.
   return (
-    <Select
-      value={value ?? undefined}
-      onValueChange={(v) => {
-        if (!v || v === value) return;
-        setLoading(true);
-        fetch("/api/llamadas", {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id: contactId, callStatus: v }),
-        })
-          .then(async (res) => {
-            if (!res.ok) throw new Error((await res.json()).error);
-            toast.success("Estado actualizado");
-            router.refresh();
+    <div className="relative inline-flex">
+      <Select
+        readOnly={loading}
+        value={value ?? undefined}
+        onValueChange={(v) => {
+          if (loading || !v || v === value) return;
+          setLoading(true);
+          fetch("/api/llamadas", {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id: contactId, callStatus: v }),
           })
-          .catch(() => toast.error("No se pudo actualizar el estado"))
-          .finally(() => setLoading(false));
-      }}
-    >
-      <SelectTrigger size="sm" className="w-[150px]">
-        <SelectValue placeholder="Sin estado" />
-      </SelectTrigger>
-      <SelectContent>
-        {OPCIONES.map((o) => (
-          <SelectItem key={o.value} value={o.value}>
-            {o.label}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
+            .then(async (res) => {
+              if (!res.ok) throw new Error((await res.json()).error);
+              toast.success("Estado actualizado");
+              router.refresh();
+            })
+            .catch(() => toast.error("No se pudo actualizar el estado"))
+            .finally(() => setLoading(false));
+        }}
+      >
+        <SelectTrigger
+          size="sm"
+          aria-label="Estado de la llamada"
+          aria-busy={loading}
+          className={loading ? "w-[150px] [&>svg]:opacity-0" : "w-[150px]"}
+        >
+          <SelectValue placeholder="Sin estado" />
+        </SelectTrigger>
+        <SelectContent>
+          {OPCIONES.map((o) => (
+            <SelectItem key={o.value} value={o.value}>
+              {o.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+      {loading && (
+        <SpinnerGap
+          size={14}
+          aria-hidden="true"
+          className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 animate-spin text-crm-muted"
+        />
+      )}
+      {/* Anuncia el guardado a lectores de pantalla; el toast ya anuncia el resultado. */}
+      <span role="status" className="sr-only">
+        {loading ? "Guardando estado…" : ""}
+      </span>
+    </div>
   );
 }

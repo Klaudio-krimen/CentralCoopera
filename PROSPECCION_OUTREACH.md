@@ -1,7 +1,7 @@
 # Prospección y Outreach — Módulo CRM
 
 > Documento maestro de la iniciativa. Punto de entrada para implementar en Claude Code o Cowork.
-> Estado: **especificación aprobada, sin implementar.**
+> Estado: **implementado** (Fases 1–4 completas en código). Si las campañas están encendidas en producción (`OutreachCampaign.isActive`) no está verificado: ver los bloqueantes de la Fase 3 en §11.
 > Última actualización: 2026-08-04
 
 ---
@@ -184,7 +184,7 @@ model OutreachSend {
 
   status     SendStatus   @default(EN_COLA)
   sentAt     DateTime?
-  messageId  String?      // id devuelto por Graph
+  messageId  String?      // id devuelto por el servidor SMTP (nodemailer)
   error      String?
   attempts   Int          @default(0)
 

@@ -47,7 +47,7 @@ Snapshot revisado el 2026-10-04; verificarlo nuevamente al iniciar otra sesión.
 | Remoto al revisar           | `HEAD` y `origin/master` sin diferencias después de `git fetch origin`            |
 | Módulos presentes en código | Operaciones, Inventario, CRM y Finanzas                                           |
 | Radar Pallets               | 12 tareas marcadas `done`; no se verificó la importación en la BD                 |
-| Outreach actual             | SMTP de Hostinger; una sección antigua de `CLAUDE.md` todavía menciona Graph      |
+| Outreach actual             | SMTP vía `nodemailer`, host SiteGround; Hostinger en evaluación (ver DOC-002)     |
 | Validación técnica inicial  | Typecheck OK; 22 archivos de tests, 281 tests OK; build OK                        |
 | Validación de interfaz      | Revisión estática; pendiente recorrido autenticado en navegador                   |
 
@@ -60,21 +60,22 @@ Autor y propósito no confirmados. Preservarlos; no incluirlos en commits de otr
 
 ## Tareas compartidas
 
-| ID        | Tarea                                                       | Prioridad | Responsable | Estado    | Rama / alcance previsto                                                       |
-| --------- | ----------------------------------------------------------- | --------- | ----------- | --------- | ----------------------------------------------------------------------------- |
-| COORD-001 | Crear registro y enlazar las instrucciones de ambos agentes | Alta      | Codex       | TERMINADA | `master`; este documento, `AGENTS.md`, `CLAUDE.md`                            |
-| REV-001   | Familiarización con arquitectura, módulos y Git             | Alta      | Codex       | TERMINADA | Revisión sobre `7a70dbb`; sin cambios de código                               |
-| REV-002   | Revisión de interfaz con `emil-design-eng`                  | Alta      | Codex       | TERMINADA | Revisión estática sobre `7a70dbb`; sin cambios de código                      |
-| UX-001    | Navegación adaptable del panel administrativo               | Alta      | Codex       | TERMINADA | `components/ui/AdminSidebar.tsx`, `app/(admin)/layout.tsx`                    |
-| UX-002    | Diálogos de usuarios/inventario y scroll CRM (primera fase) | Alta      | Codex       | TERMINADA | Modal compartido, dos formularios, diálogo CRM y specs                        |
-| UX-003    | Permitir zoom y mejorar contraste de botones                | Alta      | Codex       | TERMINADA | `app/layout.tsx`, `app/globals.css`                                           |
-| UX-004    | Corregir y anunciar la sección activa del menú              | Media     | Codex       | TERMINADA | `components/ui/AdminSidebar.tsx`                                              |
-| UX-005    | Enlaces accesibles en lista de llamadas                     | Media     | Sin asignar | PROPUESTA | `components/crm/ListaLlamadas.tsx`                                            |
-| UX-006    | Mantener tamaño y foco del selector durante guardado        | Media     | Sin asignar | PROPUESTA | `components/crm/CallStatusSelect.tsx`                                         |
-| UX-007    | Movimiento reducido y animación según frecuencia de uso     | Media     | Sin asignar | PROPUESTA | CSS, dashboard y nueva orden del chofer, primitivas de UI                     |
-| UX-008    | Sustituir transiciones generales por propiedades explícitas | Baja      | Sin asignar | PROPUESTA | Botones, formularios y navegación                                             |
-| DOC-001   | Actualizar afirmaciones antiguas de la documentación        | Media     | Sin asignar | PROPUESTA | `README.md`, `CLAUDE.md`, `PROSPECCION_OUTREACH.md`                           |
-| UX-009    | Migrar los demás modales manuales al diálogo compartido     | Media     | Sin asignar | PROPUESTA | Otros formularios de Operaciones/Inventario; asignar archivos antes de editar |
+| ID        | Tarea                                                       | Prioridad | Responsable | Estado    | Rama / alcance previsto                                                                         |
+| --------- | ----------------------------------------------------------- | --------- | ----------- | --------- | ----------------------------------------------------------------------------------------------- |
+| COORD-001 | Crear registro y enlazar las instrucciones de ambos agentes | Alta      | Codex       | TERMINADA | `master`; este documento, `AGENTS.md`, `CLAUDE.md`                                              |
+| REV-001   | Familiarización con arquitectura, módulos y Git             | Alta      | Codex       | TERMINADA | Revisión sobre `7a70dbb`; sin cambios de código                                                 |
+| REV-002   | Revisión de interfaz con `emil-design-eng`                  | Alta      | Codex       | TERMINADA | Revisión estática sobre `7a70dbb`; sin cambios de código                                        |
+| UX-001    | Navegación adaptable del panel administrativo               | Alta      | Codex       | TERMINADA | `components/ui/AdminSidebar.tsx`, `app/(admin)/layout.tsx`                                      |
+| UX-002    | Diálogos de usuarios/inventario y scroll CRM (primera fase) | Alta      | Codex       | TERMINADA | Modal compartido, dos formularios, diálogo CRM y specs                                          |
+| UX-003    | Permitir zoom y mejorar contraste de botones                | Alta      | Codex       | TERMINADA | `app/layout.tsx`, `app/globals.css`                                                             |
+| UX-004    | Corregir y anunciar la sección activa del menú              | Media     | Codex       | TERMINADA | `components/ui/AdminSidebar.tsx`                                                                |
+| UX-005    | Enlaces accesibles en lista de llamadas                     | Media     | Claude      | TERMINADA | `master`; `components/crm/ListaLlamadas.tsx` y su spec                                          |
+| UX-006    | Mantener tamaño y foco del selector durante guardado        | Media     | Claude      | TERMINADA | `master`; `components/crm/CallStatusSelect.tsx` y su spec                                       |
+| UX-007    | Movimiento reducido y animación según frecuencia de uso     | Media     | Sin asignar | PROPUESTA | CSS, dashboard y nueva orden del chofer, primitivas de UI                                       |
+| UX-008    | Sustituir transiciones generales por propiedades explícitas | Baja      | Sin asignar | PROPUESTA | Botones, formularios y navegación                                                               |
+| DOC-001   | Actualizar afirmaciones antiguas de la documentación        | Media     | Claude      | TERMINADA | `master`; `README.md`, `CLAUDE.md`, `PROSPECCION_OUTREACH.md`, `ARQUITECTURA.md`, `PRODUCT.md`  |
+| UX-009    | Migrar los demás modales manuales al diálogo compartido     | Media     | Sin asignar | PROPUESTA | Otros formularios de Operaciones/Inventario; asignar archivos antes de editar                   |
+| DOC-002   | Alinear documentos con el proveedor de correo real          | Baja      | Sin asignar | PROPUESTA | Esperar decisión Hostinger/SiteGround; `PROSPECCION_OUTREACH.md`, `VARIABLES_ENTORNO.md`, specs |
 
 ## Historial de sesiones y entregas
 
@@ -170,6 +171,51 @@ Autor y propósito no confirmados. Preservarlos; no incluirlos en commits de otr
 - **Continuación:** UX-009 recoge los demás modales. UX-005 a UX-008 y DOC-001 siguen como
   propuestas pendientes de asignar; esta entrega no implica que se hayan implementado.
 - **Despliegue / BD:** sin operaciones de esquema ni despliegue manual; estado Vercel no verificado.
+
+### 2026-10-04 — UX-005 / UX-006 / DOC-001 — Claude
+
+- **Solicitud:** el usuario autoriza tomar las tres tareas propuestas tras releer el registro.
+- **Responsable / rama / base:** Claude, `master`, `894d249`.
+- **Archivos afectados:** `components/crm/ListaLlamadas.tsx` (+ spec nueva, no existía),
+  `components/crm/CallStatusSelect.tsx` y su spec; `README.md`, `CLAUDE.md`, `ARQUITECTURA.md`,
+  `PRODUCT.md`, `PROSPECCION_OUTREACH.md`; este registro.
+- **UX-005:** el nombre de la empresa es un `<Link>` real a la ficha (teclado, clic medio, otra
+  pestaña); el `onClick` de la fila se conserva como atajo de mouse y el enlace hace
+  `stopPropagation` para evitar un doble push. Búsqueda con `aria-label`; filtros en
+  `role="group"` con `aria-pressed`.
+- **UX-006:** el `<Select>` ya no se desmonta al guardar: queda con `readOnly` (conserva foco y
+  ancho de 150 px), el spinner reemplaza al chevron, `role="status"` anuncia el guardado y el
+  trigger lleva `aria-label` y `aria-busy`. Un segundo cambio durante el guardado se ignora.
+  `readOnly` se comprobó leyendo el código de Base UI (bloquea apertura y selección, no pone
+  `disabled`); **no** se probó en navegador.
+- **DOC-001:** corregido lo que el código contradice: Graph → SMTP/Hostinger (`CLAUDE.md` §7 y
+  texto de la iniciativa, comentario de `messageId`), estado de `PROSPECCION_OUTREACH.md`
+  («sin implementar» → implementado en código), SQLite y `/public/uploads` → Postgres y Vercel
+  Blob (`README.md`, `ARQUITECTURA.md`), roles `VENTAS`/`BODEGA`, Finanzas como cuarto módulo
+  sin bypass de ADMIN (`README.md`, `CLAUDE.md` §1, `PRODUCT.md`, `ARQUITECTURA.md`). Se reescribió
+  `README.md`: su sección «Cómo empezar (para Claude Code)» pedía construir lo que ya existe.
+- **Hallazgos sin resolver:** `ESQUEMA_BASE_DATOS.md`, `ESPECIFICACION_API.md` y
+  `FLUJOS_DE_USUARIO.md` solo describen Operaciones (enum `CHOFER RECEPCION ADMIN`); quedan
+  señalados en el README, no reescritos. `PROSPECCION_OUTREACH.md` §11 cita el host SMTP
+  `gtxm1185.siteground.biz` mientras todo el texto dice Hostinger. El uso de Outlook en
+  `PROSPECCION_OUTREACH.md` §1 se dejó: describe el trabajo humano, no el mecanismo de envío.
+- **Respuestas del usuario (2026-10-04):** (1) la compra de Hostinger está en evaluación, sin
+  decidir; hoy el host SMTP es SiteGround. Se corrigieron solo las dos frases nuevas de
+  `CLAUDE.md` para no afirmar proveedor; las menciones antiguas a Hostinger quedan en DOC-002.
+  (2) Los tres documentos que solo cubren Operaciones no se reescriben salvo necesidad.
+  (3) El usuario probó UX-005/UX-006 en navegador: funcionan bien. (4) Autoriza el commit.
+- **Formato:** `README.md`, `ARQUITECTURA.md` y `REGISTRO_TRABAJO.md` pasaron por prettier; los dos
+  primeros no estaban formateados antes, por eso el diff es mayor que el cambio de contenido (el
+  hook de pre-commit lo habría hecho igual).
+- **Verificación:** `npm run typecheck` OK; `npm run test` 23 archivos, 284 tests OK;
+  `npm run build` OK. Prueba en navegador de UX-005/UX-006 hecha por el usuario, sin
+  incidencias; Claude no ejecutó QA de navegador.
+- **Entrega Git:** commit local en `master` con los archivos de esta tarea; se identifica con
+  `git log -1 -- components/crm/ListaLlamadas.spec.md`. **Sin push** (no solicitado). Los dos
+  archivos de `blueprints/` preexistentes siguen sin tocar y quedaron fuera del commit.
+- **Despliegue / BD:** no aplica; sin cambios de esquema ni despliegue.
+- **Pendientes / siguiente responsable:** push a `origin/master` cuando el usuario lo autorice;
+  DOC-002 (proveedor de correo) queda como propuesta sin asignar.
 
 ## Plantilla para próximas entradas
 

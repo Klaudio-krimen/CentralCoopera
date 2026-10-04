@@ -2,9 +2,12 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
+import { Dialog } from "@base-ui/react/dialog";
 import { signOut } from "next-auth/react";
 import {
+  List,
+  X,
   Recycle,
   ChartBar,
   Warning,
@@ -28,6 +31,7 @@ import {
   type Icon,
 } from "@phosphor-icons/react";
 import { hasFinanceAccess } from "@/lib/access";
+import { isActiveNavHref } from "@/lib/navigation";
 
 // ── Module definitions ───────────────────────────────────────────────────────
 
@@ -195,7 +199,7 @@ export default function AdminSidebar({
   discrepanciasCount?: number;
 }) {
   const path = usePathname();
-  const router = useRouter();
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const isAdmin = role === "ADMIN";
 
@@ -220,18 +224,24 @@ export default function AdminSidebar({
     ...modulosSinBypass.filter(() => hasFinanceAccess({ role, moduleAccess })),
   ];
 
-  const [active, setActive] = useState<ModuleKey>(
-    visibleModules[0]?.key ?? "operaciones"
-  );
+  const active: ModuleKey = path.startsWith("/admin/crm")
+    ? "crm"
+    : path.startsWith("/admin/inventario")
+      ? "inventario"
+      : path.startsWith("/admin/finanzas")
+        ? "finanzas"
+        : "operaciones";
 
-  // El sidebar persiste entre navegaciones dentro de (admin); sincroniza el
-  // módulo resaltado con la ruta real en vez de quedarse en el estado inicial.
+  useEffect(() => setMobileOpen(false), [path]);
+
   useEffect(() => {
-    if (path.startsWith("/admin/crm")) setActive("crm");
-    else if (path.startsWith("/admin/inventario")) setActive("inventario");
-    else if (path.startsWith("/admin/finanzas")) setActive("finanzas");
-    else setActive("operaciones");
-  }, [path]);
+    const desktop = window.matchMedia("(min-width: 1024px)");
+    const closeOnDesktop = () => {
+      if (desktop.matches) setMobileOpen(false);
+    };
+    desktop.addEventListener("change", closeOnDesktop);
+    return () => desktop.removeEventListener("change", closeOnDesktop);
+  }, []);
 
   const mod = visibleModules.find((m) => m.key === active) ?? visibleModules[0];
 
@@ -244,77 +254,78 @@ export default function AdminSidebar({
 
   if (!mod) return null;
 
-  return (
-    <aside className="hidden lg:flex w-64 shrink-0 flex-col bg-white border-r border-zinc-200/70 min-h-[100dvh] sticky top-0">
-      {/* Brand */}
+  const navigation = (
+    <>
       <div className="px-5 pt-5 pb-4">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl bg-emerald-500 flex items-center justify-center shadow-[inset_0_0_0_1px_rgba(255,255,255,0.12)]">
-            <Recycle size={16} weight="bold" className="text-white" />
+          <div className="flex size-8 items-center justify-center rounded-xl bg-emerald-700">
+            <Recycle
+              size={16}
+              weight="bold"
+              className="text-white"
+              aria-hidden="true"
+            />
           </div>
           <div className="leading-none">
-            <p className="text-sm font-semibold text-zinc-900 tracking-tight">
+            <p className="text-sm font-semibold tracking-tight text-zinc-900">
               Central Coopera
             </p>
-            <p className="text-[11px] text-zinc-500 mt-1">{mod.tag}</p>
+            <p className="mt-1 text-xs text-zinc-500">{mod.tag}</p>
           </div>
         </div>
       </div>
 
-      {/* Module switcher — solo cuando hay más de un módulo disponible (ADMIN) */}
       {visibleModules.length > 1 && (
-        <div className="px-4 pb-3">
-          <div
-            className="flex gap-0.5 p-1 rounded-xl bg-zinc-100/80"
-            role="tablist"
-            aria-label="Módulos"
-          >
-            {visibleModules.map((m) => {
-              const on = m.key === active;
-              return (
-                <button
-                  key={m.key}
-                  role="tab"
-                  aria-selected={on}
-                  onClick={() => router.push(m.nav[0].href)}
-                  className={`flex-1 px-2 py-1.5 rounded-lg text-[12px] font-medium transition-all duration-200 ${
-                    on
-                      ? "bg-white text-zinc-900 shadow-[0_1px_2px_-1px_rgba(24,24,27,0.12)]"
-                      : "text-zinc-500 hover:text-zinc-800"
-                  }`}
-                >
-                  {m.label}
-                </button>
-              );
-            })}
-          </div>
-        </div>
+        <nav
+          aria-label="Módulos"
+          className="mx-4 mb-3 grid grid-cols-2 gap-1 rounded-xl bg-zinc-100/80 p-1"
+        >
+          {visibleModules.map((m) => (
+            <Link
+              key={m.key}
+              href={m.nav[0].href}
+              onClick={() => setMobileOpen(false)}
+              aria-current={m.key === active ? "location" : undefined}
+              className={`rounded-lg px-2 py-2 text-center text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-700 ${
+                m.key === active
+                  ? "bg-white text-zinc-900"
+                  : "text-zinc-600 hover:bg-white/60 hover:text-zinc-900"
+              }`}
+            >
+              {m.label}
+            </Link>
+          ))}
+        </nav>
       )}
 
-      {/* Nav */}
-      <nav className="flex-1 px-3 py-1 space-y-0.5">
+      <nav
+        aria-label={`Secciones de ${mod.label}`}
+        className="flex-1 space-y-0.5 px-3 py-1"
+      >
         {mod.nav.map(({ href, label, icon: Icon, badge }) => {
-          const itemActive = path.startsWith(href);
+          const itemActive = isActiveNavHref(path, href);
           const showCount = badge === "discrepancias" && discrepanciasCount > 0;
-
           return (
             <Link
               key={href}
               href={href}
-              className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm transition-all duration-200 ${
+              onClick={() => setMobileOpen(false)}
+              aria-current={itemActive ? "page" : undefined}
+              className={`flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-700 ${
                 itemActive
                   ? `${mod.activeBg} ${mod.activeText} font-medium`
-                  : "text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50"
+                  : "text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900"
               }`}
             >
               <Icon
                 size={17}
                 weight={itemActive ? "fill" : "regular"}
                 className={itemActive ? mod.activeIcon : "text-zinc-400"}
+                aria-hidden="true"
               />
               {label}
               {showCount && (
-                <span className="ml-auto text-[11px] font-semibold bg-red-100 text-red-600 px-1.5 py-0.5 rounded-full tabular-nums">
+                <span className="ml-auto rounded-full bg-red-100 px-1.5 py-0.5 text-xs font-semibold tabular-nums text-red-700">
                   {discrepanciasCount}
                 </span>
               )}
@@ -323,28 +334,71 @@ export default function AdminSidebar({
         })}
       </nav>
 
-      {/* User footer */}
-      <div className="px-3 pb-4 pt-3 border-t border-zinc-200/70 mt-2 space-y-1">
+      <div className="mt-2 space-y-1 border-t border-zinc-200/70 px-3 pb-4 pt-3">
         <div className="flex items-center gap-2.5 px-2 py-1.5">
-          <div className="w-8 h-8 rounded-full bg-zinc-100 flex items-center justify-center text-[11px] font-semibold text-zinc-600 shrink-0">
+          <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-zinc-100 text-xs font-semibold text-zinc-600">
             {initials || "CC"}
           </div>
           <div className="min-w-0">
-            <p className="text-[13px] font-medium text-zinc-900 truncate leading-tight">
+            <p className="truncate text-sm font-medium leading-tight text-zinc-900">
               {userName}
             </p>
-            <p className="text-[11px] text-zinc-500 truncate">{email}</p>
+            <p className="truncate text-xs text-zinc-500">{email}</p>
           </div>
         </div>
         <button
+          type="button"
           onClick={() => signOut({ callbackUrl: "/login" })}
-          aria-label="Cerrar sesión"
-          className="flex items-center gap-2 w-full px-3 py-2.5 rounded-xl text-sm text-zinc-600 hover:bg-red-50 hover:text-red-600 transition-colors"
+          className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-sm text-zinc-600 transition-colors hover:bg-red-50 hover:text-red-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-700"
         >
-          <SignOut size={16} />
+          <SignOut size={16} aria-hidden="true" />
           Cerrar sesión
         </button>
       </div>
-    </aside>
+    </>
+  );
+
+  return (
+    <>
+      <Dialog.Root open={mobileOpen} onOpenChange={setMobileOpen}>
+        <header className="sticky top-0 z-30 flex items-center gap-3 border-b border-zinc-200 bg-white px-4 py-3 lg:hidden">
+          <Dialog.Trigger
+            aria-label="Abrir menú de navegación"
+            className="flex size-11 shrink-0 items-center justify-center rounded-xl text-zinc-700 hover:bg-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-700"
+          >
+            <List size={22} aria-hidden="true" />
+          </Dialog.Trigger>
+          <div className="min-w-0">
+            <p className="text-sm font-semibold text-zinc-900">
+              Central Coopera
+            </p>
+            <p className="text-xs text-zinc-500">{mod.tag}</p>
+          </div>
+        </header>
+        <Dialog.Portal>
+          <Dialog.Backdrop className="fixed inset-0 z-50 bg-black/30 transition-opacity duration-150 data-[starting-style]:opacity-0 data-[ending-style]:opacity-0 motion-reduce:transition-none" />
+          <Dialog.Popup className="fixed inset-y-0 left-0 z-50 flex h-[100dvh] w-80 max-w-[calc(100%-3rem)] flex-col overflow-y-auto overscroll-contain bg-white shadow-xl outline-none transition-transform duration-200 [transition-timing-function:cubic-bezier(0.32,0.72,0,1)] data-[starting-style]:-translate-x-full data-[ending-style]:-translate-x-full motion-reduce:transition-none">
+            <div className="flex items-center justify-between border-b border-zinc-200 px-5 py-3">
+              <Dialog.Title className="text-sm font-semibold text-zinc-900">
+                Navegación
+              </Dialog.Title>
+              <Dialog.Close
+                aria-label="Cerrar menú de navegación"
+                className="flex size-11 items-center justify-center rounded-xl text-zinc-600 hover:bg-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-700"
+              >
+                <X size={20} aria-hidden="true" />
+              </Dialog.Close>
+            </div>
+            {navigation}
+          </Dialog.Popup>
+        </Dialog.Portal>
+      </Dialog.Root>
+      <aside
+        aria-label="Navegación principal"
+        className="sticky top-0 hidden h-[100dvh] w-64 shrink-0 flex-col overflow-y-auto border-r border-zinc-200/70 bg-white lg:flex"
+      >
+        {navigation}
+      </aside>
+    </>
   );
 }

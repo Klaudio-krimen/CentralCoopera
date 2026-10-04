@@ -60,20 +60,21 @@ Autor y propósito no confirmados. Preservarlos; no incluirlos en commits de otr
 
 ## Tareas compartidas
 
-| ID        | Tarea                                                       | Prioridad | Responsable | Estado    | Rama / alcance previsto                                    |
-| --------- | ----------------------------------------------------------- | --------- | ----------- | --------- | ---------------------------------------------------------- |
-| COORD-001 | Crear registro y enlazar las instrucciones de ambos agentes | Alta      | Codex       | TERMINADA | `master`; este documento, `AGENTS.md`, `CLAUDE.md`         |
-| REV-001   | Familiarización con arquitectura, módulos y Git             | Alta      | Codex       | TERMINADA | Revisión sobre `7a70dbb`; sin cambios de código            |
-| REV-002   | Revisión de interfaz con `emil-design-eng`                  | Alta      | Codex       | TERMINADA | Revisión estática sobre `7a70dbb`; sin cambios de código   |
-| UX-001    | Navegación adaptable del panel administrativo               | Alta      | Sin asignar | PROPUESTA | `components/ui/AdminSidebar.tsx`, `app/(admin)/layout.tsx` |
-| UX-002    | Diálogos accesibles y contenido desplazable                 | Alta      | Sin asignar | PROPUESTA | Modales manuales, `components/crm/ui/dialog.tsx` y specs   |
-| UX-003    | Permitir zoom y mejorar contraste de botones                | Alta      | Sin asignar | PROPUESTA | `app/layout.tsx`, `app/globals.css`                        |
-| UX-004    | Corregir y anunciar la sección activa del menú              | Media     | Sin asignar | PROPUESTA | `components/ui/AdminSidebar.tsx`                           |
-| UX-005    | Enlaces accesibles en lista de llamadas                     | Media     | Sin asignar | PROPUESTA | `components/crm/ListaLlamadas.tsx`                         |
-| UX-006    | Mantener tamaño y foco del selector durante guardado        | Media     | Sin asignar | PROPUESTA | `components/crm/CallStatusSelect.tsx`                      |
-| UX-007    | Movimiento reducido y animación según frecuencia de uso     | Media     | Sin asignar | PROPUESTA | CSS, dashboard y nueva orden del chofer, primitivas de UI  |
-| UX-008    | Sustituir transiciones generales por propiedades explícitas | Baja      | Sin asignar | PROPUESTA | Botones, formularios y navegación                          |
-| DOC-001   | Actualizar afirmaciones antiguas de la documentación        | Media     | Sin asignar | PROPUESTA | `README.md`, `CLAUDE.md`, `PROSPECCION_OUTREACH.md`        |
+| ID        | Tarea                                                       | Prioridad | Responsable | Estado      | Rama / alcance previsto                                                       |
+| --------- | ----------------------------------------------------------- | --------- | ----------- | ----------- | ----------------------------------------------------------------------------- |
+| COORD-001 | Crear registro y enlazar las instrucciones de ambos agentes | Alta      | Codex       | TERMINADA   | `master`; este documento, `AGENTS.md`, `CLAUDE.md`                            |
+| REV-001   | Familiarización con arquitectura, módulos y Git             | Alta      | Codex       | TERMINADA   | Revisión sobre `7a70dbb`; sin cambios de código                               |
+| REV-002   | Revisión de interfaz con `emil-design-eng`                  | Alta      | Codex       | TERMINADA   | Revisión estática sobre `7a70dbb`; sin cambios de código                      |
+| UX-001    | Navegación adaptable del panel administrativo               | Alta      | Codex       | EN REVISIÓN | `components/ui/AdminSidebar.tsx`, `app/(admin)/layout.tsx`                    |
+| UX-002    | Diálogos de usuarios/inventario y scroll CRM (primera fase) | Alta      | Codex       | EN REVISIÓN | Modal compartido, dos formularios, diálogo CRM y specs                        |
+| UX-003    | Permitir zoom y mejorar contraste de botones                | Alta      | Codex       | EN REVISIÓN | `app/layout.tsx`, `app/globals.css`                                           |
+| UX-004    | Corregir y anunciar la sección activa del menú              | Media     | Codex       | EN REVISIÓN | `components/ui/AdminSidebar.tsx`                                              |
+| UX-005    | Enlaces accesibles en lista de llamadas                     | Media     | Sin asignar | PROPUESTA   | `components/crm/ListaLlamadas.tsx`                                            |
+| UX-006    | Mantener tamaño y foco del selector durante guardado        | Media     | Sin asignar | PROPUESTA   | `components/crm/CallStatusSelect.tsx`                                         |
+| UX-007    | Movimiento reducido y animación según frecuencia de uso     | Media     | Sin asignar | PROPUESTA   | CSS, dashboard y nueva orden del chofer, primitivas de UI                     |
+| UX-008    | Sustituir transiciones generales por propiedades explícitas | Baja      | Sin asignar | PROPUESTA   | Botones, formularios y navegación                                             |
+| DOC-001   | Actualizar afirmaciones antiguas de la documentación        | Media     | Sin asignar | PROPUESTA   | `README.md`, `CLAUDE.md`, `PROSPECCION_OUTREACH.md`                           |
+| UX-009    | Migrar los demás modales manuales al diálogo compartido     | Media     | Sin asignar | PROPUESTA   | Otros formularios de Operaciones/Inventario; asignar archivos antes de editar |
 
 ## Historial de sesiones y entregas
 
@@ -132,6 +133,39 @@ Autor y propósito no confirmados. Preservarlos; no incluirlos en commits de otr
   Incluye únicamente los tres documentos de esta tarea. El commit posterior que contiene este
   cierre se identifica con `git log -1 -- REGISTRO_TRABAJO.md`.
 - **Despliegue / BD:** sin despliegue manual ni cambios de esquema; estado de Vercel no verificado.
+
+### 2026-10-04 — UX-001 / UX-002 / UX-003 / UX-004 — Codex
+
+- **Solicitud:** usuario autoriza comenzar las mejoras de código recomendadas.
+- **Responsable / rama / base:** Codex, `master`, `364e63a`.
+- **Alcance:** menú administrativo móvil, navegación activa, modal compartido accesible para
+  NuevoUsuarioModal e ItemFormModal, scroll del diálogo CRM, zoom y contraste de botones base.
+- **Archivos previstos:** AdminSidebar y su spec, Modal y su spec, modales de usuarios/inventario
+  y sus specs, diálogo CRM y su spec, layouts global/administrativo, app/globals.css y este registro.
+- **Límites:** otros modales manuales se registrarán como una continuación; no se cambia middleware,
+  permisos, endpoints ni BD. Cambios preexistentes de blueprints conservados.
+- **Implementación:** menú móvil y escritorio comparten enlaces y permisos; módulos como enlaces
+  y sección activa anunciada. Se elimina el doble resaltado de Finanzas y se prueba la lógica pura
+  en `lib/navigation.test.ts`. Modal compartido Base UI: captura/retorno de foco, Escape, scroll,
+  etiquetas de campos y guardado que impide cierre. Texto auxiliar y errores con contraste mejorado.
+  Zoom habilitado; botones base con contraste mayor, foco visible y transiciones explícitas.
+- **QA en navegador:** skill `agent-browser`, Chromium aislado, servidor local y pantalla temporal
+  con componentes reales/datos ficticios. Probados 320x568, 390x600, 390x844 y 1440x900; sin
+  overflow horizontal. Menú cierra al navegar y pasar a escritorio; Escape devuelve foco.
+  Permisos visuales: ADMIN sin Finanzas, ADMIN con FINANZAS_LECTURA y VENTAS solo CRM.
+  Inventario conserva ancho de 512 px en escritorio y scroll en viewport pequeño. Movimiento
+  reducido verificado en drawer, modal compartido y diálogo CRM; acción final accesible con foco.
+  POST simulado en navegador: una petición, cierre bloqueado durante guardado, error anunciado,
+  datos conservados y reintento disponible. Sin escritura real de usuarios/inventario.
+- **Accesibilidad automática:** axe sin incidencias en los subárboles revisados de navegación,
+  modal de inventario y modal de usuario (incluido error simulado), después de corregir contraste.
+  No equivale a validación con lector de pantalla físico ni prueba de todos los flujos autenticados.
+- **Limpieza:** pantalla temporal retirada antes del build; browser y servidor QA propios cerrados.
+- **Verificación final:** `npm run typecheck`, `npm run test` y `npm run build` OK;
+  23 archivos, 284 tests. Build final sin advertencias de las curvas CSS añadidas.
+- **Entrega:** commit/push pendientes; solo archivos de esta tanda. Continuación de otros modales:
+  UX-009; UX-005 a UX-008 y DOC-001 conservan su estado de propuesta.
+- **Despliegue / BD:** sin operaciones de esquema ni despliegue manual; estado Vercel no verificado.
 
 ## Plantilla para próximas entradas
 

@@ -60,20 +60,20 @@ Autor y propósito no confirmados. Preservarlos; no incluirlos en commits de otr
 
 ## Tareas compartidas
 
-| ID        | Tarea                                                       | Prioridad | Responsable | Estado      | Rama / alcance previsto                                    |
-| --------- | ----------------------------------------------------------- | --------- | ----------- | ----------- | ---------------------------------------------------------- |
-| COORD-001 | Crear registro y enlazar las instrucciones de ambos agentes | Alta      | Codex       | EN REVISIÓN | `master`; este documento, `AGENTS.md`, `CLAUDE.md`         |
-| REV-001   | Familiarización con arquitectura, módulos y Git             | Alta      | Codex       | TERMINADA   | Revisión sobre `7a70dbb`; sin cambios de código            |
-| REV-002   | Revisión de interfaz con `emil-design-eng`                  | Alta      | Codex       | TERMINADA   | Revisión estática sobre `7a70dbb`; sin cambios de código   |
-| UX-001    | Navegación adaptable del panel administrativo               | Alta      | Sin asignar | PROPUESTA   | `components/ui/AdminSidebar.tsx`, `app/(admin)/layout.tsx` |
-| UX-002    | Diálogos accesibles y contenido desplazable                 | Alta      | Sin asignar | PROPUESTA   | Modales manuales, `components/crm/ui/dialog.tsx` y specs   |
-| UX-003    | Permitir zoom y mejorar contraste de botones                | Alta      | Sin asignar | PROPUESTA   | `app/layout.tsx`, `app/globals.css`                        |
-| UX-004    | Corregir y anunciar la sección activa del menú              | Media     | Sin asignar | PROPUESTA   | `components/ui/AdminSidebar.tsx`                           |
-| UX-005    | Enlaces accesibles en lista de llamadas                     | Media     | Sin asignar | PROPUESTA   | `components/crm/ListaLlamadas.tsx`                         |
-| UX-006    | Mantener tamaño y foco del selector durante guardado        | Media     | Sin asignar | PROPUESTA   | `components/crm/CallStatusSelect.tsx`                      |
-| UX-007    | Movimiento reducido y animación según frecuencia de uso     | Media     | Sin asignar | PROPUESTA   | CSS, dashboard y nueva orden del chofer, primitivas de UI  |
-| UX-008    | Sustituir transiciones generales por propiedades explícitas | Baja      | Sin asignar | PROPUESTA   | Botones, formularios y navegación                          |
-| DOC-001   | Actualizar afirmaciones antiguas de la documentación        | Media     | Sin asignar | PROPUESTA   | `README.md`, `CLAUDE.md`, `PROSPECCION_OUTREACH.md`        |
+| ID        | Tarea                                                       | Prioridad | Responsable | Estado    | Rama / alcance previsto                                    |
+| --------- | ----------------------------------------------------------- | --------- | ----------- | --------- | ---------------------------------------------------------- |
+| COORD-001 | Crear registro y enlazar las instrucciones de ambos agentes | Alta      | Codex       | TERMINADA | `master`; este documento, `AGENTS.md`, `CLAUDE.md`         |
+| REV-001   | Familiarización con arquitectura, módulos y Git             | Alta      | Codex       | TERMINADA | Revisión sobre `7a70dbb`; sin cambios de código            |
+| REV-002   | Revisión de interfaz con `emil-design-eng`                  | Alta      | Codex       | TERMINADA | Revisión estática sobre `7a70dbb`; sin cambios de código   |
+| UX-001    | Navegación adaptable del panel administrativo               | Alta      | Sin asignar | PROPUESTA | `components/ui/AdminSidebar.tsx`, `app/(admin)/layout.tsx` |
+| UX-002    | Diálogos accesibles y contenido desplazable                 | Alta      | Sin asignar | PROPUESTA | Modales manuales, `components/crm/ui/dialog.tsx` y specs   |
+| UX-003    | Permitir zoom y mejorar contraste de botones                | Alta      | Sin asignar | PROPUESTA | `app/layout.tsx`, `app/globals.css`                        |
+| UX-004    | Corregir y anunciar la sección activa del menú              | Media     | Sin asignar | PROPUESTA | `components/ui/AdminSidebar.tsx`                           |
+| UX-005    | Enlaces accesibles en lista de llamadas                     | Media     | Sin asignar | PROPUESTA | `components/crm/ListaLlamadas.tsx`                         |
+| UX-006    | Mantener tamaño y foco del selector durante guardado        | Media     | Sin asignar | PROPUESTA | `components/crm/CallStatusSelect.tsx`                      |
+| UX-007    | Movimiento reducido y animación según frecuencia de uso     | Media     | Sin asignar | PROPUESTA | CSS, dashboard y nueva orden del chofer, primitivas de UI  |
+| UX-008    | Sustituir transiciones generales por propiedades explícitas | Baja      | Sin asignar | PROPUESTA | Botones, formularios y navegación                          |
+| DOC-001   | Actualizar afirmaciones antiguas de la documentación        | Media     | Sin asignar | PROPUESTA | `README.md`, `CLAUDE.md`, `PROSPECCION_OUTREACH.md`        |
 
 ## Historial de sesiones y entregas
 
@@ -127,8 +127,11 @@ Autor y propósito no confirmados. Preservarlos; no incluirlos en commits de otr
 - **Decisión:** separar revisiones terminadas de propuestas pendientes; el registro documenta
   el trabajo y no autoriza por sí mismo la implementación del backlog.
 - **Verificación:** typecheck OK; 22 archivos de tests, 281 tests OK; build OK.
-- **Entrega Git:** pendiente; solo se incluirán los tres documentos de esta tarea.
-- **Despliegue / BD:** esta tarea no modifica aplicación ni esquema.
+- **Entrega Git:** [commit `d1c4dd8`](https://github.com/Klaudio-krimen/CentralCoopera/commit/d1c4dd83baae506eb07f81275d9ee486db25f8c9),
+  publicado en `origin/master`; `git ls-remote origin refs/heads/master` confirmó ese hash.
+  Incluye únicamente los tres documentos de esta tarea. El commit posterior que contiene este
+  cierre se identifica con `git log -1 -- REGISTRO_TRABAJO.md`.
+- **Despliegue / BD:** sin despliegue manual ni cambios de esquema; estado de Vercel no verificado.
 
 ## Plantilla para próximas entradas
 

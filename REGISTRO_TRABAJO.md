@@ -243,8 +243,10 @@ Autor y propósito no confirmados. Preservarlos; no incluirlos en commits de otr
   positivos versionados revisados y cero exposiciones reales confirmadas; `npm audit` termina con
   hallazgos (1 crítico, 20 altos, 3 moderados, 1 bajo). Typecheck, tests y build no aplican a esta
   auditoría read-only y no se ejecutaron.
-- **Entrega Git:** informe/registro listos para publicar en `origin/master`; sin código ni archivos
-  de blueprint incluidos.
+- **Entrega Git:** commit `d38ae93` (`docs: cerrar auditoria de seguridad AUD-001`) publicado en
+  `origin/master`; `git fetch` y `git ls-remote` confirmaron el hash completo
+  `d38ae93a635e47959fceec5bd68bb5d35f960448`. Solo incluye informe y registro; los blueprints
+  locales quedaron fuera.
 - **Despliegue / BD:** no aplica; configuración efectiva de Vercel y base de datos no verificada.
 - **Siguiente paso:** priorizar SEC-001 a SEC-003 antes de CAL-001; SEC-004/SEC-005 quedan como
   hardening propuesto. Las tareas de implementación continúan sin asignar.

@@ -60,22 +60,29 @@ Autor y propósito no confirmados. Preservarlos; no incluirlos en commits de otr
 
 ## Tareas compartidas
 
-| ID        | Tarea                                                       | Prioridad | Responsable | Estado    | Rama / alcance previsto                                                                         |
-| --------- | ----------------------------------------------------------- | --------- | ----------- | --------- | ----------------------------------------------------------------------------------------------- |
-| COORD-001 | Crear registro y enlazar las instrucciones de ambos agentes | Alta      | Codex       | TERMINADA | `master`; este documento, `AGENTS.md`, `CLAUDE.md`                                              |
-| REV-001   | Familiarización con arquitectura, módulos y Git             | Alta      | Codex       | TERMINADA | Revisión sobre `7a70dbb`; sin cambios de código                                                 |
-| REV-002   | Revisión de interfaz con `emil-design-eng`                  | Alta      | Codex       | TERMINADA | Revisión estática sobre `7a70dbb`; sin cambios de código                                        |
-| UX-001    | Navegación adaptable del panel administrativo               | Alta      | Codex       | TERMINADA | `components/ui/AdminSidebar.tsx`, `app/(admin)/layout.tsx`                                      |
-| UX-002    | Diálogos de usuarios/inventario y scroll CRM (primera fase) | Alta      | Codex       | TERMINADA | Modal compartido, dos formularios, diálogo CRM y specs                                          |
-| UX-003    | Permitir zoom y mejorar contraste de botones                | Alta      | Codex       | TERMINADA | `app/layout.tsx`, `app/globals.css`                                                             |
-| UX-004    | Corregir y anunciar la sección activa del menú              | Media     | Codex       | TERMINADA | `components/ui/AdminSidebar.tsx`                                                                |
-| UX-005    | Enlaces accesibles en lista de llamadas                     | Media     | Claude      | TERMINADA | `master`; `components/crm/ListaLlamadas.tsx` y su spec                                          |
-| UX-006    | Mantener tamaño y foco del selector durante guardado        | Media     | Claude      | TERMINADA | `master`; `components/crm/CallStatusSelect.tsx` y su spec                                       |
-| UX-007    | Movimiento reducido y animación según frecuencia de uso     | Media     | Sin asignar | PROPUESTA | CSS, dashboard y nueva orden del chofer, primitivas de UI                                       |
-| UX-008    | Sustituir transiciones generales por propiedades explícitas | Baja      | Sin asignar | PROPUESTA | Botones, formularios y navegación                                                               |
-| DOC-001   | Actualizar afirmaciones antiguas de la documentación        | Media     | Claude      | TERMINADA | `master`; `README.md`, `CLAUDE.md`, `PROSPECCION_OUTREACH.md`, `ARQUITECTURA.md`, `PRODUCT.md`  |
-| UX-009    | Migrar los demás modales manuales al diálogo compartido     | Media     | Sin asignar | PROPUESTA | Otros formularios de Operaciones/Inventario; asignar archivos antes de editar                   |
-| DOC-002   | Alinear documentos con el proveedor de correo real          | Baja      | Sin asignar | PROPUESTA | Esperar decisión Hostinger/SiteGround; `PROSPECCION_OUTREACH.md`, `VARIABLES_ENTORNO.md`, specs |
+| ID        | Tarea                                                              | Prioridad | Responsable | Estado    | Rama / alcance previsto                                                                         |
+| --------- | ------------------------------------------------------------------ | --------- | ----------- | --------- | ----------------------------------------------------------------------------------------------- |
+| COORD-001 | Crear registro y enlazar las instrucciones de ambos agentes        | Alta      | Codex       | TERMINADA | `master`; este documento, `AGENTS.md`, `CLAUDE.md`                                              |
+| REV-001   | Familiarización con arquitectura, módulos y Git                    | Alta      | Codex       | TERMINADA | Revisión sobre `7a70dbb`; sin cambios de código                                                 |
+| REV-002   | Revisión de interfaz con `emil-design-eng`                         | Alta      | Codex       | TERMINADA | Revisión estática sobre `7a70dbb`; sin cambios de código                                        |
+| UX-001    | Navegación adaptable del panel administrativo                      | Alta      | Codex       | TERMINADA | `components/ui/AdminSidebar.tsx`, `app/(admin)/layout.tsx`                                      |
+| UX-002    | Diálogos de usuarios/inventario y scroll CRM (primera fase)        | Alta      | Codex       | TERMINADA | Modal compartido, dos formularios, diálogo CRM y specs                                          |
+| UX-003    | Permitir zoom y mejorar contraste de botones                       | Alta      | Codex       | TERMINADA | `app/layout.tsx`, `app/globals.css`                                                             |
+| UX-004    | Corregir y anunciar la sección activa del menú                     | Media     | Codex       | TERMINADA | `components/ui/AdminSidebar.tsx`                                                                |
+| UX-005    | Enlaces accesibles en lista de llamadas                            | Media     | Claude      | TERMINADA | `master`; `components/crm/ListaLlamadas.tsx` y su spec                                          |
+| UX-006    | Mantener tamaño y foco del selector durante guardado               | Media     | Claude      | TERMINADA | `master`; `components/crm/CallStatusSelect.tsx` y su spec                                       |
+| UX-007    | Movimiento reducido y animación según frecuencia de uso            | Media     | Sin asignar | PROPUESTA | CSS, dashboard y nueva orden del chofer, primitivas de UI                                       |
+| UX-008    | Sustituir transiciones generales por propiedades explícitas        | Baja      | Sin asignar | PROPUESTA | Botones, formularios y navegación                                                               |
+| DOC-001   | Actualizar afirmaciones antiguas de la documentación               | Media     | Claude      | TERMINADA | `master`; `README.md`, `CLAUDE.md`, `PROSPECCION_OUTREACH.md`, `ARQUITECTURA.md`, `PRODUCT.md`  |
+| UX-009    | Migrar los demás modales manuales al diálogo compartido            | Media     | Sin asignar | PROPUESTA | Otros formularios de Operaciones/Inventario; asignar archivos antes de editar                   |
+| DOC-002   | Alinear documentos con el proveedor de correo real                 | Baja      | Sin asignar | PROPUESTA | Esperar decisión Hostinger/SiteGround; `PROSPECCION_OUTREACH.md`, `VARIABLES_ENTORNO.md`, specs |
+| AUD-001   | Auditoría de seguridad (Cyber Neo), POO y código limpio; solo plan | Alta      | Codex       | TERMINADA | Revisión de solo lectura sobre `43a0827`; [informe y plan](docs/auditorias/AUD-001-seguridad-y-calidad-2026-10-04.md) |
+| SEC-001   | Corregir dependencias críticas/altas y actualizar Next.js           | Alta      | Sin asignar | PROPUESTA | Next.js LTS, Nodemailer, Sharp y árbol npm; ver AUD-001                                          |
+| SEC-002   | Cerrar brechas de autorización en APIs operativas                   | Alta      | Sin asignar | PROPUESTA | Órdenes, evidencias y consulta de empresas; definir matriz rol/módulo/estado                    |
+| SEC-003   | Hacer atómico el rate limit de autenticación                         | Alta      | Sin asignar | PROPUESTA | `lib/finanzas/rate-limit.ts`, login y pruebas de concurrencia                                  |
+| SEC-004   | Exigir STARTTLS en SMTP                                               | Media     | Sin asignar | PROPUESTA | `lib/outreach/smtp.ts`; validar puertos/TLS y compatibilidad con proveedor                     |
+| SEC-005   | Endurecer webhook, CSP, logs, errores y exclusiones                   | Media     | Sin asignar | PROPUESTA | Hallazgos preventivos de AUD-001; revisar integraciones antes de cambiar contratos             |
+| CAL-001   | Modularizar pantallas grandes y reducir casts inseguros               | Media     | Sin asignar | PROPUESTA | Nueva orden del chofer, tabla/formulario de inventario y tipado gradual                        |
 
 ## Historial de sesiones y entregas
 
@@ -168,8 +175,8 @@ Autor y propósito no confirmados. Preservarlos; no incluirlos en commits de otr
   publicado en `origin/master`; hash confirmado con `git ls-remote`. Incluye únicamente los 17
   archivos de esta tanda. El commit posterior de cierre documental se identifica con
   `git log -1 -- REGISTRO_TRABAJO.md`.
-- **Continuación:** UX-009 recoge los demás modales. UX-005 a UX-008 y DOC-001 siguen como
-  propuestas pendientes de asignar; esta entrega no implica que se hayan implementado.
+- **Continuación:** UX-009 recoge los demás modales. UX-007, UX-008 y DOC-002 siguen como
+  propuestas pendientes; esta entrega no implica que se hayan implementado.
 - **Despliegue / BD:** sin operaciones de esquema ni despliegue manual; estado Vercel no verificado.
 
 ### 2026-10-04 — UX-005 / UX-006 / DOC-001 — Claude
@@ -216,6 +223,31 @@ Autor y propósito no confirmados. Preservarlos; no incluirlos en commits de otr
 - **Despliegue / BD:** no aplica; sin cambios de esquema ni despliegue.
 - **Pendientes / siguiente responsable:** push a `origin/master` cuando el usuario lo autorice;
   DOC-002 (proveedor de correo) queda como propuesta sin asignar.
+
+### 2026-10-04 — AUD-001 — Codex
+
+- **Solicitud y continuidad:** actualizar el estado de Claude y completar su auditoría Cyber Neo,
+  POO y código limpio, manteniendo la revisión en modo de solo lectura sobre la base `43a0827`.
+- **Revisión:** SCA con `npm audit`, SAST estático de 375 archivos/52 handlers API, escaneo de
+  secretos, configuración/infraestructura y supply chain/CI. No se ejecutó la aplicación ni se
+  inspeccionó producción. La auditoría identificó dependencias con avisos críticos/altos, brechas
+  de autorización en órdenes/evidencias y debilidades adicionales de rate limit y SMTP; no confirmó
+  secretos reales versionados. El detalle, evidencia, condiciones y límites están en
+  `docs/auditorias/AUD-001-seguridad-y-calidad-2026-10-04.md`.
+- **Calidad/POO:** TypeScript tiene `strict: true`; se propone modularizar tres pantallas extensas,
+  reducir gradualmente 86 usos de `any`/casts/supresiones y mantener las reglas puras. No se
+  recomienda convertir componentes funcionales a clases sin una necesidad de estado/ciclo de vida.
+- **Cambios:** informe y plan compartidos en `docs/`; no se editó código, dependencias ni esquema.
+  Los archivos locales de blueprint de terceros se conservaron fuera de esta tarea.
+- **Verificación:** `check_lockfiles.py` sin hallazgos; escáner de secretos con cinco falsos
+  positivos versionados revisados y cero exposiciones reales confirmadas; `npm audit` termina con
+  hallazgos (1 crítico, 20 altos, 3 moderados, 1 bajo). Typecheck, tests y build no aplican a esta
+  auditoría read-only y no se ejecutaron.
+- **Entrega Git:** informe/registro listos para publicar en `origin/master`; sin código ni archivos
+  de blueprint incluidos.
+- **Despliegue / BD:** no aplica; configuración efectiva de Vercel y base de datos no verificada.
+- **Siguiente paso:** priorizar SEC-001 a SEC-003 antes de CAL-001; SEC-004/SEC-005 quedan como
+  hardening propuesto. Las tareas de implementación continúan sin asignar.
 
 ## Plantilla para próximas entradas
 

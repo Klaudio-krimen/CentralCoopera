@@ -4,6 +4,14 @@
 > Se carga automáticamente al abrir el proyecto. Manténlo corto y actualizado.
 > Si algo aquí contradice el código, **el código gana** — y este archivo debe corregirse.
 
+## Coordinación entre Codex y Claude
+
+Leer [REGISTRO_TRABAJO.md](./REGISTRO_TRABAJO.md) al comenzar cada sesión.
+Antes de editar, registrar tarea, responsable, estado, archivos previstos y rama; al cerrar,
+registrar cambios, decisiones, verificaciones y referencia de commit/PR o publicación pendiente.
+Respetar las tareas y modificaciones del otro agente; seguir el protocolo de ese documento.
+Este archivo conserva las reglas técnicas; el registro conserva el historial de trabajo compartido.
+
 ---
 
 ## 1. Qué es esto

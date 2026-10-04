@@ -4,6 +4,14 @@ Intranet de Coopera Pro (Santiago, Chile): Operaciones, Inventario, CRM y **Fina
 Next.js 14 (App Router) · TypeScript 5 · Prisma 5 sobre PostgreSQL · NextAuth v4 · Tailwind 3 ·
 Vitest · desplegado en Vercel.
 
+## Coordinación entre Codex y Claude
+
+Antes de iniciar trabajo, leer [REGISTRO_TRABAJO.md](./REGISTRO_TRABAJO.md).
+Registrar allí la tarea, responsable, estado, archivos previstos y rama antes de editar;
+al cerrar, anotar cambios, decisiones, verificaciones y referencia de commit/PR o publicación pendiente.
+Respetar las tareas y modificaciones del otro agente. El protocolo completo vive en ese documento.
+Las reglas técnicas y de seguridad siguen teniendo su fuente de verdad en `CLAUDE.md`.
+
 ## Comandos
 
 | Tarea              | Comando                                      |

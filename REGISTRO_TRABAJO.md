@@ -357,9 +357,10 @@ Autor y propósito no confirmados. Preservarlos; no incluirlos en commits de otr
   `AGENTS.md`; luego revisar `npm run backfill:epp-inventario -- --dry-run` y aplicar sólo tras
   confirmar sus coincidencias con `npm run backfill:epp-inventario -- --apply`. No se crearon ítems
   ni se inventaron cantidades.
-- **Entrega Git:** implementación local lista en `security/aud001-remediation`; registrar hash y
-  push verificado después del commit. Los dos cambios previos de Claude en `blueprints/` continúan
-  preservados y fuera de staging.
+- **Entrega Git:** commit `a93e7e0c1ea550128520352817c0f5cc17c7439c`
+  (`feat: add EPP inventory category`) publicado en
+  `origin/security/aud001-remediation`; `git ls-remote` confirmó el mismo hash. Los dos cambios
+  previos de Claude en `blueprints/` continúan preservados y fuera de staging.
 
 ## Plantilla para próximas entradas
 

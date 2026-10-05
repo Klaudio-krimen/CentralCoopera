@@ -2,11 +2,11 @@
 // Marcela en Excel, no un parser — por eso además de las comillas hay que
 // neutralizar la inyección de fórmulas.
 
-const CARACTERES_FORMULA = ["=", "+", "-", "@"];
+const CARACTERES_FORMULA = ["=", "+", "-", "@", "\t", "\r"];
 
 /** Envuelve en comillas dobles y duplica las comillas internas cuando el
  *  valor contiene `,`, `"`, `\n` o `\r`. Antepone una comilla simple a
- *  cualquier campo que empiece con `=`, `+`, `-` o `@` — la mitigación
+ *  cualquier campo que empiece con `=`, `+`, `-`, `@`, tabulador o retorno de carro — la mitigación
  *  estándar de inyección de fórmulas en Excel. */
 export function escaparCampoCsv(valor: string): string {
   let campo = valor;

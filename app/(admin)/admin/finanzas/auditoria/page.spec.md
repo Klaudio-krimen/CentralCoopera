@@ -1,7 +1,7 @@
 # Página: Visor de auditoría
 
 **Ruta:** `/admin/finanzas/auditoria`
-**Acceso:** `hasFinanceAccess`. **Idéntica para `FINANZAS` y `FINANZAS_LECTURA`** — no hay
+**Acceso:** `hasFinanceAccess`. **Filas visibles para `FINANZAS` y `FINANZAS_LECTURA`** — no hay
 ninguna acción de escritura en esta pantalla. Que Elizabeth pueda leer este visor es la mitad del
 modelo de amenaza del módulo.
 
@@ -23,3 +23,10 @@ tabla `User` — una fila de auditoría no depende de que el usuario siga existi
   viva), acción (badge de texto), entidad.
 - Columna "Detalle": `<details>` semántico con `before`/`after` en JSON, sin JavaScript adicional.
 - Paginador con `<a href>` reales.
+
+## Seguridad AUD-002
+
+La página valida sesión y hasFinanceAccess. Las filas son comunes, los detalles sensibles no:
+usa serializarAuditorias igual que la API. Lectura enmascara RUT y datos de contacto/bancarios;
+escritura también enmascara empleados purgados/inexistentes. No renderiza snapshots crudos.
+Un rango de fechas inválido muestra alerta y enlace para limpiar filtros.

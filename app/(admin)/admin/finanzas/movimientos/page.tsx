@@ -58,7 +58,10 @@ export default async function MovimientosPage({
       orderBy: { date: "desc" },
       skip,
       take,
-      include: { category: true, supplier: true },
+      include: {
+        category: { select: { id: true, name: true } },
+        supplier: { select: { id: true, name: true } },
+      },
     }),
     prisma.financeTransaction.count({ where }),
     prisma.financeCategory.findMany({

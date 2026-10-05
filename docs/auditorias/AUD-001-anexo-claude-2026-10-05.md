@@ -369,3 +369,9 @@ preguntar:
 
 El `db push` de SEC-010 se ejecuta sólo con el respaldo verificado. Si falta, se deja la tarea en
 `BLOQUEADA` con el motivo.
+
+## Seguimiento de implementación Codex — 2026-10-05
+
+Plan ejecutado sobre security/aud001-remediation. Cambios, decisiones y evidencia real de BD,
+concurrencia, sesiones y UI: [QA AUD-002](../qa/AUD-002.md). El cierre y referencias Git viven
+en [REGISTRO_TRABAJO.md](../../REGISTRO_TRABAJO.md). Middleware permanece sin cambios.

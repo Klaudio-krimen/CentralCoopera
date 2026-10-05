@@ -36,5 +36,5 @@ npm run backfill:epp-inventario -- --apply
 ```
 
 El primer comando es de solo lectura. El segundo actualiza únicamente el campo `category`; no crea
-artículos ni inventa cantidades. La tarea INV-001 queda pendiente de aplicar el schema y ejecutar
-el backfill sobre la base correspondiente.
+artículos ni inventa cantidades. El 2026-10-05 se aplicó el schema con respaldo verificado y se reclasificaron 22 artículos
+existentes. Una segunda revisión confirmó cero coincidencias pendientes. Ver REGISTRO_TRABAJO.md.

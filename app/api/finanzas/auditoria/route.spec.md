@@ -15,3 +15,11 @@ impedir, es que quede a la vista.
 `FinanceAuditLog` es append-only por contrato — no hay ninguna ruta que lo actualice o borre.
 
 **No audita a sí mismo** — leer el log no genera una fila del log.
+
+## Privacidad y fechas AUD-002
+
+before/after eliminan password y bankAccountEnc recursivamente; lectura enmascara RUT,
+email, phone, address y bankAccountLast4. Escritura ve datos vivos, pero también se enmascaran
+snapshots históricos de empleados actualmente purgados/inexistentes y acciones DESVINCULAR.
+Usa serializarAuditorias, consultando sólo ID/purgedAt. El log original es inmutable.
+Fechas estrictas YYYY-MM-DD: inválidas o rango invertido responden 400; hasta incluye todo el día.

@@ -1,32 +1,18 @@
-# Página: Login
+# Login `/login`
 
-**Ruta:** `/login`  
-**Acceso:** Público (redirige a dashboard si ya hay sesión)
+Página pública sin registro. Correo y contraseña con etiquetas asociadas, autocompletado del
+navegador y botón de mostrar/ocultar accesible por teclado. El error se anuncia con `role=alert`.
 
-## Propósito
-Formulario de inicio de sesión para todos los tipos de usuario.
+La casilla «Mantener sesión iniciada en este equipo» inicia desmarcada y tiene área táctil de
+44 px. Envía `remember=1` o `0` a NextAuth; no guarda la contraseña ni una preferencia en
+localStorage. Sin marcar: ocho horas. Marcada: siete días, salvo acceso a Finanzas, siempre ocho
+horas. El servidor impone esos límites y revoca sesiones al cambiar contraseña.
 
-## Interfaz
-- Campo email
-- Campo contraseña (con toggle mostrar/ocultar)
-- Botón "Ingresar"
-- Mensaje de error si las credenciales son incorrectas
+El envío desactiva botón y casilla mientras está pendiente. Error de credenciales:
+«Correo o contraseña incorrectos»; fallo de conexión: «No se pudo iniciar sesión. Intenta
+nuevamente.». Sólo si `result.ok`, navega a `/` y refresca; la raíz resuelve el destino por rol.
+No se promete redirección automática desde esta página por middleware.
 
-## Comportamiento
-
-### Al enviar el formulario
-1. Llama a `signIn("credentials", { email, password })` de NextAuth
-2. Si éxito: redirige según el rol del usuario:
-   - CHOFER → `/chofer/dashboard`
-   - RECEPCION → `/recepcion/dashboard`
-   - ADMIN → `/admin/dashboard`
-3. Si error: muestra mensaje "Email o contraseña incorrectos"
-
-### Si el usuario ya tiene sesión activa
-- El middleware redirige automáticamente a su dashboard antes de llegar a esta página
-
-## Diseño
-- Pantalla completa centrada (mobile-first)
-- Logo de Coopera Pro en la parte superior
-- Sin opción de registro (los usuarios son creados por el admin)
-- Sin opción de recuperar contraseña en versión inicial
+Logo circular completo oficial: 56 px en panel de escritorio y 48 px en móvil, sin fondo
+esmeralda adicional. Panel lateral visible desde 1024 px; formulario limitado a 400 px.
+Los textos vecinos identifican la marca, por lo que la imagen es decorativa.

@@ -14,3 +14,7 @@
   activa su sección correspondiente, sin confundir prefijos similares.
 - Todos los controles tienen foco visible; los iconos decorativos se ocultan a lectores.
 - Drawer de 200 ms y fondo de 150 ms; movimiento reducido elimina ambas transiciones.
+
+## Marca AUD-002
+
+BrandLogo circular oficial de 32 px junto al nombre, sin envoltorio esmeralda ni Recycle genérico.

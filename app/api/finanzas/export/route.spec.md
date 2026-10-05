@@ -21,3 +21,8 @@ acotado.
    nunca el contenido exportado.
 
 **Respuesta:** `Content-Type: text/csv; charset=utf-8`, `Content-Disposition: attachment`.
+
+## Salida segura AUD-002
+
+Categoría/proveedor sólo seleccionan { id, name }. El CSV neutraliza campos que comiencen
+por =, +, -, @, tabulador o retorno de carro.

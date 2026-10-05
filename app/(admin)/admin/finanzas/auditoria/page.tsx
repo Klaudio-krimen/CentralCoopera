@@ -1,4 +1,10 @@
 import Link from "next/link";
+import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
+import { authOptions } from "@/lib/auth";
+import { hasFinanceAccess } from "@/lib/access";
+import { serializarAuditorias } from "@/lib/finanzas/audit-view";
+import { rangoFechas } from "@/lib/finanzas/fechas";
 import { prisma } from "@/lib/db";
 import { resolverPaginacion, construirMeta } from "@/lib/finanzas/paginacion";
 
@@ -21,14 +27,15 @@ function construirQuery(
   return `?${q.toString()}`;
 }
 
-// Visor de sólo lectura: FINANZAS y FINANZAS_LECTURA ven exactamente lo
-// mismo aquí. Que Elizabeth pueda leer este visor es la mitad del modelo de
-// amenaza del módulo — la defensa no es impedir, es que quede a la vista.
+// Visor sin mutaciones: ambas capacidades ven filas; el detalle se serializa
+// según permiso y estado actual de purga, igual que la API.
 export default async function AuditoriaPage({
   searchParams,
 }: {
   searchParams: Promise<SearchParams>;
 }) {
+  const session = await getServerSession(authOptions);
+  if (!session || !hasFinanceAccess(session.user)) redirect("/login");
   const filtros = await searchParams;
   const { page, pageSize, take, skip } = resolverPaginacion({
     page: filtros.page,
@@ -37,14 +44,19 @@ export default async function AuditoriaPage({
   const where: Record<string, unknown> = {};
   if (filtros.entityType) where.entityType = filtros.entityType;
   if (filtros.actorId) where.actorId = filtros.actorId;
-  if (filtros.desde || filtros.hasta) {
-    where.createdAt = {
-      ...(filtros.desde ? { gte: new Date(filtros.desde) } : {}),
-      ...(filtros.hasta ? { lte: new Date(filtros.hasta) } : {}),
-    };
+  try {
+    if (filtros.desde || filtros.hasta)
+      where.createdAt = rangoFechas(filtros.desde, filtros.hasta);
+  } catch {
+    return (
+      <div role="alert">
+        El rango de fechas no es válido.{" "}
+        <Link href="/admin/finanzas/auditoria">Limpiar filtros</Link>
+      </div>
+    );
   }
 
-  const [filas, total, tiposEntidad, actores] = await Promise.all([
+  const [filasCrudas, total, tiposEntidad, actores] = await Promise.all([
     prisma.financeAuditLog.findMany({
       where,
       orderBy: { createdAt: "desc" },
@@ -65,6 +77,7 @@ export default async function AuditoriaPage({
     }),
   ]);
 
+  const filas = await serializarAuditorias(prisma, filasCrudas, session.user);
   const meta = construirMeta(total, page, pageSize);
 
   return (

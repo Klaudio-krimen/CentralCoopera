@@ -28,6 +28,18 @@ afterEach(() => {
 });
 
 describe("cifrar / descifrar", () => {
+  it("rechaza un tag GCM truncado", () => {
+    const partes = cifrar("000123456789").split(":");
+    partes[2] = Buffer.from(partes[2], "base64")
+      .subarray(0, 12)
+      .toString("base64");
+    expect(() => descifrar(partes.join(":"))).toThrow();
+  });
+  it("rechaza un IV con tamaño distinto a 12 bytes", () => {
+    const partes = cifrar("000123456789").split(":");
+    partes[1] = Buffer.alloc(11).toString("base64");
+    expect(() => descifrar(partes.join(":"))).toThrow();
+  });
   it("cifra y descifra de vuelta al texto original", () => {
     const original = "000123456789";
     const cifrado = cifrar(original);

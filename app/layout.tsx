@@ -7,13 +7,13 @@ export const metadata: Metadata = {
   title: "Central Coopera",
   description:
     "Intranet operativa de Coopera Pro — operaciones, clientes y finanzas",
-  manifest: "/manifest.json",
+  manifest: "/manifest.webmanifest",
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#22c55e",
+  themeColor: "#29354B",
 };
 
 export default function RootLayout({

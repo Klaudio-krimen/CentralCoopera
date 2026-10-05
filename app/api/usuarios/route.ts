@@ -252,6 +252,7 @@ export async function PATCH(req: NextRequest) {
     if (password.length < 8)
       return apiError("La contraseña debe tener al menos 8 caracteres");
     data.password = await hash(password, 12);
+    data.passwordChangedAt = new Date();
   }
   if (userRole !== undefined) data.role = userRole;
   if (moduleAccess !== undefined) {

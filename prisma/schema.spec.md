@@ -55,3 +55,10 @@ Crear un archivo `prisma/seed.ts` que inserte:
 - Para SQLite en dev: `npx prisma db push`
 - Para PostgreSQL en prod: `npx prisma migrate deploy`
 - Para seeds: `npx prisma db seed`
+
+## Actualización AUD-002 (2026-10-05)
+
+La fuente actual usa exclusivamente PostgreSQL; se aplica con db push tras respaldo verificado,
+no SQLite. User.passwordChangedAt DateTime? revoca JWT previos al cambio de contraseña.
+Se asigna en servidor; null mantiene compatibilidad con usuarios anteriores. Aplicado junto
+con InventoryCategory.EPP, sin borrar datos. Ver REGISTRO_TRABAJO.md para respaldo y diff.

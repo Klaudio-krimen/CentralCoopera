@@ -5,7 +5,7 @@ repositorio para que ambos agentes puedan leerlo desde el mismo workspace o desd
 Registra trabajo local, revisiones, decisiones, cambios de código, verificaciones, commits,
 PR y despliegues. No sustituye las reglas de `AGENTS.md`, `CLAUDE.md` ni las specs.
 
-Fechas de este registro: zona **America/Santiago**. Última actualización: **2026-10-04**.
+Fechas de este registro: zona **America/Santiago**. Última actualización: **2026-10-05**.
 
 ## Protocolo de trabajo
 
@@ -83,17 +83,19 @@ Autor y propósito no confirmados. Preservarlos; no incluirlos en commits de otr
 | SEC-004   | Exigir STARTTLS en SMTP                                             | Media     | Codex       | TERMINADA   | `lib/outreach/smtp.ts`; puertos y TLS validados con pruebas                                                           |
 | SEC-005   | Endurecer webhook, CSP, logs, errores y exclusiones                 | Media     | Codex       | EN REVISIÓN | Implementado; revisar `unsafe-inline` y retirar `?secret=` tras migrar integraciones                                  |
 | CAL-001   | Modularizar pantallas grandes y reducir casts inseguros             | Media     | Codex       | TERMINADA   | Nueva orden, inventario y fronteras API/vistas con tipos                                                              |
-| INV-001   | Agregar categoría EPP y clasificar artículos de protección personal | Alta      | Codex       | EN REVISIÓN | Código validado; falta aplicar schema y backfill con respaldo verificado. Ver [guía EPP](INVENTARIO_EPP.md)           |
+| INV-001   | Agregar categoría EPP y clasificar artículos de protección personal | Alta      | Codex       | TERMINADA   | Schema y backfill aplicados con respaldo: 22 artículos EPP; cero pendientes. Ver INVENTARIO_EPP.md                    |
 | AUD-002   | Anexo AUD-001: verificación extra y plan de login y logo            | Alta      | Claude      | TERMINADA   | Solo lectura sobre `cb4e043`; `docs/auditorias/AUD-001-anexo-claude-2026-10-05.md`                                    |
-| SEC-006   | No devolver Supplier completo (bankAccountEnc) en transacciones     | Alta      | Sin asignar | PROPUESTA   | `docs/auditorias/AUD-001-anexo-claude-2026-10-05.md` §2                                                               |
-| SEC-007   | Serializar el visor de auditoría de Finanzas                        | Media     | Sin asignar | PROPUESTA   | `docs/auditorias/AUD-001-anexo-claude-2026-10-05.md` §2; decisión del usuario                                         |
-| SEC-008   | Movimientos de stock atómicos (lost update)                         | Media     | Sin asignar | PROPUESTA   | `docs/auditorias/AUD-001-anexo-claude-2026-10-05.md` §2                                                               |
-| SEC-009   | Canje único del token de recuperación                               | Baja      | Sin asignar | PROPUESTA   | `docs/auditorias/AUD-001-anexo-claude-2026-10-05.md` §2                                                               |
-| SEC-010   | Revocar sesiones al cambiar contraseña                              | Media     | Sin asignar | PROPUESTA   | `docs/auditorias/AUD-001-anexo-claude-2026-10-05.md` §2; requiere `db push` con respaldo                              |
-| SEC-011   | CSV tab/CR, porteros por método y authTagLength (SEC-011..013)      | Baja      | Sin asignar | PROPUESTA   | `docs/auditorias/AUD-001-anexo-claude-2026-10-05.md` §2                                                               |
-| LOGIN-001 | Casilla «Mantener sesión iniciada» en el login                      | Media     | Sin asignar | PROPUESTA   | `docs/auditorias/AUD-001-anexo-claude-2026-10-05.md` §3; depende de SEC-010                                           |
-| BRAND-001 | Logo de Coopera Pro en lugar del ícono de reciclaje                 | Media     | Sin asignar | PROPUESTA   | `docs/auditorias/AUD-001-anexo-claude-2026-10-05.md` §4                                                               |
-| PWA-001   | Crear el manifest declarado en el layout (hoy 404)                  | Baja      | Sin asignar | PROPUESTA   | `docs/auditorias/AUD-001-anexo-claude-2026-10-05.md` §2                                                               |
+| SEC-006   | No devolver Supplier completo (bankAccountEnc) en transacciones     | Alta      | Codex       | TERMINADA   | `docs/auditorias/AUD-001-anexo-claude-2026-10-05.md` §2                                                               |
+| SEC-007   | Serializar el visor de auditoría de Finanzas                        | Media     | Codex       | TERMINADA   | `docs/auditorias/AUD-001-anexo-claude-2026-10-05.md` §2; decisión del usuario                                         |
+| SEC-008   | Movimientos de stock atómicos (lost update)                         | Media     | Codex       | TERMINADA   | `docs/auditorias/AUD-001-anexo-claude-2026-10-05.md` §2                                                               |
+| SEC-009   | Canje único del token de recuperación                               | Baja      | Codex       | TERMINADA   | `docs/auditorias/AUD-001-anexo-claude-2026-10-05.md` §2                                                               |
+| SEC-010   | Revocar sesiones al cambiar contraseña                              | Media     | Codex       | TERMINADA   | `docs/auditorias/AUD-001-anexo-claude-2026-10-05.md` §2; requiere `db push` con respaldo                              |
+| SEC-011   | CSV tab/CR, porteros por método y authTagLength (SEC-011..013)      | Baja      | Codex       | TERMINADA   | `docs/auditorias/AUD-001-anexo-claude-2026-10-05.md` §2                                                               |
+| LOGIN-001 | Casilla «Mantener sesión iniciada» en el login                      | Media     | Codex       | TERMINADA   | `docs/auditorias/AUD-001-anexo-claude-2026-10-05.md` §3; depende de SEC-010                                           |
+| BRAND-001 | Logo de Coopera Pro en lugar del ícono de reciclaje                 | Media     | Codex       | TERMINADA   | `docs/auditorias/AUD-001-anexo-claude-2026-10-05.md` §4                                                               |
+| PWA-001   | Crear el manifest declarado en el layout (hoy 404)                  | Baja      | Codex       | TERMINADA   | `docs/auditorias/AUD-001-anexo-claude-2026-10-05.md` §2                                                               |
+
+| UX-010 | Corregir cascada del reset Tailwind4 y recarga ESM | Alta | Codex | TERMINADA | app/globals.css, tailwind.config.ts y QA de login/cabeceras |
 
 ## Historial de sesiones y entregas
 
@@ -403,7 +405,89 @@ Autor y propósito no confirmados. Preservarlos; no incluirlos en commits de otr
 - **Decisiones (2026-10-05):** el usuario aprobó todas las recomendaciones; quedan fijadas en el §6
   del anexo, junto con el orden de trabajo. Codex puede implementar sin volver a consultar.
 
+### 2026-10-05 — SEC-006..SEC-013 / BRAND-001 / PWA-001 / LOGIN-001 — Codex
+
+- **Solicitud:** actualizar contexto y ejecutar las tareas preparadas por Claude en AUD-002.
+- **Responsable / rama / base:** Codex, `security/aud001-remediation`, `503e688`; anexo y decisiones
+  aprobadas ya integrados localmente. Se preservan ambos archivos ajenos de `blueprints/`.
+- **Alcance registrado antes de editar:** proyecciones seguras en transacciones/export de Finanzas,
+  serialización del visor de auditoría y fechas, movimientos de inventario concurrentes, CSV,
+  guardia por método HTTP y cifrado GCM; canje atómico de recuperación; logo oficial y manifest;
+  revocación de sesiones al cambiar contraseña y casilla de sesión recordada.
+- **Archivos previstos:** APIs de Finanzas (`transacciones`, `export`, `auditoria`),
+  `lib/finanzas/{serialize,routes,csv,crypto,reset}.*`, página del visor de auditoría,
+  `lib/inventario/movimiento.*`, APIs de movimientos/PATCH de inventario, `lib/auth-session.*`,
+  `lib/auth.ts`, `types/next-auth.d.ts`, `prisma/schema.prisma`, APIs de recuperación y usuarios,
+  login y su spec, `components/ui/{BrandLogo,AdminSidebar,ChoferHeader,RecepcionNav}.*`,
+  `scripts/generate-brand-assets.*`, derivados de marca, layout, manifest, package y este registro.
+- **Decisiones vigentes:** aplicar §6 del anexo sin nuevas consultas; no modificar `middleware.ts`.
+  Intentar producir y verificar respaldo `pg_dump` antes del cambio de BD autorizado; comprobar el
+  diff de schema y no aceptar cambios destructivos o ajenos a esta tarea.
+- **Verificación prevista:** pruebas puras y de regresión, gate completo, revisión visual del login
+  en 320/390/1440 px y comprobación del logo/manifest. Registrar límites de QA autenticado/BD.
+
+### 2026-10-05 — cierre AUD-002 / INV-001 / UX-010 — Codex
+
+- **Cambios y decisiones:** SEC-006..013, LOGIN-001, BRAND-001 y PWA-001 implementadas según
+  decisiones aprobadas. EPP completado en BD; UX-010 corrigió cascada del reset y recarga ESM;
+  raíz resuelve rol FINANZAS con permiso explícito. Descripción y capturas en
+  [QA AUD-002](docs/qa/AUD-002.md). Specs actualizadas; nuevos componentes/rutas/scripts con spec.
+- **Gate final:** npm run typecheck OK, npm run test OK (29 archivos, 349 pruebas),
+  npm run build OK (79 páginas), git diff --cached --check OK. Build contra PostgreSQL QA
+  aislado; no consultas de prerender a datos reales. Queda aviso no bloqueante del loader ESM
+  del archivo TS de Tailwind; ya no falla su recarga por require.
+- **Concurrencia real:** npm run qa:security-concurrency OK; PostgreSQL18 local, 20 entradas,
+  12 salidas (6 conflictos), ajustes/entradas e historial decimal, 10 canjes (un ganador).
+- **HTTP real:** plazos y exp fijo; revocación por recuperación y PATCH admin; nuevos logins con
+  contraseña cambiada; permisos financieros, proyecciones y privacidad API/SSR, rango inválido,
+  PATCH/POST concurrentes; cinco canjes (un ganador y una auditoría), manifest200.
+- **UI:** Chromium 320/390/1440 px y login autenticado ADMIN/CHOFER/RECEPCION/FINANZAS con
+  fixtures; logos cargan; teclado Space, labels, alertas y localStorage vacío. Sin hardware real.
+- **BD configurada:** respaldo y diff previamente anotados; schema y 22 reclasificaciones
+  aplicados/verificados. Sin cambios de cantidades ni movimientos. QA sólo usa datos sintéticos.
+- **Git:** código preparado para commit/push en security/aud001-remediation y PR borrador.
+  Se registrarán hashes y URL al verificar publicación. Los dos archivos ajenos de blueprints
+  quedan preservados, fuera de staging; middleware y secretos/respaldos también fuera del commit.
+- **Despliegue:** no se mergea a master ni se despliega producción. CI remota/preview pendiente
+  hasta publicar PR. SEC-001 y SEC-005 conservan sus verificaciones externas pendientes.
+
 ## Plantilla para próximas entradas
+
+### 2026-10-05 — UX-010 — corrección detectada en QA del login — Codex
+
+- **Responsable / rama:** Codex / `security/aud001-remediation`, EN CURSO.
+- **Antes de editar:** `app/globals.css` y spec. El reset universal sin capa CSS vence las
+  utilidades de Tailwind 4: navegador confirma padding 0 y campos de 22 px pese a `py-3`.
+  Mover sólo ese reset a `@layer base` restaura espaciado y áreas táctiles previstos en toda
+  la aplicación. Conservar valores y tokens existentes; verificar 320/390/1440 px y navegaciones.
+- **Extensión antes de editar:** `tailwind.config.ts`: al recargar CSS, el compilador intentó
+  evaluar el archivo como ESM y falló `require is not defined`. Usar import del mismo plugin
+  `tailwindcss-animate`, sin cambiar dependencias ni comportamiento.
+
+### 2026-10-05 — alcance adicional LOGIN-001 — Codex
+
+- Al preparar QA se detectó que `/` no resolvía el rol `FINANZAS`, pese a existir en esquema y
+  shell administrativo. Añadir destino financiero con `hasFinanceAccess` en `app/page.tsx` y
+  su spec permite completar el login para ese rol. No se modifica middleware ni se otorga acceso
+  implícito a Finanzas por rol; sigue requiriendo permiso explícito.
+
+### 2026-10-05 — avance y validación AUD-002 / INV-001 — Codex
+
+- **BD:** respaldo `backups/pre-aud002-2026-10-05-1791217724374.dump`, 129974 bytes;
+  SHA256 `2e81d36237b24d5528a0630153f09c94f17f5011b5b4a7f3158f02ed5d4767ad`.
+  `pg_restore --list` y lectura completa del archivo verificados. Respaldo excluido de Git.
+  Diff previo limitado a agregar `InventoryCategory.EPP` y `User.passwordChangedAt`;
+  `db push` sin aceptar pérdida de datos, diff posterior vacío y cliente regenerado.
+- **INV-001:** ampliación registrada para sinónimos `AUDIFONOS TAPONES/CASCOS` en
+  `lib/inventario/category.*`. Revisadas las 22 coincidencias del dry-run; backfill aplicado
+  a 22 filas. Segundo dry-run: cero pendientes. Únicamente categoría y timestamp de actualización;
+  no se crearon artículos ni movimientos, ni se modificaron cantidades.
+- **Validación ampliada antes de editar:** añadir `scripts/verify-security-concurrency.ts` y spec,
+  comando optativo de QA contra PostgreSQL local aislado. Se rechazarán URLs remotas y nombres
+  ajenos a `coopera_qa_*`. Pruebas concurrentes reales de stock y canje de token.
+  Revisión autenticada con usuarios sintéticos en esa misma BD, sin correos externos.
+- **Specs previstas:** actualizar autenticación, login, esquema, APIs/páginas de Finanzas e
+  inventario y navegación; registrar evidencia visual y resultados en `docs/qa/AUD-002.md`.
 
 Copiar esta plantilla al historial y actualizar también la tabla de tareas.
 

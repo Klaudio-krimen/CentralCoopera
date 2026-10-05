@@ -62,7 +62,10 @@ export async function GET(req: NextRequest) {
   const transacciones = await prisma.financeTransaction.findMany({
     where,
     orderBy: { date: "asc" },
-    include: { category: true, supplier: true },
+    include: {
+      category: { select: { id: true, name: true } },
+      supplier: { select: { id: true, name: true } },
+    },
   });
 
   const filas = transacciones.map((t) => [

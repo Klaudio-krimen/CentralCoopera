@@ -4,6 +4,8 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { apiError } from "@/lib/utils";
 import { hasFinanceAccess } from "@/lib/access";
+import { rangoFechas } from "@/lib/finanzas/fechas";
+import { serializarAuditorias } from "@/lib/finanzas/audit-view";
 import { resolverPaginacion, construirMeta } from "@/lib/finanzas/paginacion";
 
 // GET /api/finanzas/auditoria — visor paginado del log, filtros por
@@ -28,11 +30,10 @@ export async function GET(req: NextRequest) {
   const where: Record<string, unknown> = {};
   if (entityType) where.entityType = entityType;
   if (actorId) where.actorId = actorId;
-  if (desde || hasta) {
-    where.createdAt = {
-      ...(desde ? { gte: new Date(desde) } : {}),
-      ...(hasta ? { lte: new Date(hasta) } : {}),
-    };
+  try {
+    if (desde || hasta) where.createdAt = rangoFechas(desde, hasta);
+  } catch {
+    return apiError("Rango de fechas inválido", 400);
   }
 
   const [filas, total] = await Promise.all([
@@ -46,7 +47,7 @@ export async function GET(req: NextRequest) {
   ]);
 
   return NextResponse.json({
-    data: filas,
+    data: await serializarAuditorias(prisma, filas, session.user),
     meta: construirMeta(total, page, pageSize),
   });
 }

@@ -1,7 +1,9 @@
 "use client";
 
+import BrandLogo from "@/components/ui/BrandLogo";
+
 import { signOut } from "next-auth/react";
-import { Recycle, SignOut, User } from "@phosphor-icons/react";
+import { SignOut, User } from "@phosphor-icons/react";
 import { useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useDropdownPosition } from "./useDropdownPosition";
@@ -27,9 +29,7 @@ export default function ChoferHeader({ userName }: { userName: string }) {
       <div className="flex items-center justify-between">
         {/* Logo */}
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl bg-emerald-500 flex items-center justify-center shadow-[inset_0_0_0_1px_rgba(255,255,255,0.12)]">
-            <Recycle size={15} weight="bold" className="text-white" />
-          </div>
+          <BrandLogo size={32} decorative />
           <span className="font-semibold text-zinc-900 text-sm tracking-tight">
             Central Coopera
           </span>

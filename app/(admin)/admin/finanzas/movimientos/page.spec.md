@@ -22,3 +22,8 @@ Lista de ingresos y egresos con filtro y alta.
 - `AnularMovimientoButton.tsx`: `PATCH .../[id]` con `status: "ANULADO"`, confirmación con monto y
   descripción antes de anular. Oculto si la fila ya está `ANULADO`.
 - Paginador con `<a href>` reales (compartible, sin estado oculto en JS).
+
+## Proyecciones AUD-002
+
+Las relaciones proveedor/categoría seleccionan sólo ID/nombre; no hay proveedor completo
+ni cuenta cifrada en los datos enviados al componente cliente.

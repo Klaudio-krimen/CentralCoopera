@@ -64,6 +64,7 @@ model User {
   name         String
   email        String         @unique
   password     String
+  passwordChangedAt DateTime?
   role         UserRole
   moduleAccess ModuleAccess[] @default([])
   isActive     Boolean        @default(true)

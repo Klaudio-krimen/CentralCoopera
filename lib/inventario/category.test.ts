@@ -12,6 +12,7 @@ describe("clasificación de EPP", () => {
     "Antiparras",
     "Polerón reflectante",
     "Tapón auditivo",
+    "AUDIFONOS TAPONES",
     "Cascos",
     "Chaleco reflectante",
     "Polera reflectante",

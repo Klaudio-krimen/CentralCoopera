@@ -46,6 +46,8 @@ export const EPP_ITEM_SUGGESTIONS = [
 ] as const;
 
 const EPP_PHRASES = [
+  "audifonos tapones",
+  "audifonos cascos",
   "tapon auditivo",
   "tapones auditivos",
   "tapon auricular",

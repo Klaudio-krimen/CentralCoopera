@@ -73,3 +73,12 @@ CSV con las mismas 12 columnas de la planilla original de bodega (`NUMERO`, `NOM
 Movimiento explícito (no edición en línea): `ENTRADA` suma, `SALIDA` resta (rechaza si deja el
 stock negativo), `AJUSTE` fija el valor exacto. Guarda `quantityBefore`/`quantityAfter`. `NIVEL`
 no se acepta aquí — sólo lo genera `PATCH /api/inventario/[id]` al editar `fillPercent`.
+
+## Concurrencia y validación AUD-002
+
+PATCH y movimientos explícitos adquieren el mismo bloqueo de fila con increment:0 dentro de
+la transacción antes de leer stock. El historial usa el valor previo exacto bloqueado y el valor
+persistido, sin reconstrucción por resta de floats. Entradas usan increment; salidas decrement
+condicionado a quantity >= cantidad. Conflicto de stock responde 409. Ajustes absolutos se
+serializan con entradas/salidas. Cantidades finitas; ENTRADA/SALIDA >0 y AJUSTE >=0.
+PATCH valida esquema y enum, porcentajes enteros 0..100 o null, cantidades no negativas.

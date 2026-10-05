@@ -451,8 +451,6 @@ Autor y propósito no confirmados. Preservarlos; no incluirlos en commits de otr
 - **Despliegue:** no se mergea a master ni se despliega producción. CI remota/preview pendiente
   hasta publicar PR. SEC-001 y SEC-005 conservan sus verificaciones externas pendientes.
 
-## Plantilla para próximas entradas
-
 ### 2026-10-05 — UX-010 — corrección detectada en QA del login — Codex
 
 - **Responsable / rama:** Codex / `security/aud001-remediation`, EN CURSO.
@@ -488,6 +486,27 @@ Autor y propósito no confirmados. Preservarlos; no incluirlos en commits de otr
   Revisión autenticada con usuarios sintéticos en esa misma BD, sin correos externos.
 - **Specs previstas:** actualizar autenticación, login, esquema, APIs/páginas de Finanzas e
   inventario y navegación; registrar evidencia visual y resultados en `docs/qa/AUD-002.md`.
+
+### 2026-10-05 — entrega Git AUD-002 — Codex
+
+- **Commit de código:** 2ab57f9fe62e2cabc7a18ab63fba665877c2c0ed; hook Prettier/typecheck/
+  349 pruebas también pasó. Push a origin/security/aud001-remediation confirmado con ls-remote:
+  mismo hash. Sólo permanecen modificados los dos blueprints ajenos al trabajo.
+- **PR borrador:** [#1](https://github.com/Klaudio-krimen/CentralCoopera/pull/1), base master;
+  contiene AUD-001/AUD-002 e INV-001. Sin merge ni publicación de producción.
+- **CI remota:** [ejecución del código](https://github.com/Klaudio-krimen/CentralCoopera/actions/runs/37344408041)
+  completada SUCCESS sobre 2ab57f9; instalación, npm audit (nivel low), typecheck, tests y build
+  pasaron. El próximo commit sólo registra esta entrega y puede generar otra ejecución de CI.
+- **Vercel:** preview automático reporta FAILURE. No se pudo obtener log de compilación:
+  vercel inspect responde «The specified token is not valid». La causa del fallo del deployment
+  no está confirmada; requiere restaurar acceso válido a Vercel para diagnosticarlo.
+  [Deployment reportado](https://vercel.com/claudio-nunezs-projects/track-residuos/9ygxvpcukorMap33ofcsTWCfnvC8).
+  SEC-001 sigue EN REVISIÓN por preview pendiente. No se modifica ni se versiona la credencial.
+- **QA cerrado:** navegador y servidor Next local detenidos; PostgreSQL de QA detenido. Respaldo
+  de la BD configurada conservado en backups/, fuera de Git. Datos de pruebas sólo en BD temporal.
+- **Siguiente revisión:** Claude puede revisar PR/QA/specs; acceso a Vercel pendiente del entorno.
+
+## Plantilla para próximas entradas
 
 Copiar esta plantilla al historial y actualizar también la tabla de tareas.
 

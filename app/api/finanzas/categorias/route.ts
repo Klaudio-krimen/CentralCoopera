@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
@@ -54,12 +55,15 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json(categoria, { status: 201 });
-  } catch (e: any) {
+  } catch (error: unknown) {
     // @@unique([name, kind]) — la carrera la resuelve la base, no un
     // findUnique previo que podría correr al mismo tiempo que otra request.
-    if (e?.code === "P2002") {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2002"
+    ) {
       return apiError("Ya existe una categoría con ese nombre y tipo", 409);
     }
-    throw e;
+    throw error;
   }
 }

@@ -27,19 +27,20 @@ function construirQuery(
 export default async function AuditoriaPage({
   searchParams,
 }: {
-  searchParams: SearchParams;
+  searchParams: Promise<SearchParams>;
 }) {
+  const filtros = await searchParams;
   const { page, pageSize, take, skip } = resolverPaginacion({
-    page: searchParams.page,
+    page: filtros.page,
   });
 
   const where: Record<string, unknown> = {};
-  if (searchParams.entityType) where.entityType = searchParams.entityType;
-  if (searchParams.actorId) where.actorId = searchParams.actorId;
-  if (searchParams.desde || searchParams.hasta) {
+  if (filtros.entityType) where.entityType = filtros.entityType;
+  if (filtros.actorId) where.actorId = filtros.actorId;
+  if (filtros.desde || filtros.hasta) {
     where.createdAt = {
-      ...(searchParams.desde ? { gte: new Date(searchParams.desde) } : {}),
-      ...(searchParams.hasta ? { lte: new Date(searchParams.hasta) } : {}),
+      ...(filtros.desde ? { gte: new Date(filtros.desde) } : {}),
+      ...(filtros.hasta ? { lte: new Date(filtros.hasta) } : {}),
     };
   }
 
@@ -83,7 +84,7 @@ export default async function AuditoriaPage({
           <select
             id="aud-entityType"
             name="entityType"
-            defaultValue={searchParams.entityType ?? ""}
+            defaultValue={filtros.entityType ?? ""}
             className="rounded-md border border-[#E2E8F0] px-2 py-1.5 text-sm text-[#0F172A]"
           >
             <option value="">Todas</option>
@@ -104,7 +105,7 @@ export default async function AuditoriaPage({
           <select
             id="aud-actorId"
             name="actorId"
-            defaultValue={searchParams.actorId ?? ""}
+            defaultValue={filtros.actorId ?? ""}
             className="rounded-md border border-[#E2E8F0] px-2 py-1.5 text-sm text-[#0F172A]"
           >
             <option value="">Todos</option>
@@ -128,7 +129,7 @@ export default async function AuditoriaPage({
             id="aud-desde"
             type="date"
             name="desde"
-            defaultValue={searchParams.desde ?? ""}
+            defaultValue={filtros.desde ?? ""}
             className="rounded-md border border-[#E2E8F0] px-2 py-1.5 text-sm text-[#0F172A]"
           />
         </div>
@@ -143,7 +144,7 @@ export default async function AuditoriaPage({
             id="aud-hasta"
             type="date"
             name="hasta"
-            defaultValue={searchParams.hasta ?? ""}
+            defaultValue={filtros.hasta ?? ""}
             className="rounded-md border border-[#E2E8F0] px-2 py-1.5 text-sm text-[#0F172A]"
           />
         </div>
@@ -241,7 +242,7 @@ export default async function AuditoriaPage({
             <div className="flex gap-2">
               {meta.page > 1 && (
                 <Link
-                  href={construirQuery(searchParams, {
+                  href={construirQuery(filtros, {
                     page: String(meta.page - 1),
                   })}
                   className="rounded-md border border-[#E2E8F0] px-2.5 py-1 hover:bg-[#F8FAFC]"
@@ -251,7 +252,7 @@ export default async function AuditoriaPage({
               )}
               {meta.page < meta.totalPages && (
                 <Link
-                  href={construirQuery(searchParams, {
+                  href={construirQuery(filtros, {
                     page: String(meta.page + 1),
                   })}
                   className="rounded-md border border-[#E2E8F0] px-2.5 py-1 hover:bg-[#F8FAFC]"

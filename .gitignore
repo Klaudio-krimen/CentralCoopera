@@ -15,6 +15,11 @@ dist/
 .env.development.local
 .env.test.local
 .env.production.local
+.env.*
+!.env.example
+credentials.json
+credentials.*.json
+service-account*.json
 
 # Database
 *.db
@@ -31,6 +36,7 @@ public/uploads/*
 *.p12
 *.pfx
 *.jks
+*.keystore
 id_rsa
 id_ed25519
 

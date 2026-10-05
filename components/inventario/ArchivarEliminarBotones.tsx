@@ -39,8 +39,8 @@ export default function ArchivarEliminarBotones({
       });
       if (!res.ok) throw new Error((await res.json()).error);
       router.refresh();
-    } catch (e: any) {
-      setError(e.message);
+    } catch (error: unknown) {
+      setError(error instanceof Error ? error.message : "Error inesperado.");
     } finally {
       setLoading(null);
     }
@@ -62,8 +62,8 @@ export default function ArchivarEliminarBotones({
       if (!res.ok && res.status !== 204)
         throw new Error((await res.json()).error);
       router.refresh();
-    } catch (e: any) {
-      setError(e.message);
+    } catch (error: unknown) {
+      setError(error instanceof Error ? error.message : "Error inesperado.");
     } finally {
       setLoading(null);
     }

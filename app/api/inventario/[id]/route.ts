@@ -22,8 +22,9 @@ const CAMPOS_TEXTO = ["name", "details", "format", "color", "notes"] as const;
 // GET /api/inventario/[id] — ficha del ítem
 export async function GET(
   _req: NextRequest,
-  { params }: { params: { id: string } }
+  props: { params: Promise<{ id: string }> }
 ) {
+  const params = await props.params;
   const session = await getServerSession(authOptions);
   if (!session) return apiError("No autorizado", 401);
   if (!hasModuleAccess(session.user, "INVENTARIO"))
@@ -45,8 +46,9 @@ export async function GET(
 // isActive:false (archivar) sólo lo puede hacer ADMIN.
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  props: { params: Promise<{ id: string }> }
 ) {
+  const params = await props.params;
   const session = await getServerSession(authOptions);
   if (!session) return apiError("No autorizado", 401);
   if (!hasModuleAccess(session.user, "INVENTARIO"))
@@ -160,8 +162,9 @@ export async function PATCH(
 // ningún ajuste todavía, sí se puede borrar directo.
 export async function DELETE(
   _req: NextRequest,
-  { params }: { params: { id: string } }
+  props: { params: Promise<{ id: string }> }
 ) {
+  const params = await props.params;
   const session = await getServerSession(authOptions);
   if (!session) return apiError("No autorizado", 401);
   if (!hasModuleAccess(session.user, "INVENTARIO"))

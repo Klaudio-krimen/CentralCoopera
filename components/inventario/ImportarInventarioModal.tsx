@@ -153,8 +153,10 @@ export default function ImportarInventarioModal() {
       if (!res.ok) throw new Error(data.error);
       setHecho(data.count);
       router.refresh();
-    } catch (e: any) {
-      setSubmitError(e.message);
+    } catch (error: unknown) {
+      setSubmitError(
+        error instanceof Error ? error.message : "Error inesperado."
+      );
     } finally {
       setLoading(false);
     }

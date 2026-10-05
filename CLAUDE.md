@@ -37,12 +37,17 @@ De ahí nace la iniciativa activa (ver §6).
 
 ## 2. Stack
 
-- **Next.js 14** (App Router) + **TypeScript 5**
+- **Next.js 15** (App Router) + **TypeScript 5** · Node.js **20.9+**
 - **Prisma 5** sobre **PostgreSQL** (`DATABASE_URL` + `DIRECT_URL` → pooler/directa)
 - **NextAuth v4** (credenciales + bcrypt), protección por `middleware.ts`
-- **Tailwind 3** + `@base-ui/react` + Phosphor/Lucide + Framer Motion
+- **Tailwind 4** + `@base-ui/react` + Phosphor/Lucide + Framer Motion
 - **Vercel Blob** para imágenes (firmas, evidencias) · **Leaflet** para mapas · **Recharts** para gráficos
 - Deploy en **Vercel** · Tests con **Vitest** · Husky + lint-staged en commit
+
+Tailwind 4 requiere Safari 16.4+, Chrome 111+ o Firefox 128+. La CI aplica `npm audit`,
+typecheck, tests y build en PR/push; la instalación CI usa `--legacy-peer-deps` por la diferencia
+entre Nodemailer 10 y el peer opcional declarado por NextAuth 4. No habilitar EmailProvider sin
+revisar de nuevo esa compatibilidad.
 
 ## 3. Comandos
 
@@ -400,8 +405,10 @@ run`. Usar relativos.
   Novofarma Service". Match exacto tras normalizar.
 - **Segunda corrida del importador con `companiesCreated > 0`** → idempotencia rota (probablemente
   la normalización de nombre difiere entre el índice en memoria y lo que se guardó).
-- **`nodemailer` 7.x** tiene advisories sin parche en 7.x — el bump a 9.1+ es un ticket **aparte**,
-  no parte de este cambio (ver `blueprint.md` §20.2/§20.4).
+- **`nodemailer` 10.x** corrige los advisories identificados por AUD-001. NextAuth 4 declara un
+  peer opcional que espera Nodemailer 7; esta app usa CredentialsProvider y no EmailProvider. La
+  instalación de dependencias requiere `npm ci --legacy-peer-deps` hasta que se migre o retire ese
+  peer; revisar compatibilidad antes de habilitar autenticación por correo.
 
 ### No negociable
 

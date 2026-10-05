@@ -1,5 +1,8 @@
 # Crear y editar un ítem de inventario
 
+El ciclo de vida del diálogo y la persistencia se mantienen en `ItemFormModal.tsx`; los controles
+del formulario se renderizan en `ItemFormFields.tsx`.
+
 - Conserva el contrato y conversiones numéricas actuales de POST/PATCH de inventario.
 - Usa `Modal`, con título según creación/edición y ancho máximo de 512 px.
 - Al abrir se recargan los datos del ítem y se limpia el error. El disparador es un botón nativo.

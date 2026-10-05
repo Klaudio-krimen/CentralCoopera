@@ -5,26 +5,13 @@ import Link from "next/link";
 import {
   ArrowsLeftRight,
   MagnifyingGlass,
-  Archive,
-  Trash,
   Package,
   Warning,
 } from "@phosphor-icons/react";
-import EditableCell from "./EditableCell";
+import FilaInventario from "./FilaInventario";
 import ItemFormModal from "./ItemFormModal";
 import ImportarInventarioModal from "./ImportarInventarioModal";
-import AjustarStockModal from "@/components/ui/AjustarStockModal";
-import { parseCantidad } from "@/lib/inventario/parse";
-import {
-  CATEGORIAS,
-  CATEGORIA_LABEL,
-  MEDIDA_LABEL,
-  formatearCantidad,
-  type InventoryItemRow,
-  type InventoryMeasureUnit,
-} from "./types";
-
-const MEDIDA_COLUMNAS: InventoryMeasureUnit[] = ["LITROS", "METROS", "KILOS"];
+import { CATEGORIAS, CATEGORIA_LABEL, type InventoryItemRow } from "./types";
 
 interface Meta {
   total: number;
@@ -93,15 +80,11 @@ export default function TablaInventario({
   /** PATCH optimista: aplica el cambio en pantalla, revierte si la API falla. */
   const commitField = async (
     item: InventoryItemRow,
-    patch: Record<string, unknown>
+    patch: Partial<InventoryItemRow>
   ) => {
     const anterior = items;
     setItems((prev) =>
-      prev.map((it) =>
-        it.id === item.id
-          ? { ...it, ...(patch as Partial<InventoryItemRow>) }
-          : it
-      )
+      prev.map((it) => (it.id === item.id ? { ...it, ...patch } : it))
     );
     setError("");
     try {
@@ -112,10 +95,10 @@ export default function TablaInventario({
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
-    } catch (e: any) {
+    } catch (error: unknown) {
       setItems(anterior);
       setError(
-        `No se pudo guardar el cambio en "${item.name}". Se revirtió. ${e.message ?? ""}`
+        `No se pudo guardar el cambio en "${item.name}". Se revirtió. ${getErrorMessage(error)}`
       );
     }
   };
@@ -136,9 +119,9 @@ export default function TablaInventario({
         body: JSON.stringify({ isActive: false }),
       });
       if (!res.ok) throw new Error((await res.json()).error);
-    } catch (e: any) {
+    } catch (error: unknown) {
       setItems(anterior);
-      setError(`No se pudo archivar "${item.name}". ${e.message ?? ""}`);
+      setError(`No se pudo archivar "${item.name}". ${getErrorMessage(error)}`);
     }
   };
 
@@ -159,9 +142,9 @@ export default function TablaInventario({
       });
       if (!res.ok && res.status !== 204)
         throw new Error((await res.json()).error);
-    } catch (e: any) {
+    } catch (error: unknown) {
       setItems(anterior);
-      setError(`No se pudo eliminar "${item.name}". ${e.message ?? ""}`);
+      setError(`No se pudo eliminar "${item.name}". ${getErrorMessage(error)}`);
     }
   };
 
@@ -309,147 +292,6 @@ export default function TablaInventario({
   );
 }
 
-function FilaInventario({
-  item,
-  isAdmin,
-  onCommit,
-  onArchive,
-  onDelete,
-}: {
-  item: InventoryItemRow;
-  isAdmin: boolean;
-  onCommit: (patch: Record<string, unknown>) => void;
-  onArchive: () => void;
-  onDelete: () => void;
-}) {
-  return (
-    <tr className="h-10 border-b border-zinc-50 last:border-0 hover:bg-zinc-50/60 group">
-      <td className="sticky left-0 bg-white group-hover:bg-zinc-50/60 px-3 py-1 font-mono text-xs text-zinc-500 tabular-nums">
-        {item.numero ?? "—"}
-      </td>
-      <td className="sticky left-14 bg-white group-hover:bg-zinc-50/60 px-1 py-1">
-        <EditableCell
-          value={item.name}
-          onCommit={(v) => onCommit({ name: v })}
-          className="font-medium"
-        />
-      </td>
-      <td className="px-1 py-1">
-        <EditableCell
-          value={item.details ?? ""}
-          onCommit={(v) => onCommit({ details: v || null })}
-        />
-      </td>
-      <td className="px-1 py-1">
-        <EditableCell
-          value={item.format ?? ""}
-          onCommit={(v) => onCommit({ format: v || null })}
-        />
-      </td>
-      <td className="px-1 py-1">
-        <EditableCell
-          value={item.color ?? ""}
-          onCommit={(v) => onCommit({ color: v || null })}
-        />
-      </td>
-
-      {MEDIDA_COLUMNAS.map((unidad) => (
-        <td key={unidad} className="px-1 py-1">
-          <EditableCell
-            value={
-              item.measureUnit === unidad && item.measureValue != null
-                ? String(item.measureValue)
-                : ""
-            }
-            align="right"
-            inputMode="decimal"
-            onCommit={(raw) => {
-              const limpio = raw.trim();
-              if (!limpio) {
-                if (item.measureUnit === unidad)
-                  onCommit({ measureValue: null, measureUnit: null });
-                return;
-              }
-              const num = parseFloat(limpio.replace(",", "."));
-              if (isNaN(num)) return;
-              onCommit({ measureValue: num, measureUnit: unidad });
-            }}
-          />
-        </td>
-      ))}
-
-      <td className="px-1 py-1">
-        <EditableCell
-          value={formatearCantidad(item)}
-          align="right"
-          inputMode="decimal"
-          onCommit={(raw) => {
-            const { quantity, fillPercent } = parseCantidad(raw);
-            onCommit({ quantity, fillPercent });
-          }}
-        />
-      </td>
-
-      <td className="px-1 py-1 text-center">
-        <input
-          type="checkbox"
-          checked={item.condition === "NUEVO"}
-          onChange={() =>
-            onCommit({ condition: item.condition === "NUEVO" ? null : "NUEVO" })
-          }
-          className="w-4 h-4 accent-emerald-600"
-          aria-label={`${item.name} nuevo`}
-        />
-      </td>
-      <td className="px-1 py-1 text-center">
-        <input
-          type="checkbox"
-          checked={item.condition === "USADO"}
-          onChange={() =>
-            onCommit({ condition: item.condition === "USADO" ? null : "USADO" })
-          }
-          className="w-4 h-4 accent-amber-600"
-          aria-label={`${item.name} usado`}
-        />
-      </td>
-
-      <td className="px-1 py-1">
-        <EditableCell
-          value={item.notes ?? ""}
-          onCommit={(v) => onCommit({ notes: v || null })}
-        />
-      </td>
-
-      <td className="px-2 py-1">
-        <div className="flex items-center justify-end gap-2.5">
-          <AjustarStockModal
-            itemId={item.id}
-            itemName={item.name}
-            unit={item.measureUnit ? MEDIDA_LABEL[item.measureUnit] : "un"}
-          />
-          <ItemFormModal item={item} />
-          {isAdmin && (
-            <>
-              <button
-                onClick={onArchive}
-                aria-label={`Archivar ${item.name}`}
-                className="text-zinc-400 hover:text-amber-600 transition-colors"
-                title="Archivar"
-              >
-                <Archive size={15} />
-              </button>
-              <button
-                onClick={onDelete}
-                aria-label={`Eliminar ${item.name}`}
-                className="text-zinc-400 hover:text-red-600 transition-colors"
-                title="Eliminar (sólo si no tiene movimientos)"
-              >
-                <Trash size={15} />
-              </button>
-            </>
-          )}
-        </div>
-      </td>
-    </tr>
-  );
+function getErrorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : "Error inesperado.";
 }

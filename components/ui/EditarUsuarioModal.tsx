@@ -91,8 +91,8 @@ export default function EditarUsuarioModal({
       if (!res.ok) throw new Error(data.error);
       router.refresh();
       onClose();
-    } catch (e: any) {
-      setError(e.message);
+    } catch (error: unknown) {
+      setError(error instanceof Error ? error.message : "Error inesperado.");
     } finally {
       setLoading(false);
     }

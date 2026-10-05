@@ -60,29 +60,29 @@ Autor y propósito no confirmados. Preservarlos; no incluirlos en commits de otr
 
 ## Tareas compartidas
 
-| ID        | Tarea                                                              | Prioridad | Responsable | Estado    | Rama / alcance previsto                                                                         |
-| --------- | ------------------------------------------------------------------ | --------- | ----------- | --------- | ----------------------------------------------------------------------------------------------- |
-| COORD-001 | Crear registro y enlazar las instrucciones de ambos agentes        | Alta      | Codex       | TERMINADA | `master`; este documento, `AGENTS.md`, `CLAUDE.md`                                              |
-| REV-001   | Familiarización con arquitectura, módulos y Git                    | Alta      | Codex       | TERMINADA | Revisión sobre `7a70dbb`; sin cambios de código                                                 |
-| REV-002   | Revisión de interfaz con `emil-design-eng`                         | Alta      | Codex       | TERMINADA | Revisión estática sobre `7a70dbb`; sin cambios de código                                        |
-| UX-001    | Navegación adaptable del panel administrativo                      | Alta      | Codex       | TERMINADA | `components/ui/AdminSidebar.tsx`, `app/(admin)/layout.tsx`                                      |
-| UX-002    | Diálogos de usuarios/inventario y scroll CRM (primera fase)        | Alta      | Codex       | TERMINADA | Modal compartido, dos formularios, diálogo CRM y specs                                          |
-| UX-003    | Permitir zoom y mejorar contraste de botones                       | Alta      | Codex       | TERMINADA | `app/layout.tsx`, `app/globals.css`                                                             |
-| UX-004    | Corregir y anunciar la sección activa del menú                     | Media     | Codex       | TERMINADA | `components/ui/AdminSidebar.tsx`                                                                |
-| UX-005    | Enlaces accesibles en lista de llamadas                            | Media     | Claude      | TERMINADA | `master`; `components/crm/ListaLlamadas.tsx` y su spec                                          |
-| UX-006    | Mantener tamaño y foco del selector durante guardado               | Media     | Claude      | TERMINADA | `master`; `components/crm/CallStatusSelect.tsx` y su spec                                       |
-| UX-007    | Movimiento reducido y animación según frecuencia de uso            | Media     | Sin asignar | PROPUESTA | CSS, dashboard y nueva orden del chofer, primitivas de UI                                       |
-| UX-008    | Sustituir transiciones generales por propiedades explícitas        | Baja      | Sin asignar | PROPUESTA | Botones, formularios y navegación                                                               |
-| DOC-001   | Actualizar afirmaciones antiguas de la documentación               | Media     | Claude      | TERMINADA | `master`; `README.md`, `CLAUDE.md`, `PROSPECCION_OUTREACH.md`, `ARQUITECTURA.md`, `PRODUCT.md`  |
-| UX-009    | Migrar los demás modales manuales al diálogo compartido            | Media     | Sin asignar | PROPUESTA | Otros formularios de Operaciones/Inventario; asignar archivos antes de editar                   |
-| DOC-002   | Alinear documentos con el proveedor de correo real                 | Baja      | Sin asignar | PROPUESTA | Esperar decisión Hostinger/SiteGround; `PROSPECCION_OUTREACH.md`, `VARIABLES_ENTORNO.md`, specs |
-| AUD-001   | Auditoría de seguridad (Cyber Neo), POO y código limpio; solo plan | Alta      | Codex       | TERMINADA | Revisión de solo lectura sobre `43a0827`; [informe y plan](docs/auditorias/AUD-001-seguridad-y-calidad-2026-10-04.md) |
-| SEC-001   | Corregir dependencias críticas/altas y actualizar Next.js           | Alta      | Sin asignar | PROPUESTA | Next.js LTS, Nodemailer, Sharp y árbol npm; ver AUD-001                                          |
-| SEC-002   | Cerrar brechas de autorización en APIs operativas                   | Alta      | Sin asignar | PROPUESTA | Órdenes, evidencias y consulta de empresas; definir matriz rol/módulo/estado                    |
-| SEC-003   | Hacer atómico el rate limit de autenticación                         | Alta      | Sin asignar | PROPUESTA | `lib/finanzas/rate-limit.ts`, login y pruebas de concurrencia                                  |
-| SEC-004   | Exigir STARTTLS en SMTP                                               | Media     | Sin asignar | PROPUESTA | `lib/outreach/smtp.ts`; validar puertos/TLS y compatibilidad con proveedor                     |
-| SEC-005   | Endurecer webhook, CSP, logs, errores y exclusiones                   | Media     | Sin asignar | PROPUESTA | Hallazgos preventivos de AUD-001; revisar integraciones antes de cambiar contratos             |
-| CAL-001   | Modularizar pantallas grandes y reducir casts inseguros               | Media     | Sin asignar | PROPUESTA | Nueva orden del chofer, tabla/formulario de inventario y tipado gradual                        |
+| ID        | Tarea                                                              | Prioridad | Responsable | Estado      | Rama / alcance previsto                                                                                               |
+| --------- | ------------------------------------------------------------------ | --------- | ----------- | ----------- | --------------------------------------------------------------------------------------------------------------------- |
+| COORD-001 | Crear registro y enlazar las instrucciones de ambos agentes        | Alta      | Codex       | TERMINADA   | `master`; este documento, `AGENTS.md`, `CLAUDE.md`                                                                    |
+| REV-001   | Familiarización con arquitectura, módulos y Git                    | Alta      | Codex       | TERMINADA   | Revisión sobre `7a70dbb`; sin cambios de código                                                                       |
+| REV-002   | Revisión de interfaz con `emil-design-eng`                         | Alta      | Codex       | TERMINADA   | Revisión estática sobre `7a70dbb`; sin cambios de código                                                              |
+| UX-001    | Navegación adaptable del panel administrativo                      | Alta      | Codex       | TERMINADA   | `components/ui/AdminSidebar.tsx`, `app/(admin)/layout.tsx`                                                            |
+| UX-002    | Diálogos de usuarios/inventario y scroll CRM (primera fase)        | Alta      | Codex       | TERMINADA   | Modal compartido, dos formularios, diálogo CRM y specs                                                                |
+| UX-003    | Permitir zoom y mejorar contraste de botones                       | Alta      | Codex       | TERMINADA   | `app/layout.tsx`, `app/globals.css`                                                                                   |
+| UX-004    | Corregir y anunciar la sección activa del menú                     | Media     | Codex       | TERMINADA   | `components/ui/AdminSidebar.tsx`                                                                                      |
+| UX-005    | Enlaces accesibles en lista de llamadas                            | Media     | Claude      | TERMINADA   | `master`; `components/crm/ListaLlamadas.tsx` y su spec                                                                |
+| UX-006    | Mantener tamaño y foco del selector durante guardado               | Media     | Claude      | TERMINADA   | `master`; `components/crm/CallStatusSelect.tsx` y su spec                                                             |
+| UX-007    | Movimiento reducido y animación según frecuencia de uso            | Media     | Sin asignar | PROPUESTA   | CSS, dashboard y nueva orden del chofer, primitivas de UI                                                             |
+| UX-008    | Sustituir transiciones generales por propiedades explícitas        | Baja      | Sin asignar | PROPUESTA   | Botones, formularios y navegación                                                                                     |
+| DOC-001   | Actualizar afirmaciones antiguas de la documentación               | Media     | Claude      | TERMINADA   | `master`; `README.md`, `CLAUDE.md`, `PROSPECCION_OUTREACH.md`, `ARQUITECTURA.md`, `PRODUCT.md`                        |
+| UX-009    | Migrar los demás modales manuales al diálogo compartido            | Media     | Sin asignar | PROPUESTA   | Otros formularios de Operaciones/Inventario; asignar archivos antes de editar                                         |
+| DOC-002   | Alinear documentos con el proveedor de correo real                 | Baja      | Sin asignar | PROPUESTA   | Esperar decisión Hostinger/SiteGround; `PROSPECCION_OUTREACH.md`, `VARIABLES_ENTORNO.md`, specs                       |
+| AUD-001   | Auditoría de seguridad (Cyber Neo), POO y código limpio; solo plan | Alta      | Codex       | TERMINADA   | Revisión de solo lectura sobre `43a0827`; [informe y plan](docs/auditorias/AUD-001-seguridad-y-calidad-2026-10-04.md) |
+| SEC-001   | Corregir dependencias críticas/altas y actualizar Next.js          | Alta      | Codex       | EN REVISIÓN | Código y gates locales listos; falta ejecución de CI remota y preview Vercel                                          |
+| SEC-002   | Cerrar brechas de autorización en APIs operativas                  | Alta      | Codex       | TERMINADA   | Órdenes, evidencias y empresas; matriz por rol/módulo/estado y specs                                                  |
+| SEC-003   | Hacer atómico el rate limit de autenticación                       | Alta      | Codex       | TERMINADA   | `lib/finanzas/rate-limit.ts`; incremento atómico y prueba de concurrencia                                             |
+| SEC-004   | Exigir STARTTLS en SMTP                                            | Media     | Codex       | TERMINADA   | `lib/outreach/smtp.ts`; puertos y TLS validados con pruebas                                                           |
+| SEC-005   | Endurecer webhook, CSP, logs, errores y exclusiones                | Media     | Codex       | EN REVISIÓN | Implementado; revisar `unsafe-inline` y retirar `?secret=` tras migrar integraciones                                  |
+| CAL-001   | Modularizar pantallas grandes y reducir casts inseguros            | Media     | Codex       | TERMINADA   | Nueva orden, inventario y fronteras API/vistas con tipos                                                              |
 
 ## Historial de sesiones y entregas
 
@@ -250,6 +250,71 @@ Autor y propósito no confirmados. Preservarlos; no incluirlos en commits de otr
 - **Despliegue / BD:** no aplica; configuración efectiva de Vercel y base de datos no verificada.
 - **Siguiente paso:** priorizar SEC-001 a SEC-003 antes de CAL-001; SEC-004/SEC-005 quedan como
   hardening propuesto. Las tareas de implementación continúan sin asignar.
+
+### 2026-10-04 - SEC-001..SEC-005 / CAL-001 - Codex
+
+- **Solicitud:** el usuario autorizo implementar todos los hallazgos y mejoras propuestos en
+  AUD-001, continuando el trabajo local y dejando trazabilidad para Claude.
+- **Responsable / rama / base:** Codex, `security/aud001-remediation`, `fff720c`.
+- **Alcance registrado antes de editar codigo:** dependencias y compuerta de CI; autorizacion de
+  ordenes/evidencias/empresas; rate limit concurrente; STARTTLS; webhook, CSP, logs, errores y
+  exclusiones; refactor de las tres pantallas extensas y reduccion inicial de casts inseguros.
+- **Archivos previstos:** `package.json`, `package-lock.json`, `.github/workflows/ci.yml`,
+  `app/api/ordenes/**`, `app/api/evidencias/**`, `app/api/empresas/**`,
+  `lib/finanzas/rate-limit.*`, `lib/outreach/smtp.*`, `app/api/configuracion/webhook/**`,
+  `app/api/webhooks/leads/**`, `components/crm/WebhookSettings.*`, `next.config.mjs`, `.gitignore`,
+  `app/api/contactos/import/**`, `lib/auth.ts`,
+  `app/(chofer)/chofer/nueva-orden/page.tsx`, `components/inventario/TablaInventario.tsx`,
+  `components/inventario/ItemFormModal.tsx`, sus specs pertinentes, el informe AUD-001 y este
+  registro.
+- **Alcance ampliado tras el primer build:** Next.js 15 vuelve asincronos `params` y
+  `searchParams` de paginas y handlers dinamicos; adaptar los puntos existentes en CRM,
+  Operaciones, Inventario y Finanzas. Tailwind 4 requiere referencia al CSS global para el CSS
+  scoped del CRM. Se incluira el ajuste `target` generado por Next en `tsconfig.json` si se
+  confirma necesario.
+- **Archivos adicionales previstos:** `app/**/[id]/**`, `app/api/finanzas/**`,
+  `app/api/inventario/[id]/route.ts`, rutas/paginas dinamicas existentes de CRM, Operaciones y
+  Finanzas, `app/globals.css`, `app/(admin)/admin/crm/crm.css`, `postcss.config.js` y
+  `tsconfig.json`.
+- **Decisiones iniciales:** mantener acceso CRM de VENTAS al listado de empresas, bajo su
+  portero de modulo; conservar que el receptor acepte `x-webhook-secret` y `?secret=` para no
+  romper integraciones existentes, pero dejar de emitir secretos dentro de URLs generadas.
+  No acceder a valores de `.env.local`, no ejecutar cambios de esquema/BD y no desplegar.
+- **Verificacion prevista:** pruebas nuevas de permisos y concurrencia junto al porton
+  `npm run typecheck && npm run test && npm run build`; repetir `npm audit` tras actualizar el lock.
+- **Estado:** implementacion iniciada. Los archivos locales de `blueprints/` observados al inicio
+  no pertenecen a esta tarea y quedan fuera de cualquier commit.
+
+#### Ampliación CAL-001 — tipado de producción
+
+- Antes de ampliar el alcance se actualiza esta entrada: además de las tres pantallas registradas,
+  revisar y tipar los usos de `any`/casts/supresiones en handlers y vistas de producción de
+  Operaciones, CRM, usuarios, autenticación y reportes. Fixtures de tests quedan fuera salvo que
+  bloqueen un tipo de producción. El propósito es cerrar fronteras de datos con tipos de Prisma,
+  enums validados y `unknown` en errores, sin cambiar contratos de API ni comportamiento visual.
+- Archivos adicionales previstos: `lib/auth.ts`, handlers de `contactos`, `discrepancias`,
+  `posiciones`, `reportes`, `usuarios`, `webhooks/leads` y vistas relacionadas de órdenes,
+  discrepancias, choferes y CRM. Revisar cada cambio con typecheck, tests y build.
+
+#### Cierre de implementación — 2026-10-04
+
+- **Cambios completados:** se implementó el alcance de SEC-001..SEC-005 y CAL-001 descrito en el
+  informe AUD-001. También se corrigió el selector de empresas para que CHOFER solo pueda
+  consultar empresas activas, aunque solicite `active=false`.
+- **Verificación:** `npm ci --legacy-peer-deps`, `npm audit --audit-level=low`,
+  `npm run typecheck`, `npm run test` (24 archivos, 292 pruebas), `npm run build` (76 páginas) y
+  `git diff --check` completaron sin fallos. El build usó URL ficticia local; el intento de
+  conexión Prisma a `127.0.0.1` falló durante prerender, pero Next generó las páginas y terminó
+  con código 0. No se usó una BD real.
+- **Límites de verificación:** no se ejecutó CI en GitHub, preview de Vercel ni QA autenticado de
+  navegador. No se hizo `db push`, migración ni despliegue. En el siguiente cierre registrar los
+  hashes de commits y verificar el push de esta rama.
+- **Riesgos residuales:** CSP conserva `unsafe-inline` hasta probar nonce/hash en navegador; el
+  receptor de webhook conserva `?secret=` por compatibilidad; `eslint-config-next` permanece en
+  14.2.35 por la cadena vulnerable transitiva del 15 y Next runtime está en 15.5.27. La CI usa
+  `npm ci --legacy-peer-deps` por el peer opcional de Nodemailer de NextAuth 4.
+- **Colaboración:** las modificaciones preexistentes de Claude en `blueprints/` se preservan y
+  quedan fuera de los commits de esta tarea.
 
 ## Plantilla para próximas entradas
 

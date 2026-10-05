@@ -1,10 +1,13 @@
+import { Prisma } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { hasModuleAccess } from "@/lib/access";
 import { prisma } from "@/lib/db";
 import { apiError } from "@/lib/utils";
-import { hasModuleAccess } from "@/lib/access";
 import { escaparCampoCsv } from "@/lib/finanzas/csv";
+
+type CsvValue = string | number | null;
 
 // GET /api/reportes?type=discrepancias&from=2026-01-01&to=2026-12-31&format=json|csv
 export async function GET(req: NextRequest) {
@@ -21,19 +24,20 @@ export async function GET(req: NextRequest) {
   const companyId = searchParams.get("companyId");
   const format = searchParams.get("format") ?? "json";
 
-  const dateFilter: any = {};
+  const dateFilter: Prisma.DateTimeFilter = {};
   if (from) dateFilter.gte = new Date(from);
-  if (to) dateFilter.lte = new Date(to + "T23:59:59");
+  if (to) dateFilter.lte = new Date(`${to}T23:59:59`);
+  const createdAt = Object.keys(dateFilter).length > 0 ? dateFilter : undefined;
 
-  let data: any[];
+  let data: unknown[];
   let filename: string;
   let csvHeaders: string[];
-  let csvRows: (string | number | null)[][];
+  let csvRows: CsvValue[][];
 
   if (type === "discrepancias") {
-    data = await prisma.discrepancy.findMany({
+    const discrepancies = await prisma.discrepancy.findMany({
       where: {
-        ...(Object.keys(dateFilter).length ? { createdAt: dateFilter } : {}),
+        ...(createdAt ? { createdAt } : {}),
         ...(driverId ? { order: { driverId } } : {}),
         ...(companyId ? { order: { companyId } } : {}),
       },
@@ -47,7 +51,7 @@ export async function GET(req: NextRequest) {
       },
       orderBy: { createdAt: "desc" },
     });
-
+    data = discrepancies;
     filename = `discrepancias_${new Date().toISOString().slice(0, 10)}.csv`;
     csvHeaders = [
       "Código Orden",
@@ -61,44 +65,52 @@ export async function GET(req: NextRequest) {
       "Estado",
       "Fecha",
     ];
-    csvRows = data.map((d) => [
-      d.order.orderCode,
-      d.order.company.name,
-      d.order.driver?.name ?? "",
-      d.materialType ?? "",
-      d.declaredQuantity ?? "",
-      d.receivedQuantity ?? "",
-      d.differencePercent ? d.differencePercent.toFixed(2) : "",
-      d.severity,
-      d.status,
-      new Date(d.createdAt).toLocaleDateString("es-CL"),
+    csvRows = discrepancies.map((discrepancy) => [
+      discrepancy.order.orderCode,
+      discrepancy.order.company.name,
+      discrepancy.order.driver?.name ?? "",
+      discrepancy.materialType ?? "",
+      discrepancy.declaredQuantity ?? "",
+      discrepancy.receivedQuantity ?? "",
+      discrepancy.differencePercent
+        ? discrepancy.differencePercent.toFixed(2)
+        : "",
+      discrepancy.severity,
+      discrepancy.status,
+      new Date(discrepancy.createdAt).toLocaleDateString("es-CL"),
     ]);
   } else if (type === "choferes") {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    data = (await (prisma.pickupOrder as any).groupBy({
+    const ordersByDriver = await prisma.pickupOrder.groupBy({
       by: ["driverId"],
-      where: Object.keys(dateFilter).length ? { createdAt: dateFilter } : {},
+      where: createdAt ? { createdAt } : {},
       _count: { id: true },
       orderBy: { _count: { id: "desc" } },
-    })) as any[];
+    });
+    data = ordersByDriver;
 
+    const driverIds = ordersByDriver
+      .map((row) => row.driverId)
+      .filter((id): id is string => id !== null);
     const drivers = await prisma.user.findMany({
-      where: { id: { in: data.map((d: any) => d.driverId) } },
+      where: { id: { in: driverIds } },
       select: { id: true, name: true },
     });
-    const driverMap = Object.fromEntries(drivers.map((d) => [d.id, d.name]));
+    const driverMap = new Map(
+      drivers.map((driver) => [driver.id, driver.name])
+    );
 
     filename = `reporte_choferes_${new Date().toISOString().slice(0, 10)}.csv`;
     csvHeaders = ["Chofer", "Total Órdenes"];
-    csvRows = data.map((d: any) => [
-      driverMap[d.driverId] ?? d.driverId,
-      d._count.id,
+    csvRows = ordersByDriver.map((row) => [
+      row.driverId
+        ? (driverMap.get(row.driverId) ?? row.driverId)
+        : "Sin asignar",
+      row._count.id,
     ]);
   } else {
-    // Default: ordenes
-    data = await prisma.pickupOrder.findMany({
+    const orders = await prisma.pickupOrder.findMany({
       where: {
-        ...(Object.keys(dateFilter).length ? { createdAt: dateFilter } : {}),
+        ...(createdAt ? { createdAt } : {}),
         ...(driverId ? { driverId } : {}),
         ...(companyId ? { companyId } : {}),
       },
@@ -117,7 +129,7 @@ export async function GET(req: NextRequest) {
       },
       orderBy: { createdAt: "desc" },
     });
-
+    data = orders;
     filename = `ordenes_${new Date().toISOString().slice(0, 10)}.csv`;
     csvHeaders = [
       "Código",
@@ -128,26 +140,24 @@ export async function GET(req: NextRequest) {
       "Discrepancias",
       "Fecha",
     ];
-    csvRows = data.map((o: any) => [
-      o.orderCode,
-      o.company.name,
-      o.driver?.name ?? "",
-      o.status,
-      o.items
-        .map((i: any) => `${i.materialName}: ${i.declaredQuantity}${i.unit}`)
+    csvRows = orders.map((order) => [
+      order.orderCode,
+      order.company.name,
+      order.driver?.name ?? "",
+      order.status,
+      order.items
+        .map(
+          (item) => `${item.materialName}: ${item.declaredQuantity}${item.unit}`
+        )
         .join(" | "),
-      o._count.discrepancies,
-      new Date(o.createdAt).toLocaleDateString("es-CL"),
+      order._count.discrepancies,
+      new Date(order.createdAt).toLocaleDateString("es-CL"),
     ]);
   }
 
   if (format === "csv") {
-    // escaparCampoCsv() también antepone una comilla simple a campos que
-    // empiezan con =, +, - o @ — mitigación de inyección de fórmulas en
-    // Excel/Sheets, que es quien abre este archivo.
-    const escape = (v: string | number | null) =>
-      escaparCampoCsv(String(v ?? ""));
-
+    // Mitiga inyección de fórmulas en hojas de cálculo que abren el archivo.
+    const escape = (value: CsvValue) => escaparCampoCsv(String(value ?? ""));
     const csv = [
       csvHeaders.map(escape).join(","),
       ...csvRows.map((row) => row.map(escape).join(",")),

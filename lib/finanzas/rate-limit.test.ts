@@ -18,10 +18,25 @@ function crearContadorEnMemoria(): ClienteContador {
       async upsert({ where: { key }, create, update }) {
         const existente = filas.get(key);
         const fila: ContadorRegistro = existente
-          ? { ...existente, ...update }
+          ? {
+              ...existente,
+              count:
+                typeof update.count === "number"
+                  ? update.count
+                  : existente.count + update.count.increment,
+              windowStart: update.windowStart ?? existente.windowStart,
+            }
           : { id: String(++siguienteId), ...create };
         filas.set(key, fila);
         return fila;
+      },
+      async updateMany({ where: { key, windowStart }, data }) {
+        const existente = filas.get(key);
+        if (!existente || existente.windowStart > windowStart.lte) {
+          return { count: 0 };
+        }
+        filas.set(key, { ...existente, ...data });
+        return { count: 1 };
       },
       async update({ where: { key }, data }) {
         const existente = filas.get(key);
@@ -70,6 +85,24 @@ describe("checkRateLimit", () => {
 
     expect(sexto.ok).toBe(false);
     expect(sexto.retryAfterSec).toBeGreaterThan(0);
+  });
+
+  it("aplica el limite aun cuando llegan intentos concurrentes", async () => {
+    const contador = crearContadorEnMemoria();
+    const ahora = new Date("2026-08-08T10:00:00Z");
+
+    const resultados = await Promise.all(
+      Array.from({ length: 20 }, () =>
+        checkRateLimit(contador, "login:concurrente@x.cl", 5, VENTANA_MS, ahora)
+      )
+    );
+
+    expect(resultados.filter((resultado) => resultado.ok)).toHaveLength(5);
+    expect(resultados.filter((resultado) => !resultado.ok)).toHaveLength(15);
+    const fila = await contador.rateLimitCounter.findUnique({
+      where: { key: "login:concurrente@x.cl" },
+    });
+    expect(fila?.count).toBe(20);
   });
 
   it("reinicia el contador a 1 cuando la ventana ya expiró", async () => {

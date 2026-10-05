@@ -7,16 +7,19 @@ import { validateCoordinates } from "@/lib/tracking";
 
 // POST /api/posiciones — recibe un ping de posición (teléfono o GPS)
 export async function POST(req: NextRequest) {
-  let body: any;
-  try {
-    body = await req.json();
-  } catch {
+  const body: unknown = await req.json().catch(() => null);
+  if (typeof body !== "object" || body === null || Array.isArray(body)) {
     return apiError("JSON inválido", 400);
   }
+  const input = body as Record<string, unknown>;
 
-  const { lat, lng, accuracy, source } = body ?? {};
+  const { lat, lng, accuracy, source } = input;
 
-  if (!validateCoordinates(lat, lng)) {
+  if (
+    typeof lat !== "number" ||
+    typeof lng !== "number" ||
+    !validateCoordinates(lat, lng)
+  ) {
     return apiError("Coordenadas inválidas", 422);
   }
 
@@ -55,7 +58,12 @@ export async function POST(req: NextRequest) {
       trackerId: tracker.id,
       lat,
       lng,
-      accuracy: typeof accuracy === "number" ? accuracy : null,
+      accuracy:
+        typeof accuracy === "number" &&
+        Number.isFinite(accuracy) &&
+        accuracy >= 0
+          ? accuracy
+          : null,
       source: source === "device" ? "device" : "phone",
     },
   });

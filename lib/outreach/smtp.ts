@@ -10,7 +10,7 @@
  * corresponde a cómo está hosteado el correo hoy.
  */
 
-import nodemailer from "nodemailer";
+import nodemailer, { type SendMailOptions, type Transporter } from "nodemailer";
 
 const MAX_ATTACHMENT_BYTES = 3 * 1024 * 1024; // mismo límite que la decisión original de §8
 
@@ -34,25 +34,58 @@ function requireEnv(name: string): string {
   return value;
 }
 
-let cachedTransporter: nodemailer.Transporter | null = null;
+let cachedTransporter: Transporter | null = null;
+
+export interface SmtpTransportInput {
+  host: string;
+  port: number;
+  user: string;
+  pass: string;
+}
+
+export function parseSmtpPort(value: string): number {
+  const normalized = value.trim();
+  const port = Number(normalized);
+  if (
+    !/^\d+$/.test(normalized) ||
+    !Number.isInteger(port) ||
+    port < 1 ||
+    port > 65535
+  ) {
+    throw new Error("SMTP_PORT debe ser un puerto TCP entre 1 y 65535");
+  }
+  return port;
+}
+
+export function buildSmtpTransportOptions(input: SmtpTransportInput) {
+  const { host, port, user, pass } = input;
+  if (!Number.isInteger(port) || port < 1 || port > 65535) {
+    throw new Error("SMTP_PORT debe ser un puerto TCP entre 1 y 65535");
+  }
+  return {
+    host,
+    port,
+    secure: port === 465,
+    ...(port === 465 ? {} : { requireTLS: true }),
+    auth: { user, pass },
+    tls: { rejectUnauthorized: true },
+  };
+}
 
 // Un solo transporter reutilizado entre envíos del mismo lote — nodemailer
 // mantiene su propio pool de conexiones, no vale la pena reconectar por
 // cada contacto del cron.
-function getTransporter(): nodemailer.Transporter {
+function getTransporter(): Transporter {
   if (cachedTransporter) return cachedTransporter;
 
   const host = requireEnv("SMTP_HOST");
-  const port = parseInt(process.env.SMTP_PORT ?? "465", 10);
+  const port = parseSmtpPort(process.env.SMTP_PORT ?? "465");
   const user = requireEnv("SMTP_USER");
   const pass = requireEnv("SMTP_PASSWORD");
 
-  cachedTransporter = nodemailer.createTransport({
-    host,
-    port,
-    secure: port === 465, // 465 = SSL directo, 587 = STARTTLS (secure:false, nodemailer negocia solo)
-    auth: { user, pass },
-  });
+  cachedTransporter = nodemailer.createTransport(
+    buildSmtpTransportOptions({ host, port, user, pass })
+  );
   return cachedTransporter;
 }
 
@@ -79,9 +112,7 @@ export function assertAttachmentWithinLimit(
 // SMTP_REPLY_TO (contacto@cooperapro.cl) vía el header Reply-To. Así, si
 // algún filtro antispam llega a marcar la casilla de envío, la casilla
 // pública que recibe el feedback de negocio queda protegida.
-export function buildMailOptions(
-  input: SendMailInput
-): nodemailer.SendMailOptions {
+export function buildMailOptions(input: SendMailInput): SendMailOptions {
   const fromAddress = requireEnv("SMTP_USER");
   const fromName = process.env.SMTP_FROM_NAME || "Coopera Pro";
   const replyTo = process.env.SMTP_REPLY_TO || undefined;

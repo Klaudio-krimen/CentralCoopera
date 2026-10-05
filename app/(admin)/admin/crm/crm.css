@@ -1,3 +1,5 @@
+@reference "../../../globals.css";
+
 /* Tokens visuales scoped al módulo CRM (imagen de auto-crm) — solo se importa
    desde app/(admin)/admin/crm/layout.tsx. No afecta Operaciones/Inventario/
    Chofer/Recepción, que siguen usando .card/.btn-primary/.input-base (emerald). */

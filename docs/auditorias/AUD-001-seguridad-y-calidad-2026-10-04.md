@@ -15,14 +15,14 @@ El CVE-2026-75604 de Next.js requiere un servidor alojado sobre sistema de archi
 
 ## Alcance y método
 
-| Revisión | Resultado |
-| --- | --- |
-| Reconocimiento | Next.js 14, React, TypeScript, Prisma/PostgreSQL, NextAuth y Vercel. 423 archivos fuera de dependencias y artefactos; revisión estática de 375 archivos de código y 52 handlers API. |
-| SCA | `npm audit --json`, con datos del registro consultados el 2026-10-04. Exit 1 por vulnerabilidades; 25 paquetes afectados: 1 crítico, 20 altos, 3 moderados, 1 bajo. |
-| Integridad de dependencias | `check_lockfiles.py`: cero hallazgos. `package-lock.json` está versionado; 628 paquetes resueltos con versión e integridad y coincide con el manifiesto. |
-| Secretos | `scan_secrets.py`: 390 archivos escaneados, 2 omitidos. Cinco coincidencias en archivos versionados: cuatro placeholders de `VARIABLES_ENTORNO.md` y un fixture en `lib/finanzas/audit.test.ts`; exposiciones reales confirmadas: cero. No se incluyeron valores. |
-| Configuración e infraestructura | Sin Docker ni workflows de GitHub detectados. `.env.local` existe y está ignorado; su contenido no se abrió. |
-| Herramientas externas | npm 11.16.0, Node 24.18.0 y Python 3.14.2. Semgrep, Trivy y Gitleaks no disponibles. |
+| Revisión                        | Resultado                                                                                                                                                                                                                                                         |
+| ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Reconocimiento                  | Next.js 14, React, TypeScript, Prisma/PostgreSQL, NextAuth y Vercel. 423 archivos fuera de dependencias y artefactos; revisión estática de 375 archivos de código y 52 handlers API.                                                                              |
+| SCA                             | `npm audit --json`, con datos del registro consultados el 2026-10-04. Exit 1 por vulnerabilidades; 25 paquetes afectados: 1 crítico, 20 altos, 3 moderados, 1 bajo.                                                                                               |
+| Integridad de dependencias      | `check_lockfiles.py`: cero hallazgos. `package-lock.json` está versionado; 628 paquetes resueltos con versión e integridad y coincide con el manifiesto.                                                                                                          |
+| Secretos                        | `scan_secrets.py`: 390 archivos escaneados, 2 omitidos. Cinco coincidencias en archivos versionados: cuatro placeholders de `VARIABLES_ENTORNO.md` y un fixture en `lib/finanzas/audit.test.ts`; exposiciones reales confirmadas: cero. No se incluyeron valores. |
+| Configuración e infraestructura | Sin Docker ni workflows de GitHub detectados. `.env.local` existe y está ignorado; su contenido no se abrió.                                                                                                                                                      |
+| Herramientas externas           | npm 11.16.0, Node 24.18.0 y Python 3.14.2. Semgrep, Trivy y Gitleaks no disponibles.                                                                                                                                                                              |
 
 No se levantó la aplicación, no se ejecutaron pruebas, build ni comandos contra la base de datos; tampoco se accedió a la configuración de Vercel, producción o sus logs. El análisis regex de secretos no sustituye una búsqueda especializada de todo el historial Git.
 
@@ -83,11 +83,11 @@ No se levantó la aplicación, no se ejecutaron pruebas, build ni comandos contr
 - **Severidad:** High, Medium y Low según tabla; OWASP A06:2025.
 - **Evidencia y remediación:**
 
-| Alcance | Paquetes/advisories destacados | Versión indicada por npm/advisory |
-| --- | --- | --- |
-| Producción o grafo compartido | `postcss@8.4.31` (XSS/path traversal y disclosure), `undici@6.28.0`, `tailwindcss@3.4.19` y transitivos `braces@3.0.3`, `chokidar@3.6.0`, `fast-glob@3.3.3`, `micromatch@4.0.8`; también `postcss-selector-parser@6.1.2` | PostCSS `>=8.5.23`, Undici `>=6.28.1`, selector parser `>=6.1.3`. Revisar cadena Tailwind: el cambio sugerido a Tailwind 4 es mayor y `braces` no tenía versión parcheada en el advisory revisado. |
-| Tooling / solo desarrollo | `eslint-config-next@14.2.5`, `@next/eslint-plugin-next@14.2.5`, `@typescript-eslint/parser`/`typescript-estree@7.2.0`, `glob@10.3.10`, `globby@11.1.0`, `minimatch@9.0.3`, `brace-expansion` en varias ramas, `browserslist@4.28.2`, `js-yaml@4.3.1` | `glob >=10.5.0`, `minimatch >=9.0.7`, `brace-expansion >=1.1.21/2.1.7`, `browserslist >=4.28.7`, `js-yaml >=4.3.2`; actualizar tooling compatible y confirmar todas las instancias del lock. |
-| Pruebas / desarrollo | `vitest@4.1.9`, `@vitest/mocker@4.1.9`, `baseline-browser-mapping@2.10.34` | Vitest/mocker `>=4.1.11`, baseline mapping `>=2.11.0`. |
+| Alcance                       | Paquetes/advisories destacados                                                                                                                                                                                                                       | Versión indicada por npm/advisory                                                                                                                                                                  |
+| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Producción o grafo compartido | `postcss@8.4.31` (XSS/path traversal y disclosure), `undici@6.28.0`, `tailwindcss@3.4.19` y transitivos `braces@3.0.3`, `chokidar@3.6.0`, `fast-glob@3.3.3`, `micromatch@4.0.8`; también `postcss-selector-parser@6.1.2`                             | PostCSS `>=8.5.23`, Undici `>=6.28.1`, selector parser `>=6.1.3`. Revisar cadena Tailwind: el cambio sugerido a Tailwind 4 es mayor y `braces` no tenía versión parcheada en el advisory revisado. |
+| Tooling / solo desarrollo     | `eslint-config-next@14.2.5`, `@next/eslint-plugin-next@14.2.5`, `@typescript-eslint/parser`/`typescript-estree@7.2.0`, `glob@10.3.10`, `globby@11.1.0`, `minimatch@9.0.3`, `brace-expansion` en varias ramas, `browserslist@4.28.2`, `js-yaml@4.3.1` | `glob >=10.5.0`, `minimatch >=9.0.7`, `brace-expansion >=1.1.21/2.1.7`, `browserslist >=4.28.7`, `js-yaml >=4.3.2`; actualizar tooling compatible y confirmar todas las instancias del lock.       |
+| Pruebas / desarrollo          | `vitest@4.1.9`, `@vitest/mocker@4.1.9`, `baseline-browser-mapping@2.10.34`                                                                                                                                                                           | Vitest/mocker `>=4.1.11`, baseline mapping `>=2.11.0`.                                                                                                                                             |
 
 Los nombres exactos, advisories y versiones se obtuvieron de `npm audit` y su árbol resuelto. En Tailwind, ESLint y paquetes compartidos debe comprobarse si el componente vulnerable procesa entrada no confiable; alcance en el árbol no demuestra por sí solo ejecución en requests. El resultado completo debe repetirse tras cualquier cambio del lock.
 
@@ -145,14 +145,14 @@ Trabajo de mantenibilidad propuesto, posterior a cerrar los riesgos de acceso y 
 
 Estas tareas quedan propuestas; esta auditoría no las implementa:
 
-| ID | Prioridad | Tarea | Criterio de cierre |
-| --- | --- | --- | --- |
-| SEC-001 | Alta | Actualizar Next.js desde 14 y corregir los avisos críticos/altos de producción y tooling | Líneas LTS soportadas, `npm audit` revisado en todo el árbol y en producción, typecheck/tests/build y preview desplegado verificados. |
-| SEC-002 | Alta | Corregir autorización por rol/módulo/estado en órdenes, evidencias y listado de empresas | Matriz acordada, handlers responden 401/403 según rol; pruebas positivas/negativas para cada método. |
-| SEC-003 | Alta | Hacer atómico el rate limit de login | Carrera de incremento/expiración corregida y prueba concurrente que no excede el límite. |
-| SEC-004 | Media | Exigir STARTTLS para puertos de actualización SMTP | Puertos validados, transporte falla sin TLS y tests cubren 465/587. |
-| SEC-005 | Media | Endurecer configuración de webhook, CSP, logging, errores y `.gitignore` | Credenciales fuera de URL cuando sea posible; errores de API sin detalles internos; reglas de exclusión cubiertas. |
-| CAL-001 | Media | Modularizar pantallas grandes y reducir casts inseguros | Refactor incremental con contratos tipados, sin cambio funcional y con pruebas existentes más casos por flujo. |
+| ID      | Prioridad | Tarea                                                                                    | Criterio de cierre                                                                                                                    |
+| ------- | --------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| SEC-001 | Alta      | Actualizar Next.js desde 14 y corregir los avisos críticos/altos de producción y tooling | Líneas LTS soportadas, `npm audit` revisado en todo el árbol y en producción, typecheck/tests/build y preview desplegado verificados. |
+| SEC-002 | Alta      | Corregir autorización por rol/módulo/estado en órdenes, evidencias y listado de empresas | Matriz acordada, handlers responden 401/403 según rol; pruebas positivas/negativas para cada método.                                  |
+| SEC-003 | Alta      | Hacer atómico el rate limit de login                                                     | Carrera de incremento/expiración corregida y prueba concurrente que no excede el límite.                                              |
+| SEC-004 | Media     | Exigir STARTTLS para puertos de actualización SMTP                                       | Puertos validados, transporte falla sin TLS y tests cubren 465/587.                                                                   |
+| SEC-005 | Media     | Endurecer configuración de webhook, CSP, logging, errores y `.gitignore`                 | Credenciales fuera de URL cuando sea posible; errores de API sin detalles internos; reglas de exclusión cubiertas.                    |
+| CAL-001 | Media     | Modularizar pantallas grandes y reducir casts inseguros                                  | Refactor incremental con contratos tipados, sin cambio funcional y con pruebas existentes más casos por flujo.                        |
 
 ## Fuentes consultadas
 
@@ -164,3 +164,44 @@ Estas tareas quedan propuestas; esta auditoría no las implementa:
 - [sharp GHSA-f88m-g3jw-g9cj](https://github.com/advisories/GHSA-f88m-g3jw-g9cj) · [sharp GHSA-rgj7-g3m4-5g8c](https://github.com/advisories/GHSA-rgj7-g3m4-5g8c)
 - [OWASP Top 10:2025](https://top10.owasp.org/2025/0x00_2025-Introduction/)
 - [OWASP Session Management Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html)
+
+## Implementación de SEC-001..SEC-005 y CAL-001 — 2026-10-04
+
+La auditoría anterior fue de solo lectura. Esta sección registra una implementación posterior
+autorizada por el usuario en la rama `security/aud001-remediation`, basada en `fff720c`. El informe
+histórico, su evidencia y sus cifras corresponden a la base `43a0827`; los estados de abajo reflejan
+el árbol actualizado después de los cambios.
+
+| Hallazgo        | Resultado de la implementación                                                                                                                                                                                                                                                                                           |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| CN-001 / CN-008 | Next.js `15.5.27`, Tailwind `4.3.3`, Sharp `0.35.5`, Nodemailer `10.0.14`; overrides corrigen PostCSS y tooling. `npm audit --audit-level=low` reporta cero vulnerabilidades. CI fija Node 24, requiere Node `>=20.9` y ejecuta audit, typecheck, tests y build.                                                         |
+| CN-002          | GET/POST/PATCH de órdenes aplica acceso a Operaciones, propiedad y autorización de acción/estado. La creación de código y orden queda en transacción; los datos recibidos se validan en servidor.                                                                                                                        |
+| CN-003          | Carga y borrado de evidencia validan módulo, rol, etapa, dueño y estado; enums y coordenadas se validan antes de persistir.                                                                                                                                                                                              |
+| CN-004          | Empresas: CHOFER recibe selección mínima; usuarios CRM reciben campos comerciales; otros roles reciben 403.                                                                                                                                                                                                              |
+| CN-005          | El límite de intentos usa `updateMany` para expirar y un upsert con incremento atómico; la prueba concurrente confirma que no se excede el límite.                                                                                                                                                                       |
+| CN-006          | SMTP valida el puerto, usa TLS implícito en 465 y exige STARTTLS en otros puertos permitidos. NextAuth 4 mantiene un peer opcional que declara Nodemailer 7; el proyecto solo habilita CredentialsProvider y `npm ci` usa `--legacy-peer-deps`. Revisar antes de habilitar EmailProvider.                                |
+| CN-007          | Sharp se actualizó a `0.35.5`; `npm audit` cubre el lock completo. No se probó el despliegue ni una matriz de archivos de imagen contra producción.                                                                                                                                                                      |
+| CN-009          | Puerto SMTP y opciones TLS tienen validación y pruebas para 465/587/25 y entradas inválidas. El proveedor/puerto real no se volvió a consultar en esta tarea.                                                                                                                                                            |
+| CN-010          | GET del webhook no retorna el secreto; rotar lo devuelve una sola vez, con `no-store`, fuera de la URL. El receptor mantiene `?secret=` por compatibilidad, además del header.                                                                                                                                           |
+| CN-011          | En producción CSP ya no incluye `unsafe-eval`; se añadieron `object-src 'none'`, `base-uri 'self'` y `form-action 'self'`. `unsafe-inline` permanece para scripts de Next.js: falta una prueba de navegador para migrar a nonce/hash sin romper renderizado.                                                             |
+| CN-012 / CN-013 | Auth no registra email/ID ni el objeto de error; la importación devuelve mensajes genéricos por fila. `.gitignore` cubre env files, credenciales y keystores.                                                                                                                                                            |
+| CAL-001         | Orden nueva, tabla/fila y formulario de inventario quedaron divididos en componentes con specs. Las fronteras API y vistas relacionadas usan enums/tipos Prisma; el barrido final no encontró `any`, `as any` ni `@ts-ignore` en `app`, `components` o `lib` de producción. Se conservan dos casts en fixtures de tests. |
+
+La actualización a Next.js 15 también convirtió `params` y `searchParams` a promesas en páginas y
+handlers dinámicos existentes. La migración Tailwind 4 conserva los tokens CRM y el CSS scoped usa
+`@reference` al tema global. Se actualizaron `AGENTS.md`, `CLAUDE.md` y `README.md`.
+
+### Verificación de la implementación
+
+- `npm ci --legacy-peer-deps`: OK; el proceso de instalación y `npm audit` encontraron cero
+  vulnerabilidades.
+- `npm audit --audit-level=low`: cero vulnerabilidades.
+- `npm run typecheck`: OK.
+- `npm run test`: 24 archivos y 292 tests aprobados.
+- `npm run build`: OK; Next compiló y generó las 76 páginas. Durante prerender intentó consultas a
+  Prisma usando el URL ficticio local de CI y registró fallos de autenticación contra `127.0.0.1`;
+  no se leyó ni escribió una BD real y el comando terminó con código 0.
+- La CI está definida, pero aún no se verificó una ejecución en GitHub ni un preview de Vercel.
+  Tampoco se ejecutó QA autenticado en navegador, `db push`, migración ni despliegue. La verificación
+  local completa y los riesgos residuales quedan registrados en `REGISTRO_TRABAJO.md`; los hashes
+  de entrega Git se añadirán allí tras crear y publicar los commits.

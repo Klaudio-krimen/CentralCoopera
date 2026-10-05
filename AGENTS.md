@@ -1,7 +1,7 @@
 # TrackResiduos — instrucciones para agentes
 
 Intranet de Coopera Pro (Santiago, Chile): Operaciones, Inventario, CRM y **Finanzas**.
-Next.js 14 (App Router) · TypeScript 5 · Prisma 5 sobre PostgreSQL · NextAuth v4 · Tailwind 3 ·
+Next.js 15 (App Router) · TypeScript 5 · Prisma 5 sobre PostgreSQL · NextAuth v4 · Tailwind 4 ·
 Vitest · desplegado en Vercel.
 
 ## Coordinación entre Codex y Claude

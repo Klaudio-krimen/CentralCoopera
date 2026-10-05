@@ -1,3 +1,4 @@
+import { ContactSource, ContactTemperature } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
@@ -5,21 +6,24 @@ import { prisma } from "@/lib/db";
 import { apiError } from "@/lib/utils";
 import { hasModuleAccess } from "@/lib/access";
 
-const TEMPERATURES = ["FRIO", "TIBIO", "CALIENTE"];
-const SOURCES = [
-  "WEBSITE",
-  "WHATSAPP",
-  "REFERIDO",
-  "REDES_SOCIALES",
-  "LLAMADA_FRIA",
-  "EMAIL",
-  "FORMULARIO",
-  "EVENTO",
-  "IMPORT",
-  "WEBHOOK",
-  "SCRAPING",
-  "OTRO",
-];
+const IMPORT_FIELDS = [
+  "name",
+  "email",
+  "phone",
+  "role",
+  "company",
+  "temperature",
+  "source",
+  "notes",
+  "website",
+  "instagram",
+  "linkedin",
+  "city",
+  "rating",
+  "reviews",
+  "qualification",
+  "date",
+] as const;
 
 // Valores placeholder que herramientas de scraping (ej. Apify) escriben
 // literalmente cuando no encontraron el dato — deben tratarse como vacío,
@@ -40,6 +44,23 @@ function clean(value?: string): string | undefined {
   if (!trimmed) return undefined;
   if (PLACEHOLDER_VALUES.has(trimmed.toLowerCase())) return undefined;
   return trimmed;
+}
+
+function isImportRow(value: unknown): value is ImportRow {
+  if (typeof value !== "object" || value === null || Array.isArray(value))
+    return false;
+  return IMPORT_FIELDS.every((field) => {
+    const fieldValue = (value as Record<string, unknown>)[field];
+    return fieldValue === undefined || typeof fieldValue === "string";
+  });
+}
+
+function isContactSource(value: string): value is ContactSource {
+  return (Object.values(ContactSource) as string[]).includes(value);
+}
+
+function isContactTemperature(value: string): value is ContactTemperature {
+  return (Object.values(ContactTemperature) as string[]).includes(value);
 }
 
 interface ImportRow {
@@ -74,9 +95,19 @@ export async function POST(req: NextRequest) {
   if (!hasModuleAccess(session.user, "CRM"))
     return apiError("Acceso denegado", 403);
 
-  const { rows } = (await req.json()) as { rows: ImportRow[] };
-  if (!Array.isArray(rows) || rows.length === 0)
-    return apiError("Sin filas para importar");
+  const body: unknown = await req.json().catch(() => null);
+  if (
+    typeof body !== "object" ||
+    body === null ||
+    Array.isArray(body) ||
+    !Array.isArray((body as { rows?: unknown }).rows)
+  ) {
+    return apiError("Formato de importación inválido");
+  }
+  const rows = (body as { rows: unknown[] }).rows;
+  if (rows.length === 0) return apiError("Sin filas para importar");
+  if (rows.length > 500)
+    return apiError("El máximo es 500 filas por importación", 413);
 
   const companyCache = new Map<string, string>();
   let created = 0;
@@ -85,10 +116,17 @@ export async function POST(req: NextRequest) {
 
   for (let i = 0; i < rows.length; i++) {
     const row = rows[i];
-    try {
-      const company = clean(row.company);
-      if (!company) throw new Error("Falta la empresa (o negocio)");
+    if (!isImportRow(row)) {
+      errors.push({ row: i + 2, message: "Formato de fila inválido" });
+      continue;
+    }
+    const company = clean(row.company);
+    if (!company) {
+      errors.push({ row: i + 2, message: "Falta la empresa (o negocio)" });
+      continue;
+    }
 
+    try {
       // El scraper a menudo no identifica un contacto humano ("sin dato")
       // — en ese caso el lead se registra igual, usando el nombre de la
       // empresa como identificador, para que Ventas pueda trabajarlo y
@@ -96,26 +134,13 @@ export async function POST(req: NextRequest) {
       const name = clean(row.name) || company;
 
       const companyKey = company.toLowerCase();
-      let companyId = companyCache.get(companyKey);
-      if (!companyId) {
-        let companyRecord = await prisma.company.findFirst({
-          where: { name: { equals: company, mode: "insensitive" } },
-        });
-        if (!companyRecord) {
-          companyRecord = await prisma.company.create({
-            data: { name: company },
-          });
-          companiesCreated++;
-        }
-        companyId = companyRecord.id;
-        companyCache.set(companyKey, companyId);
-      }
+      const cachedCompanyId = companyCache.get(companyKey);
 
       const temperature = clean(row.temperature)?.toUpperCase();
       const rawSource = clean(row.source);
       const upperSource = rawSource?.toUpperCase();
-      const source =
-        upperSource && SOURCES.includes(upperSource)
+      const source: ContactSource =
+        upperSource && isContactSource(upperSource)
           ? upperSource
           : rawSource && /apify|crawler|scrap/i.test(rawSource)
             ? "SCRAPING"
@@ -153,25 +178,48 @@ export async function POST(req: NextRequest) {
         .filter(Boolean)
         .join("\n\n");
 
-      await prisma.contact.create({
-        data: {
-          companyId,
-          name,
-          email: clean(row.email) || null,
-          phone: clean(row.phone) || null,
-          role: clean(row.role) || null,
-          notes: notes || null,
-          source: source as any,
-          ...(temperature && TEMPERATURES.includes(temperature)
-            ? { temperature: temperature as any }
-            : {}),
-        },
+      const result = await prisma.$transaction(async (tx) => {
+        let companyId = cachedCompanyId;
+        let companyWasCreated = false;
+        if (!companyId) {
+          let companyRecord = await tx.company.findFirst({
+            where: { name: { equals: company, mode: "insensitive" } },
+            select: { id: true },
+          });
+          if (!companyRecord) {
+            companyRecord = await tx.company.create({
+              data: { name: company },
+              select: { id: true },
+            });
+            companyWasCreated = true;
+          }
+          companyId = companyRecord.id;
+        }
+
+        await tx.contact.create({
+          data: {
+            companyId,
+            name,
+            email: clean(row.email) || null,
+            phone: clean(row.phone) || null,
+            role: clean(row.role) || null,
+            notes: notes || null,
+            source,
+            ...(temperature && isContactTemperature(temperature)
+              ? { temperature }
+              : {}),
+          },
+        });
+        return { companyId, companyWasCreated };
       });
+      companyCache.set(companyKey, result.companyId);
+      if (result.companyWasCreated) companiesCreated++;
       created++;
-    } catch (e) {
+    } catch {
       errors.push({
         row: i + 2,
-        message: e instanceof Error ? e.message : "Error desconocido",
+        message:
+          "No se pudo importar esta fila; revise los datos e inténtelo nuevamente",
       });
     }
   }

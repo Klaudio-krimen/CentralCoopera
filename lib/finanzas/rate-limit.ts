@@ -17,8 +17,15 @@ export interface ClienteContador {
     upsert(args: {
       where: { key: string };
       create: { key: string; count: number; windowStart: Date };
-      update: { count: number; windowStart: Date };
+      update: {
+        count: number | { increment: number };
+        windowStart?: Date;
+      };
     }): Promise<ContadorRegistro>;
+    updateMany(args: {
+      where: { key: string; windowStart: { lte: Date } };
+      data: { count: number; windowStart: Date };
+    }): Promise<{ count: number }>;
     update(args: {
       where: { key: string };
       data: { count: number; windowStart: Date };
@@ -41,34 +48,31 @@ export async function checkRateLimit(
   windowMs: number,
   ahora: Date = new Date()
 ): Promise<ResultadoRateLimit> {
-  const fila = await contador.rateLimitCounter.findUnique({ where: { key } });
+  const limiteVentana = new Date(ahora.getTime() - windowMs);
+  const reiniciada = await contador.rateLimitCounter.updateMany({
+    where: { key, windowStart: { lte: limiteVentana } },
+    data: { count: 1, windowStart: ahora },
+  });
 
-  const ventanaExpirada =
-    !fila || ahora.getTime() - fila.windowStart.getTime() >= windowMs;
-
-  if (ventanaExpirada) {
-    await contador.rateLimitCounter.upsert({
-      where: { key },
-      create: { key, count: 1, windowStart: ahora },
-      update: { count: 1, windowStart: ahora },
-    });
+  if (reiniciada.count > 0) {
     return { ok: true, retryAfterSec: 0 };
   }
 
-  const nuevoConteo = fila.count + 1;
-  if (nuevoConteo > limit) {
-    const restanteMs =
-      windowMs - (ahora.getTime() - fila.windowStart.getTime());
-    return { ok: false, retryAfterSec: Math.ceil(restanteMs / 1000) };
-  }
-
-  await contador.rateLimitCounter.upsert({
+  const fila = await contador.rateLimitCounter.upsert({
     where: { key },
-    create: { key, count: nuevoConteo, windowStart: fila.windowStart },
-    update: { count: nuevoConteo, windowStart: fila.windowStart },
+    create: { key, count: 1, windowStart: ahora },
+    update: { count: { increment: 1 } },
   });
 
-  return { ok: true, retryAfterSec: 0 };
+  const retryAfterSec = Math.max(
+    0,
+    Math.ceil(
+      (windowMs - (ahora.getTime() - fila.windowStart.getTime())) / 1000
+    )
+  );
+  return fila.count <= limit
+    ? { ok: true, retryAfterSec: 0 }
+    : { ok: false, retryAfterSec };
 }
 
 /** Reinicia el contador de una clave tras un intento exitoso. No hace nada

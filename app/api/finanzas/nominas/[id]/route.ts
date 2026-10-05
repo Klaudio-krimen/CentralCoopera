@@ -18,8 +18,9 @@ const TRANSICIONES_VALIDAS: Record<string, string> = {
 // GET /api/finanzas/nominas/[id] — cabecera + líneas, RUT enmascarado para FINANZAS_LECTURA
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  props: { params: Promise<{ id: string }> }
 ) {
+  const params = await props.params;
   const session = await getServerSession(authOptions);
   if (!session) return apiError("No autorizado", 401);
   if (!hasFinanceAccess(session.user)) return apiError("Acceso denegado", 403);
@@ -64,8 +65,9 @@ export async function GET(
 // PATCH /api/finanzas/nominas/[id] — aprueba (BORRADOR→APROBADA) o marca pagada (APROBADA→PAGADA)
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  props: { params: Promise<{ id: string }> }
 ) {
+  const params = await props.params;
   const session = await getServerSession(authOptions);
   if (!session) return apiError("No autorizado", 401);
   if (!canWriteFinance(session.user)) return apiError("Acceso denegado", 403);

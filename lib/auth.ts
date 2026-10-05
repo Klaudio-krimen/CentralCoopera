@@ -29,9 +29,7 @@ export const authOptions: NextAuthOptions = {
           LOGIN_RATE_WINDOW_MS
         );
         if (!limite.ok) {
-          console.warn("[auth] login bloqueado por rate limit", {
-            email: credentials.email,
-          });
+          console.warn("[auth] login blocked by rate limit");
           return null;
         }
 
@@ -40,25 +38,17 @@ export const authOptions: NextAuthOptions = {
         });
 
         if (!user) {
-          console.warn("[auth] login fallido: usuario no encontrado", {
-            email: credentials.email,
-          });
+          console.warn("[auth] credentials rejected");
           return null;
         }
         if (!user.isActive) {
-          console.warn("[auth] login fallido: cuenta inactiva", {
-            email: credentials.email,
-            userId: user.id,
-          });
+          console.warn("[auth] credentials rejected");
           return null;
         }
 
         const ok = await compare(credentials.password, user.password);
         if (!ok) {
-          console.warn("[auth] login fallido: contraseña incorrecta", {
-            email: credentials.email,
-            userId: user.id,
-          });
+          console.warn("[auth] credentials rejected");
           return null;
         }
 
@@ -78,8 +68,8 @@ export const authOptions: NextAuthOptions = {
     jwt: async ({ token, user }) => {
       if (user) {
         token.id = user.id;
-        token.role = (user as any).role;
-        token.moduleAccess = (user as any).moduleAccess ?? [];
+        token.role = user.role;
+        token.moduleAccess = user.moduleAccess;
       }
       // Re-validar rol y módulos desde DB en cada renovación (detecta cambios)
       if (!user && token.id) {
@@ -92,7 +82,7 @@ export const authOptions: NextAuthOptions = {
           token.moduleAccess = dbUser.moduleAccess;
         } else {
           // Usuario inactivo: limpiar rol para que el middleware rechace la sesión
-          token.role = undefined as any;
+          token.role = "";
           token.moduleAccess = [];
         }
       }
@@ -112,17 +102,17 @@ export const authOptions: NextAuthOptions = {
     // su propia app pero sigue pintado en el mapa de Operaciones hasta que el
     // cierre por inactividad lo alcance, 15 min después.
     signOut: async ({ token }) => {
-      const userId = token?.id as string | undefined;
+      const userId = token?.id;
       if (!userId) return;
       try {
         await prisma.shift.updateMany({
           where: { userId, endedAt: null },
           data: { endedAt: new Date(), endedReason: "LOGOUT" },
         });
-      } catch (e) {
+      } catch {
         // Un fallo acá no puede impedir el logout. El cierre por inactividad
         // recoge el turno de todas formas.
-        console.error("[auth] no se pudo cerrar el turno al cerrar sesión", e);
+        console.error("[auth] failed to close shift after logout");
       }
     },
   },

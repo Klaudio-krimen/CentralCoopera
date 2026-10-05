@@ -1,3 +1,4 @@
+import { DiscrepancySeverity, DiscrepancyStatus, Prisma } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
@@ -9,17 +10,30 @@ import { hasModuleAccess } from "@/lib/access";
 export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session) return apiError("No autorizado", 401);
-  if (session.user.role === "CHOFER") return apiError("Acceso denegado", 403);
+  if (!hasModuleAccess(session.user, "OPERACIONES"))
+    return apiError("Acceso denegado", 403);
 
   const { searchParams } = req.nextUrl;
   const status = searchParams.get("status");
   const severity = searchParams.get("severity");
-  const page = parseInt(searchParams.get("page") ?? "1");
-  const limit = Math.min(parseInt(searchParams.get("limit") ?? "25"), 100);
+  const page = parsePositiveInteger(searchParams.get("page"), 1);
+  const limit = Math.min(
+    parsePositiveInteger(searchParams.get("limit"), 25),
+    100
+  );
 
-  const where: any = {
-    ...(status ? { status: status as any } : {}),
-    ...(severity ? { severity: severity as any } : {}),
+  const statusValue = status
+    ? Object.values(DiscrepancyStatus).find((value) => value === status)
+    : undefined;
+  const severityValue = severity
+    ? Object.values(DiscrepancySeverity).find((value) => value === severity)
+    : undefined;
+  if (status && !statusValue) return apiError("Estado inválido");
+  if (severity && !severityValue) return apiError("Severidad inválida");
+
+  const where: Prisma.DiscrepancyWhereInput = {
+    ...(statusValue ? { status: statusValue } : {}),
+    ...(severityValue ? { severity: severityValue } : {}),
   };
 
   const [discrepancias, total] = await Promise.all([
@@ -43,6 +57,12 @@ export async function GET(req: NextRequest) {
   ]);
 
   return NextResponse.json({ discrepancias, total, page, limit });
+}
+
+function parsePositiveInteger(value: string | null, fallback: number): number {
+  if (!value || !/^\d+$/.test(value)) return fallback;
+  const parsed = Number(value);
+  return Number.isSafeInteger(parsed) && parsed > 0 ? parsed : fallback;
 }
 
 // PATCH /api/discrepancias — cambiar estado (ADMIN o acceso a Operaciones)

@@ -9,13 +9,14 @@ import EditarTrabajadorForm from "./EditarTrabajadorForm";
 export default async function FichaTrabajadorPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  const { id } = await params;
   const session = await getServerSession(authOptions);
   const puedeEscribir = canWriteFinance(session!.user);
 
   const empleado = await prisma.employee.findUnique({
-    where: { id: params.id },
+    where: { id },
   });
   if (!empleado) notFound();
 

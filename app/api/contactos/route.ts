@@ -1,3 +1,4 @@
+import { ContactSource, ContactTemperature } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
@@ -5,7 +6,7 @@ import { prisma } from "@/lib/db";
 import { apiError, clamp } from "@/lib/utils";
 import { hasModuleAccess } from "@/lib/access";
 
-const TEMPERATURES = ["FRIO", "TIBIO", "CALIENTE"];
+const TEMPERATURES = Object.values(ContactTemperature);
 
 // GET /api/contactos?companyId=xxx — contactos de una empresa
 // GET /api/contactos?temperature=CALIENTE&search=texto — listado global (todas las empresas)
@@ -30,8 +31,8 @@ export async function GET(req: NextRequest) {
   const contacts = await prisma.contact.findMany({
     where: {
       isActive: true,
-      ...(temperature && TEMPERATURES.includes(temperature)
-        ? { temperature: temperature as any }
+      ...(temperature && TEMPERATURES.some((value) => value === temperature)
+        ? { temperature: TEMPERATURES.find((value) => value === temperature)! }
         : {}),
       ...(search
         ? {
@@ -49,20 +50,7 @@ export async function GET(req: NextRequest) {
   return NextResponse.json(contacts);
 }
 
-const SOURCES = [
-  "WEBSITE",
-  "WHATSAPP",
-  "REFERIDO",
-  "REDES_SOCIALES",
-  "LLAMADA_FRIA",
-  "EMAIL",
-  "FORMULARIO",
-  "EVENTO",
-  "IMPORT",
-  "WEBHOOK",
-  "SCRAPING",
-  "OTRO",
-];
+const SOURCES = Object.values(ContactSource);
 
 // POST /api/contactos — crear contacto
 export async function POST(req: NextRequest) {

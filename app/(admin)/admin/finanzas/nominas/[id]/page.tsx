@@ -16,13 +16,14 @@ const ESTADO_COLOR: Record<string, string> = {
 export default async function DetalleNominaPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  const { id } = await params;
   const session = await getServerSession(authOptions);
   const puedeEscribir = canWriteFinance(session!.user);
 
   const nomina = await prisma.payrollRun.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: {
       items: {
         include: { employee: { select: { fullName: true, rut: true } } },

@@ -1,25 +1,30 @@
-import { notFound, redirect } from 'next/navigation'
-import { prisma } from '@/lib/db'
-import { formatDate, formatTime } from '@/lib/utils'
-import StatusBadge from '@/components/ui/StatusBadge'
-import RecepcionForm from '@/components/forms/RecepcionForm'
-import Image from 'next/image'
-import Link from 'next/link'
-import { ArrowLeft } from '@phosphor-icons/react/dist/ssr'
+import { notFound, redirect } from "next/navigation";
+import { prisma } from "@/lib/db";
+import { formatDate, formatTime } from "@/lib/utils";
+import StatusBadge from "@/components/ui/StatusBadge";
+import RecepcionForm from "@/components/forms/RecepcionForm";
+import Image from "next/image";
+import Link from "next/link";
+import { ArrowLeft } from "@phosphor-icons/react/dist/ssr";
 
-export default async function RecibirPage({ params }: { params: { ordenId: string } }) {
+export default async function RecibirPage({
+  params,
+}: {
+  params: Promise<{ ordenId: string }>;
+}) {
+  const { ordenId } = await params;
   const order = await prisma.pickupOrder.findUnique({
-    where: { id: params.ordenId },
+    where: { id: ordenId },
     include: {
-      company:   { select: { name: true } },
-      driver:    { select: { name: true } },
-      items:     true,
+      company: { select: { name: true } },
+      driver: { select: { name: true } },
+      items: true,
       evidences: { take: 3 },
     },
-  })
+  });
 
-  if (!order) notFound()
-  if (order.status !== 'EN_TRANSITO') redirect(`/recepcion/dashboard`)
+  if (!order) notFound();
+  if (order.status !== "EN_TRANSITO") redirect(`/recepcion/dashboard`);
 
   return (
     <div className="space-y-6">
@@ -35,13 +40,19 @@ export default async function RecibirPage({ params }: { params: { ordenId: strin
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-xs font-mono text-zinc-400 mb-0.5">{order.orderCode}</p>
+          <p className="text-xs font-mono text-zinc-400 mb-0.5">
+            {order.orderCode}
+          </p>
           <h1 className="text-2xl font-semibold tracking-tight text-zinc-900">
             {order.company.name}
           </h1>
           <p className="text-zinc-400 text-sm mt-1">
-            Chofer: <span className="text-zinc-600 font-medium">{order.driver?.name}</span>
-            {' · '}Salida: {formatDate(order.updatedAt)} {formatTime(order.updatedAt)}
+            Chofer:{" "}
+            <span className="text-zinc-600 font-medium">
+              {order.driver?.name}
+            </span>
+            {" · "}Salida: {formatDate(order.updatedAt)}{" "}
+            {formatTime(order.updatedAt)}
           </p>
         </div>
         <StatusBadge status="EN_TRANSITO" />
@@ -55,9 +66,14 @@ export default async function RecibirPage({ params }: { params: { ordenId: strin
           </h2>
 
           <div className="card divide-y divide-zinc-50">
-            {order.items.map((item: any) => (
-              <div key={item.id} className="px-4 py-3 flex items-center justify-between">
-                <p className="text-sm text-zinc-700 capitalize">{item.materialType}</p>
+            {order.items.map((item) => (
+              <div
+                key={item.id}
+                className="px-4 py-3 flex items-center justify-between"
+              >
+                <p className="text-sm text-zinc-700 capitalize">
+                  {item.materialName}
+                </p>
                 <p className="text-sm font-semibold text-zinc-900 font-mono">
                   {item.declaredQuantity} {item.unit}
                 </p>
@@ -70,9 +86,18 @@ export default async function RecibirPage({ params }: { params: { ordenId: strin
             <div>
               <p className="text-xs text-zinc-400 mb-2">Fotos de retiro</p>
               <div className="flex gap-2">
-                {order.evidences.map((ev: any) => (
-                  <div key={ev.id} className="relative w-20 h-20 rounded-xl overflow-hidden bg-zinc-100 shrink-0">
-                    <Image src={ev.imagePath} alt="Evidencia" fill className="object-cover" sizes="80px" />
+                {order.evidences.map((ev) => (
+                  <div
+                    key={ev.id}
+                    className="relative w-20 h-20 rounded-xl overflow-hidden bg-zinc-100 shrink-0"
+                  >
+                    <Image
+                      src={ev.imagePath}
+                      alt="Evidencia"
+                      fill
+                      className="object-cover"
+                      sizes="80px"
+                    />
                   </div>
                 ))}
               </div>
@@ -102,9 +127,9 @@ export default async function RecibirPage({ params }: { params: { ordenId: strin
           <h2 className="text-sm font-semibold text-zinc-500 uppercase tracking-wider mb-4">
             Registrar lo recibido
           </h2>
-          <RecepcionForm order={order as any} />
+          <RecepcionForm order={order} />
         </div>
       </div>
     </div>
-  )
+  );
 }

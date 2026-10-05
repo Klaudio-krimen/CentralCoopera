@@ -1,9 +1,10 @@
-import { notFound } from 'next/navigation'
-import { prisma } from '@/lib/db'
-import { formatDate, formatTime } from '@/lib/utils'
-import StatusBadge from '@/components/ui/StatusBadge'
-import Link from 'next/link'
-import Image from 'next/image'
+import { notFound } from "next/navigation";
+import { DiscrepancySeverity } from "@prisma/client";
+import { prisma } from "@/lib/db";
+import { formatDate, formatTime } from "@/lib/utils";
+import StatusBadge from "@/components/ui/StatusBadge";
+import Link from "next/link";
+import Image from "next/image";
 import {
   ArrowLeft,
   Buildings,
@@ -14,21 +15,33 @@ import {
   MapPin,
   Warning,
   Clock,
-} from '@phosphor-icons/react/dist/ssr'
+} from "@phosphor-icons/react/dist/ssr";
 
-const SEVERITY_STYLE = {
-  MENOR:    'bg-amber-50 text-amber-700 border-amber-200',
-  MODERADA: 'bg-orange-50 text-orange-700 border-orange-200',
-  GRAVE:    'bg-red-50 text-red-700 border-red-200',
-}
+const SEVERITY_STYLE: Record<DiscrepancySeverity, string> = {
+  MENOR: "bg-amber-50 text-amber-700 border-amber-200",
+  MODERADA: "bg-orange-50 text-orange-700 border-orange-200",
+  GRAVE: "bg-red-50 text-red-700 border-red-200",
+};
 
-export default async function AdminOrdenDetailPage({ params }: { params: { id: string } }) {
+export default async function AdminOrdenDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
   const order = await prisma.pickupOrder.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: {
-      company:   { select: { name: true, address: true, contactName: true, contactPhone: true } },
-      driver:    { select: { name: true, email: true } },
-      items:     { include: { materialType: { select: { name: true } } } },
+      company: {
+        select: {
+          name: true,
+          address: true,
+          contactName: true,
+          contactPhone: true,
+        },
+      },
+      driver: { select: { name: true, email: true } },
+      items: { include: { materialType: { select: { name: true } } } },
       evidences: true,
       discrepancies: {
         include: {
@@ -37,12 +50,12 @@ export default async function AdminOrdenDetailPage({ params }: { params: { id: s
         },
       },
     },
-  })
+  });
 
-  if (!order) notFound()
+  if (!order) notFound();
 
-  const retiroEvidences  = order.evidences.filter((e: any) => e.stage === 'RETIRO')
-  const recepEvidences   = order.evidences.filter((e: any) => e.stage === 'RECEPCION')
+  const retiroEvidences = order.evidences.filter((e) => e.stage === "RETIRO");
+  const recepEvidences = order.evidences.filter((e) => e.stage === "RECEPCION");
 
   return (
     <div className="space-y-6 max-w-4xl">
@@ -58,7 +71,9 @@ export default async function AdminOrdenDetailPage({ params }: { params: { id: s
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-xs font-mono text-zinc-400 mb-0.5">{order.orderCode}</p>
+          <p className="text-xs font-mono text-zinc-400 mb-0.5">
+            {order.orderCode}
+          </p>
           <h1 className="text-2xl font-semibold tracking-tight text-zinc-900">
             {order.company.name}
           </h1>
@@ -73,7 +88,7 @@ export default async function AdminOrdenDetailPage({ params }: { params: { id: s
             </span>
           </div>
         </div>
-        <StatusBadge status={order.status as any} />
+        <StatusBadge status={order.status} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -81,18 +96,26 @@ export default async function AdminOrdenDetailPage({ params }: { params: { id: s
         <div className="space-y-5">
           {/* Empresa */}
           <div className="card p-5 space-y-3">
-            <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Empresa</p>
+            <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">
+              Empresa
+            </p>
             <div className="flex items-start gap-3">
               <div className="w-9 h-9 rounded-xl bg-zinc-100 flex items-center justify-center shrink-0">
                 <Buildings size={16} className="text-zinc-500" />
               </div>
               <div>
-                <p className="text-sm font-semibold text-zinc-900">{order.company.name}</p>
+                <p className="text-sm font-semibold text-zinc-900">
+                  {order.company.name}
+                </p>
                 {order.company.address && (
-                  <p className="text-xs text-zinc-400 mt-0.5">{order.company.address}</p>
+                  <p className="text-xs text-zinc-400 mt-0.5">
+                    {order.company.address}
+                  </p>
                 )}
                 {order.company.contactName && (
-                  <p className="text-xs text-zinc-400 mt-0.5">Contacto: {order.company.contactName}</p>
+                  <p className="text-xs text-zinc-400 mt-0.5">
+                    Contacto: {order.company.contactName}
+                  </p>
                 )}
               </div>
             </div>
@@ -112,15 +135,15 @@ export default async function AdminOrdenDetailPage({ params }: { params: { id: s
               </div>
             ) : (
               <div className="divide-y divide-zinc-50">
-                {order.items.map((item: any) => {
+                {order.items.map((item) => {
                   const diff =
                     item.receivedQuantity !== null
                       ? Math.abs(item.declaredQuantity - item.receivedQuantity)
-                      : null
+                      : null;
                   const pct =
                     diff !== null && item.declaredQuantity > 0
                       ? (diff / item.declaredQuantity) * 100
-                      : null
+                      : null;
 
                   return (
                     <div key={item.id} className="px-5 py-3">
@@ -133,7 +156,9 @@ export default async function AdminOrdenDetailPage({ params }: { params: { id: s
                             {item.declaredQuantity} {item.unit}
                           </p>
                           {item.receivedQuantity !== null && (
-                            <p className={`text-xs font-mono ${pct && pct > 2 ? 'text-red-500' : 'text-emerald-600'}`}>
+                            <p
+                              className={`text-xs font-mono ${pct && pct > 2 ? "text-red-500" : "text-emerald-600"}`}
+                            >
                               Recibido: {item.receivedQuantity} {item.unit}
                               {pct !== null && ` (${pct.toFixed(1)}%)`}
                             </p>
@@ -141,7 +166,7 @@ export default async function AdminOrdenDetailPage({ params }: { params: { id: s
                         </div>
                       </div>
                     </div>
-                  )
+                  );
                 })}
               </div>
             )}
@@ -151,7 +176,8 @@ export default async function AdminOrdenDetailPage({ params }: { params: { id: s
           {order.pickupLat && order.pickupLng && (
             <div className="flex items-center gap-2 text-xs text-zinc-400">
               <MapPin size={13} />
-              GPS retiro: {Number(order.pickupLat).toFixed(5)}, {Number(order.pickupLng).toFixed(5)}
+              GPS retiro: {Number(order.pickupLat).toFixed(5)},{" "}
+              {Number(order.pickupLng).toFixed(5)}
             </div>
           )}
         </div>
@@ -166,9 +192,18 @@ export default async function AdminOrdenDetailPage({ params }: { params: { id: s
                 Fotos de retiro ({retiroEvidences.length})
               </p>
               <div className="grid grid-cols-3 gap-2">
-                {retiroEvidences.map((ev: any) => (
-                  <div key={ev.id} className="relative aspect-square rounded-xl overflow-hidden bg-zinc-100">
-                    <Image src={ev.imagePath} alt="Evidencia retiro" fill className="object-cover" sizes="120px" />
+                {retiroEvidences.map((ev) => (
+                  <div
+                    key={ev.id}
+                    className="relative aspect-square rounded-xl overflow-hidden bg-zinc-100"
+                  >
+                    <Image
+                      src={ev.imagePath}
+                      alt="Evidencia retiro"
+                      fill
+                      className="object-cover"
+                      sizes="120px"
+                    />
                   </div>
                 ))}
               </div>
@@ -183,9 +218,18 @@ export default async function AdminOrdenDetailPage({ params }: { params: { id: s
                 Fotos de recepción ({recepEvidences.length})
               </p>
               <div className="grid grid-cols-3 gap-2">
-                {recepEvidences.map((ev: any) => (
-                  <div key={ev.id} className="relative aspect-square rounded-xl overflow-hidden bg-zinc-100">
-                    <Image src={ev.imagePath} alt="Evidencia recepción" fill className="object-cover" sizes="120px" />
+                {recepEvidences.map((ev) => (
+                  <div
+                    key={ev.id}
+                    className="relative aspect-square rounded-xl overflow-hidden bg-zinc-100"
+                  >
+                    <Image
+                      src={ev.imagePath}
+                      alt="Evidencia recepción"
+                      fill
+                      className="object-cover"
+                      sizes="120px"
+                    />
                   </div>
                 ))}
               </div>
@@ -208,7 +252,9 @@ export default async function AdminOrdenDetailPage({ params }: { params: { id: s
                   sizes="400px"
                 />
               </div>
-              <p className="text-xs text-zinc-600 font-medium">{order.clientSignerName}</p>
+              <p className="text-xs text-zinc-600 font-medium">
+                {order.clientSignerName}
+              </p>
             </div>
           )}
 
@@ -220,10 +266,12 @@ export default async function AdminOrdenDetailPage({ params }: { params: { id: s
                 Discrepancias ({order.discrepancies.length})
               </p>
               <div className="space-y-2">
-                {order.discrepancies.map((d: any) => (
+                {order.discrepancies.map((d) => (
                   <div key={d.id} className="card p-4 space-y-2">
                     <div className="flex items-center gap-2">
-                      <span className={`text-xs font-semibold px-2 py-0.5 rounded-full border ${SEVERITY_STYLE[d.severity as keyof typeof SEVERITY_STYLE]}`}>
+                      <span
+                        className={`text-xs font-semibold px-2 py-0.5 rounded-full border ${SEVERITY_STYLE[d.severity]}`}
+                      >
                         {d.severity}
                       </span>
                       <span className="text-xs text-zinc-500">{d.status}</span>
@@ -231,8 +279,9 @@ export default async function AdminOrdenDetailPage({ params }: { params: { id: s
                     <p className="text-sm text-zinc-700">{d.description}</p>
                     {d.differencePercent && (
                       <p className="text-xs font-mono text-red-600">
-                        Diferencia: {d.differencePercent.toFixed(1)}%
-                        {' · '}{d.declaredQuantity} → {d.receivedQuantity} {order.items[0]?.unit}
+                        Diferencia: {d.differencePercent.toFixed(1)}%{" · "}
+                        {d.declaredQuantity} → {d.receivedQuantity}{" "}
+                        {order.items[0]?.unit}
                       </p>
                     )}
                     {d.resolutionNote && (
@@ -255,10 +304,12 @@ export default async function AdminOrdenDetailPage({ params }: { params: { id: s
       {/* Notes */}
       {order.notes && (
         <div className="card p-5">
-          <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Observaciones</p>
+          <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">
+            Observaciones
+          </p>
           <p className="text-sm text-zinc-700">{order.notes}</p>
         </div>
       )}
     </div>
-  )
+  );
 }

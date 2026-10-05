@@ -84,6 +84,16 @@ Autor y propósito no confirmados. Preservarlos; no incluirlos en commits de otr
 | SEC-005   | Endurecer webhook, CSP, logs, errores y exclusiones                 | Media     | Codex       | EN REVISIÓN | Implementado; revisar `unsafe-inline` y retirar `?secret=` tras migrar integraciones                                  |
 | CAL-001   | Modularizar pantallas grandes y reducir casts inseguros             | Media     | Codex       | TERMINADA   | Nueva orden, inventario y fronteras API/vistas con tipos                                                              |
 | INV-001   | Agregar categoría EPP y clasificar artículos de protección personal | Alta      | Codex       | EN REVISIÓN | Código validado; falta aplicar schema y backfill con respaldo verificado. Ver [guía EPP](INVENTARIO_EPP.md)           |
+| AUD-002   | Anexo AUD-001: verificación extra y plan de login y logo            | Alta      | Claude      | TERMINADA   | Solo lectura sobre `cb4e043`; `docs/auditorias/AUD-001-anexo-claude-2026-10-05.md`                                    |
+| SEC-006   | No devolver Supplier completo (bankAccountEnc) en transacciones     | Alta      | Sin asignar | PROPUESTA   | `docs/auditorias/AUD-001-anexo-claude-2026-10-05.md` §2                                                               |
+| SEC-007   | Serializar el visor de auditoría de Finanzas                        | Media     | Sin asignar | PROPUESTA   | `docs/auditorias/AUD-001-anexo-claude-2026-10-05.md` §2; decisión del usuario                                         |
+| SEC-008   | Movimientos de stock atómicos (lost update)                         | Media     | Sin asignar | PROPUESTA   | `docs/auditorias/AUD-001-anexo-claude-2026-10-05.md` §2                                                               |
+| SEC-009   | Canje único del token de recuperación                               | Baja      | Sin asignar | PROPUESTA   | `docs/auditorias/AUD-001-anexo-claude-2026-10-05.md` §2                                                               |
+| SEC-010   | Revocar sesiones al cambiar contraseña                              | Media     | Sin asignar | PROPUESTA   | `docs/auditorias/AUD-001-anexo-claude-2026-10-05.md` §2; requiere `db push` con respaldo                              |
+| SEC-011   | CSV tab/CR, porteros por método y authTagLength (SEC-011..013)      | Baja      | Sin asignar | PROPUESTA   | `docs/auditorias/AUD-001-anexo-claude-2026-10-05.md` §2                                                               |
+| LOGIN-001 | Casilla «Mantener sesión iniciada» en el login                      | Media     | Sin asignar | PROPUESTA   | `docs/auditorias/AUD-001-anexo-claude-2026-10-05.md` §3; depende de SEC-010                                           |
+| BRAND-001 | Logo de Coopera Pro en lugar del ícono de reciclaje                 | Media     | Sin asignar | PROPUESTA   | `docs/auditorias/AUD-001-anexo-claude-2026-10-05.md` §4                                                               |
+| PWA-001   | Crear el manifest declarado en el layout (hoy 404)                  | Baja      | Sin asignar | PROPUESTA   | `docs/auditorias/AUD-001-anexo-claude-2026-10-05.md` §2                                                               |
 
 ## Historial de sesiones y entregas
 
@@ -361,6 +371,35 @@ Autor y propósito no confirmados. Preservarlos; no incluirlos en commits de otr
   (`feat: add EPP inventory category`) publicado en
   `origin/security/aud001-remediation`; `git ls-remote` confirmó el mismo hash. Los dos cambios
   previos de Claude en `blueprints/` continúan preservados y fuera de staging.
+
+### 2026-10-05 — AUD-002 — Claude
+
+- **Solicitud:** ponerse al día tras el trabajo de Codex; dejar listo para Codex el plan de los
+  hallazgos pendientes, una casilla «recordar contraseña» en el login y el logo de Coopera Pro en
+  lugar del ícono de reciclaje.
+- **Responsable / rama / base:** Claude, worktree `C:\dev\CentralCoopera-claude`, rama
+  `claude/aud001-anexo` creada desde `origin/security/aud001-remediation` @ `cb4e043`, para no
+  editar la rama que Codex tiene abierta en `C:\dev\CentralCoopera`.
+- **Archivos:** `docs/auditorias/AUD-001-anexo-claude-2026-10-05.md` (nuevo) y este registro.
+  Sin cambios de código, dependencias, esquema ni BD.
+- **Verificación:** se reconfirmaron a mano en `cb4e043` los hallazgos de un barrido multiagente
+  que quedó incompleto por límite de sesión. Confirmados: SEC-006..SEC-013 y PWA-001. Descartados:
+  sesión de usuario desactivado (el `jwt` revalida en BD), hash de contraseña en el log de
+  auditoría (`withAudit` redacta) y `OrderCounter` no atómico (ya va en transacción). El resto de
+  candidatos de POO y código limpio de ese barrido no se reverificó y no se convierte en tareas;
+  CAL-001 de Codex cubre la parte principal.
+- **Corrección al informe AUD-001:** la afirmación «Finanzas excluye `bankAccountEnc` del
+  serializado» no vale para `GET /api/finanzas/transacciones` (ver SEC-006).
+- **Corrección al registro:** los dos cambios locales de `blueprints/importacion-radar-pallets/`
+  **no** son de Claude; ya estaban antes de la primera sesión de Claude (2026-10-04) y su autor
+  sigue sin confirmar.
+- **Typecheck/tests/build:** no aplican (solo documentación).
+- **Entrega Git:** commit en la rama local `claude/aud001-anexo`, sin push (el usuario no lo pidió);
+  la rama es visible desde el repositorio local compartido. Al integrar, aplicar sobre
+  `security/aud001-remediation`; si el registro de esa rama cambió entretanto, conservar las
+  entradas de ambos.
+- **Siguiente responsable:** Codex, empezando por SEC-006. Las decisiones del usuario están listadas
+  en el §5 del anexo.
 
 ## Plantilla para próximas entradas
 

@@ -1,10 +1,10 @@
-# Importación Radar de Clientes Pallets + segmento INDUSTRIA — Blueprint
+                                                              # Importación Radar de Clientes Pallets + segmento INDUSTRIA — Blueprint
 
 > Generado por The Architect el 2026-09-09
 > Shape: internal-tool (módulo CRM de una intranet multi-módulo) + capacidad de data-import/outreach
 > Modo de emisión: bundle (12 pasos en §9 → ≥12 → bundle; el usuario además lo pidió explícito)
 > Versión del blueprint: 1
-> Versiones verificadas: 2026-09-09 — ver §11 para provenance por paquete
+> Versiones verificadas: 2026-09-12 — ver §11 para provenance por paquete
 
 **Cambio brownfield.** El repo objetivo es `C:/dev/CentralCoopera` (GitHub
 `Klaudio-krimen/CentralCoopera`, rama `master`, desplegado en `intranet.cooperapro.cl`). El bundle
@@ -585,7 +585,8 @@ observable) / **Verify** (bash literal, cada línea sale 0 cuando el paso está 
 Whitelist de comandos de Verify: `npm run typecheck` · `npm run test` · `npx vitest run
 lib/<x>.test.ts` · `npm run build` · `npm run db:push` · `npx prisma validate` · `npx prisma
 generate` · `test -f/-s <ruta>` · un `grep` · `export` (para cargar env de `.env.local` antes de un
-comando Prisma). **`next lint` nunca es compuerta.**
+comando Prisma) · `mkdir -p backups` · `pg_dump` (respaldo de S2, ver §4 Migrations). **`next lint`
+nunca es compuerta.**
 
 ### Step map
 
@@ -1464,27 +1465,28 @@ levantar (los tests son puros; la BD es Neon remota).
 ## 11. Dependencies
 
 **Cero dependencias nuevas.** Este cambio no agrega ni sube ningún paquete. Todos los pines salen
-del `package-lock.json` del repo, leído 2026-09-09, y verificados por el `stack-researcher` en esta
-sesión (mismo día). `Installed by` = §10 Bootstrap (`npm ci`).
+del `package-lock.json` del repo, leído 2026-09-09. Verificados por el `stack-researcher` ese mismo
+día y **re-verificados en un refresh el 2026-09-12** (§20.3 #13-#15) — ningún número cambió.
+`Installed by` = §10 Bootstrap (`npm ci`).
 
 ### Runtime
 
 | Package | Version (lock) | Source | Checked | Estado | Purpose |
 |---|---|---|---|---|---|
-| `next` | 14.2.35 | `package-lock.json` + registry.npmjs.org/next (dist-tag `next-14`) | 2026-09-09 | VERIFIED — tip final y totalmente parchado de 14.x (CVE-2025-29927 y la ola RSC-DoS de dic-2025 cubiertas). 14.x está EOL: sin parches futuros. | El framework. S1, S9, S10, S12 tocan rutas/middleware/páginas. |
-| `next-auth` | 4.24.15 | `package-lock.json` + github.com/nextauthjs/next-auth releases | 2026-09-09 | VERIFIED — parche de seguridad de la línea 4.x. El fail-open de jul-2026 afecta **sólo** el middleware v5, no `withAuth` v4. | Auth. `withAuth` en `middleware.ts` (S1). |
-| `@prisma/client` | 5.22.0 | `package-lock.json` + github.com/prisma/prisma releases | 2026-09-09 | VERIFIED · línea 5.x EOL para fixes (sin backports). Suficiente para el cambio aditivo de schema. | ORM. S2 (schema), S5/S9/S10 (queries). |
-| `react` / `react-dom` | 18.3.1 | `package-lock.json` | 2026-09-09 | VERIFIED — terminal 18.x. No lo toca el cambio directamente. | UI. Componentes de S11/S12. |
-| `nodemailer` | 7.0.13 | `package-lock.json` + github.com/nodemailer/nodemailer | 2026-09-09 | VERIFIED — **7.x EOL con advisories sin parche en 7.x**: DoS O(n²) en addressparser (GHSA-2x7j-588g-ccc2) y bypass de validación de dominio (GHSA-cc9r-2j5m-2m83), fix recién en 9.1.0/8.0.4. El cron manda correo por este paquete. **Este cambio NO empeora la exposición** — ver §20.2 riesgo 3 y §20.4. | SMTP. El cron (S9) sigue usando `lib/outreach/smtp.ts` sin cambios. |
+| `next` | 14.2.35 | `package-lock.json` + registry.npmjs.org/next (dist-tag `next-14`) | 2026-09-12 | VERIFIED — tip final y totalmente parchado de 14.x (CVE-2025-29927 y la ola RSC-DoS de dic-2025 cubiertas). 14.x está EOL: sin parches futuros. | El framework. S1, S9, S10, S12 tocan rutas/middleware/páginas. |
+| `next-auth` | 4.24.15 | `package-lock.json` + github.com/nextauthjs/next-auth releases | 2026-09-12 | VERIFIED — parche de seguridad de la línea 4.x. El fail-open (CVE-2026-73421) afecta **sólo** el middleware v5 (`5.0.0-beta.0`–`5.0.0-beta.31`), no `withAuth` v4. | Auth. `withAuth` en `middleware.ts` (S1). |
+| `@prisma/client` | 5.22.0 | `package-lock.json` + github.com/prisma/prisma releases | 2026-09-12 | VERIFIED · línea 5.x EOL para fixes (sin backports). Suficiente para el cambio aditivo de schema. | ORM. S2 (schema), S5/S9/S10 (queries). |
+| `react` / `react-dom` | 18.3.1 | `package-lock.json` | 2026-09-12 | VERIFIED — terminal 18.x (18.3.2 no existe). No lo toca el cambio directamente. | UI. Componentes de S11/S12. |
+| `nodemailer` | 7.0.13 | `package-lock.json` + github.com/nodemailer/nodemailer | 2026-09-12 | VERIFIED — **7.x EOL con advisories sin parche en 7.x**: DoS O(n²) en addressparser (GHSA-2x7j-588g-ccc2) y bypass de validación de dominio (GHSA-cc9r-2j5m-2m83), **ambos parcheados recién en 9.1.0** (corrección del refresh 2026-09-12: 8.0.4 no corrige ninguno de los dos — ver §20.3 #13). El cron manda correo por este paquete. **Este cambio NO empeora la exposición** — ver §20.2 riesgo 3 y §20.4. | SMTP. El cron (S9) sigue usando `lib/outreach/smtp.ts` sin cambios. |
 
 ### Development
 
 | Package | Version (lock) | Source | Checked | Estado | Purpose |
 |---|---|---|---|---|---|
-| `prisma` (CLI) | 5.22.0 | `package-lock.json` | 2026-09-09 | VERIFIED · en lockstep con `@prisma/client`. | `prisma validate` / `db push` / `generate` (S2). |
-| `vitest` | 4.1.9 | `package-lock.json` + registry (tag `V4` = 4.1.11) | 2026-09-09 | VERIFIED — `^4.1.9` flota a 4.1.11. CVE-2026-47429 afecta `<4.1.0` y sólo con UI/API server expuesto; `vitest run` node no lo activa. | Tests puros de S3/S4/S6/S8. |
-| `ts-node` | 10.9.2 | `package-lock.json` | 2026-09-09 | VERIFIED · stale pero correcto para major 10. `--project tsconfig.scripts.json` sin afectar. | El script `import-radar-pallets.ts` (S5). |
-| `typescript` | 5.9.3 | `package-lock.json` | 2026-09-09 | VERIFIED — final 5.x. | `npm run typecheck` (todos los pasos). |
+| `prisma` (CLI) | 5.22.0 | `package-lock.json` | 2026-09-12 | VERIFIED · en lockstep con `@prisma/client`. CAUTION: el dist-tag `latest` de `prisma` (CLI) es hoy un RC (`8.0.0-rc.14`) mientras el de `@prisma/client` sigue siendo estable (`7.10.0`) — no instalar ninguno de los dos con `@latest` a secas en un futuro bump; ver §20.3 #15. | `prisma validate` / `db push` / `generate` (S2). |
+| `vitest` | 4.1.9 | `package-lock.json` + registry (tag `V4` = 4.1.11) | 2026-09-12 | VERIFIED — `^4.1.9` flota a 4.1.11. CVE-2026-47429 afecta `<4.1.0` y sólo con UI/API server expuesto; `vitest run` node no lo activa. vitest 5.0.0 (major nuevo) GA el 2026-09-03 — el caret no cruza el major, sin impacto en este pin. | Tests puros de S3/S4/S6/S8. |
+| `ts-node` | 10.9.2 | `package-lock.json` | 2026-09-12 | VERIFIED · stale pero correcto para major 10 (11.x sigue en beta). `--project tsconfig.scripts.json` sin afectar. | El script `import-radar-pallets.ts` (S5). |
+| `typescript` | 5.9.3 | `package-lock.json` | 2026-09-12 | VERIFIED — final 5.x. CAUTION: TypeScript 6.0.3 y 7.0.2 (compilador nativo Go) ya son GA; 7.x no expone API de compilador invocable desde JS hasta 7.1+, y `ts-node@10.9.2` depende de esa API — no subir de major sin reemplazar/parchar `ts-node` primero. | `npm run typecheck` (todos los pasos). |
 
 ### Deliberately not used
 
@@ -1795,8 +1797,8 @@ del reparto es ≤ globalCap), no golden files pre-autorados contra un productor
 #### El bundle dentro del proyecto
 
 El repo **no** corre formatter/linter sobre todo el árbol como compuerta. El portón §20.1 usa
-`git ls-files -z <dirs nuevos> | xargs -0 -r npx prettier --check` **acotado a los directorios que
-el cambio toca** — no recorre `blueprints/`. Además `blueprints/` ya está en `.prettierignore` y en
+`npx prettier --check` con la **lista explícita de los archivos nuevos** del cambio (no un glob de
+directorio) — no recorre `blueprints/`. Además `blueprints/` ya está en `.prettierignore` y en
 `tsconfig.json` `exclude` (los agregó el bundle de Finanzas). `next build` y `tsc` no recorren
 `blueprints/` por ese `exclude`.
 
@@ -1895,6 +1897,9 @@ Gates manuales, cada uno chequeado una vez antes de lanzar:
 | 10 | `INDUSTRIA` se agrega al enum `ProspectSegment` al final; `OTRO` se conserva. | Renombrar `OTRO` → `INDUSTRIA`. | Renombrar un valor de enum es destructivo en Postgres/`db push`. Agregar es aditivo. | Se confirma que ninguna fila usa `OTRO` y se hace una migración de limpieza aparte. |
 | 11 | Dedup contra el CRM sin columna `Company.normalizedName` persistida (match en memoria al vuelo). | Columna persistida + backfill de las ~120 empresas Apify + índice. | Alcanza para una carga supervisada de una vez (`--dry-run` + revisión, spec §9). | La importación pasa a recurrente, o Ventas renombra empresas entre corridas. |
 | 12 | La campaña `INDUSTRIA` reusa el mismo `OUTREACH_PDF_BLOB_URL` que las otras dos. | Un PDF propio para el segmento INDUSTRIA. | Decisión §13.1 de PROSPECCION_OUTREACH.md: un único PDF para todos los segmentos. | El segmento INDUSTRIA necesita un material distinto. |
+| 13 | Refresh de versiones (`/architect-refresh`, 2026-09-12): ningún pin de §11 cambia de número — los 9 paquetes siguen siendo el último patch de su línea, EOL/terminal por diseño (brownfield, igual al repo en producción). Se corrige la cita de `nodemailer`: los dos GHSA citados (2x7j-588g-ccc2, cc9r-2j5m-2m83) parchan sólo en 9.1.0 — **8.0.4 no corrige ninguno**, el texto anterior lo atribuía mal. | Dejar la cita de `nodemailer` sin corregir. | Un texto que atribuye el fix a 8.0.4 podría llevar al ticket de §20.4 ("bump nodemailer 7→9.1+") a considerar 8.0.4 como opción válida — no lo es para estas dos CVE. | La atribución 8.0.4 se confirma correcta contra una nueva lectura de los GHSA (no se espera). |
+| 14 | Se elimina la entrada `Bash(npm install --save-exact zod@4.4.3)` del allowlist de `workspace/.claude/settings.json`. | Actualizar el pin a `zod@4.6.3` y conservar la entrada. | Este bundle no usa `zod` — la tabla "Deliberately not used" de §11 lo confirma explícitamente. La entrada era un residuo copiado de `blueprints/modulo-finanzas/` (que sí usa zod en `/api/finanzas`). Un comando pre-aprobado para instalar un paquete que el propio blueprint dice no adoptar es ruido en el allowlist, no una previsión útil. | Este cambio adopta `zod` para validar `/api/llamadas` (contradiría la decisión §11 vigente de validar a mano). |
+| 15 | No se hace ningún bump de `prisma`/`@prisma/client` en este refresh; se documenta que sus dist-tags `latest` están hoy desincronizados (`prisma@latest` = `8.0.0-rc.14`, un RC; `@prisma/client@latest` = `7.10.0`, estable). | Dejar la nota sólo en la celda de §11 sin registrarla acá. | Un futuro bump que corra `npm install -D prisma@latest @prisma/client@latest` a secas instalaría una RC sin darse cuenta, dado que ambos paquetes deben ir en lockstep (§11). Registrar la razón acá evita que la nota se pierda si la celda de §11 se reescribe en un refresh posterior. | `prisma` 8.0.0 llega a GA y ambos dist-tags `latest` vuelven a coincidir en una versión estable. |
 
 ### 20.4 What to build next
 

@@ -506,7 +506,31 @@ Autor y propósito no confirmados. Preservarlos; no incluirlos en commits de otr
   de la BD configurada conservado en backups/, fuera de Git. Datos de pruebas sólo en BD temporal.
 - **Siguiente revisión:** Claude puede revisar PR/QA/specs; acceso a Vercel pendiente del entorno.
 
+### 2026-10-05 — DEP-001 — publicación de las mejoras — Codex
+
+- **Solicitud:** publicar las mejoras en producción tras «entonces?»; continuar hasta verificar
+  versión pública. Responsable Codex, rama security/aud001-remediation, base 9d32486.
+- **Estado:** EN CURSO. Antes de editar: registro, configuración de despliegue si el diagnóstico
+  identifica un defecto concreto, .env.example/.gitignore si hay omisiones reales y sus specs.
+  No tocar datos de usuarios ni repetir db push/backfill ya verificados.
+- **Estado verificado:** PR1 abierto/borrador, mergeable, CI SUCCESS para 9d32486. Último commit
+  sólo incorpora los dos blueprints ajenos que ya fueron revisados y guardados por el usuario.
+- **Despliegue:** preview Vercel FAILURE sin URL pública; credenciales locales inexistentes según
+  vercel whoami. Se pidió al usuario completar npx vercel login, sin compartir secretos.
+  Diagnosticar preview, lograr health check y luego integrar/publicar; no forzar despliegue fallido.
+- **Skill:** all-deploy; proyecto Next15 existente track-residuos, sin crear otro proyecto.
+  Autorización vigente para publicar; validaciones antes de la integración y producción.
+
 ## Plantilla para próximas entradas
+
+### 2026-10-05 — DEP-001 — preparación y auditoría
+
+- Scope registrado: añadir `.env.example` sin valores reales; el auditor detectó su ausencia.
+  Incluye claves detectadas y SMTP_HOST/USER/PASSWORD recibidas mediante configuración dinámica.
+  No cambia variables remotas, claves de cifrado ni passwords. El único dirty era este registro;
+  se commiteará antes de desplegar. Avisos Python (`.venv`, `__pycache__`) no aplican al servidor
+  Next.js y no bloquean. Auditor ejecutado completo en Windows resolviendo npm a npm.cmd,
+  sin desactivar ninguna comprobación. CI completa sobre 9d32486 ya verificada SUCCESS.
 
 Copiar esta plantilla al historial y actualizar también la tabla de tareas.
 

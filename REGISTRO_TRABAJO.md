@@ -400,6 +400,8 @@ Autor y propósito no confirmados. Preservarlos; no incluirlos en commits de otr
   entradas de ambos.
 - **Siguiente responsable:** Codex, empezando por SEC-006. Las decisiones del usuario están listadas
   en el §5 del anexo.
+- **Decisiones (2026-10-05):** el usuario aprobó todas las recomendaciones; quedan fijadas en el §6
+  del anexo, junto con el orden de trabajo. Codex puede implementar sin volver a consultar.
 
 ## Plantilla para próximas entradas
 

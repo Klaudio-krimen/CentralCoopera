@@ -340,3 +340,32 @@ local no necesita `remotePatterns`.
 
 Portón para todas: `npm run typecheck && npm run test && npm run build`. Cada ruta, componente o
 script nuevo lleva su `*.spec.md`.
+
+## 6. Decisiones aprobadas por el usuario (2026-10-05)
+
+El usuario aprobó las recomendaciones de este anexo. Codex puede implementar sin volver a
+preguntar:
+
+| Tema                                 | Decisión aprobada                                                        |
+| ------------------------------------ | ------------------------------------------------------------------------ |
+| LOGIN-001: duración con casilla      | 7 días; sin casilla, 8 h como hoy                                        |
+| LOGIN-001: usuarios de Finanzas      | Tope de 8 h aunque marquen la casilla (`FINANZAS` o `FINANZAS_LECTURA`)  |
+| LOGIN-001: texto                     | «Mantener sesión iniciada en este equipo», desmarcada por defecto        |
+| SEC-010: `User.passwordChangedAt`    | Autorizado; `db push` sólo con respaldo `pg_dump` verificado (`test -s`) |
+| SEC-007: datos de contacto en el log | Enmascarar al leer; no cambiar la escritura ni tocar filas existentes    |
+| BRAND-001: tamaño chico              | Logo circular completo en todos los tamaños (sin isotipo)                |
+| BRAND-001: `themeColor`              | `#29354B` (azul del logo); la paleta emerald de la app no cambia         |
+| PWA-001                              | Crear el manifest con los íconos de BRAND-001                            |
+
+**Orden de trabajo:**
+
+1. SEC-006
+2. SEC-008
+3. SEC-007
+4. SEC-011..013
+5. SEC-009
+6. BRAND-001 + PWA-001
+7. SEC-010 + LOGIN-001, que requieren `db push` y van al final
+
+El `db push` de SEC-010 se ejecuta sólo con el respaldo verificado. Si falta, se deja la tarea en
+`BLOQUEADA` con el motivo.

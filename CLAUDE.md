@@ -48,6 +48,9 @@ Tailwind 4 requiere Safari 16.4+, Chrome 111+ o Firefox 128+. La CI aplica `npm 
 typecheck, tests y build en PR/push; la instalación CI usa `--legacy-peer-deps` por la diferencia
 entre Nodemailer 10 y el peer opcional declarado por NextAuth 4. No habilitar EmailProvider sin
 revisar de nuevo esa compatibilidad.
+`vercel.json` fija también `npm ci --legacy-peer-deps`: el instalador predeterminado de Vercel
+fallaba ERESOLVE antes de compilar. Variables de ejemplo en `.env.example`; valores reales fuera
+de Git y entornos remotos gestionados en Vercel.
 
 ## 3. Comandos
 

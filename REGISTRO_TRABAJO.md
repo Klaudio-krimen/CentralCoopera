@@ -521,7 +521,44 @@ Autor y propósito no confirmados. Preservarlos; no incluirlos en commits de otr
 - **Skill:** all-deploy; proyecto Next15 existente track-residuos, sin crear otro proyecto.
   Autorización vigente para publicar; validaciones antes de la integración y producción.
 
-## Plantilla para próximas entradas
+### 2026-10-05 — DEP-001 — entorno y BD verificados antes de publicar
+
+- Corrección de diagnóstico: la lista de Production no mostraba los overrides de la rama.
+  Preview ya tenía DATABASE_URL/DATABASE_URL_UNPOOLED para otra BD. No se sobrescribieron.
+  Se añadieron sólo DIRECT_URL (desde ese UNPOOLED) y NEXTAUTH_SECRET independiente/sensible,
+  scoped a security/aud001-remediation; sin tocar variables de Production ni protección SSO.
+- Production/local apuntan a la misma BD: Prisma diff vacío, campo passwordChangedAt disponible
+  y 22 filas EPP. No hay migración ni backfill adicional de Production.
+- Preview DB tiene exactamente dos cambios aditivos pendientes: enum EPP y User.passwordChangedAt.
+  Antes de db push: respaldo pg_dump verificado, hash/lectura completa y diff limitado a esos
+  cambios. Sin reclasificar filas de pruebas ni tocar datos de usuarios.
+- Gate local de esta entrega: typecheck, 349 tests y build79 páginas OK contra configuración
+  Production, cargada en procesos sin imprimir secretos. Config y template son los únicos cambios
+  nuevos; el código de AUD-002 conserva su QA autenticado y concurrente anterior.
+
+### 2026-10-05 — DEP-001 — Preview preparado
+
+- Respaldo Preview: backups/pre-preview-dep001-1791232349841.dump, 130821 bytes,
+  SHA256 3deb7daf4a90901a2a6f5a78cd57dcc5cbe567cb13a30d380cbc6ea5bbeb8805; lista y lectura completa pg_restore verificadas.
+  db push limitado a EPP/passwordChangedAt aplicado; diff posterior vacío. Archivo fuera de Git.
+- Configuración revisable: vercel.json cambia sólo installCommand a npm ci --legacy-peer-deps;
+  spec y CLAUDE.md explican el peer opcional. No hay cambio de código de auth/SMTP ni downgrade.
+- Validar despliegue automático del siguiente commit y health protegido usando vercel curl,
+  sin desactivar protección del preview. Después publicar por integración GitHub a master.
+
+### 2026-10-05 — DEP-001 — causa confirmada y corrección prevista
+
+- Vercel autenticado; log de 9d32486 confirma ERESOLVE: peer opcional Nodemailer7 de
+  NextAuth4 frente a Nodemailer10. CI ya instala con npm ci --legacy-peer-deps. Antes de editar:
+  vercel.json/spec y CLAUDE.md: fijar el mismo installCommand, sin degradar dependencias.
+- Entorno Preview carece de DATABASE_URL/DIRECT_URL/NEXTAUTH_SECRET. Configurar sólo el preview
+  de esta rama con conexiones ya existentes y secreto independiente; conservar autenticación
+  Vercel del preview. No modificar claves, variables ni credenciales de Production.
+- Descargar env de Production únicamente en backups/ (ignorado), comparar esquema real antes
+  de integrar; no repetir migraciones/backfill si el diff ya está vacío. Proyecto existente y
+  dominios confirmados: intranet.cooperapro.cl y track-residuos.vercel.app.
+- Producción anterior Ready: dpl_DZ4gX6XNQkh9wvMMaYGYBMrxxphn, commit fff720c.
+  Referencia de reversión; no mover alias antes de preview saludable.
 
 ### 2026-10-05 — DEP-001 — preparación y auditoría
 
@@ -531,6 +568,8 @@ Autor y propósito no confirmados. Preservarlos; no incluirlos en commits de otr
   se commiteará antes de desplegar. Avisos Python (`.venv`, `__pycache__`) no aplican al servidor
   Next.js y no bloquean. Auditor ejecutado completo en Windows resolviendo npm a npm.cmd,
   sin desactivar ninguna comprobación. CI completa sobre 9d32486 ya verificada SUCCESS.
+
+## Plantilla para próximas entradas
 
 Copiar esta plantilla al historial y actualizar también la tabla de tareas.
 

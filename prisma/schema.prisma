@@ -64,6 +64,7 @@ model User {
   name         String
   email        String         @unique
   password     String
+  passwordChangedAt DateTime?
   role         UserRole
   moduleAccess ModuleAccess[] @default([])
   isActive     Boolean        @default(true)
@@ -337,6 +338,7 @@ enum InventoryCategory {
   MATERIAL
   HERRAMIENTA
   OTRO
+  EPP // Elementos de Protección Personal
 }
 
 // La planilla trae tres columnas de medida y jamás llena más de una: un tarro

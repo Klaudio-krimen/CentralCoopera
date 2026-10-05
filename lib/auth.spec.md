@@ -1,44 +1,29 @@
-# Librería: Autenticación
+# Autenticación y sesiones
 
-**Archivo:** `lib/auth.ts`
+`lib/auth.ts`: NextAuth v4 Credentials, bcrypt y rate limit atómico por correo. Sólo admite
+usuarios activos; nunca expone hash ni fecha de cambio de contraseña al cliente.
 
-## Propósito
-Configuración de NextAuth.js y utilidades relacionadas con autenticación.
+`authorize` devuelve ID, nombre, correo, rol, módulos y datos internos de sesión. El callback
+JWT revalida en BD la actividad, permisos y passwordChangedAt, también al iniciar sesión.
+Si la contraseña cambia entre validación y emisión, rechaza el inicio. Una sesión inválida
+lanza error: NextAuth devuelve sesión vacía y elimina su cookie, sin conceder permisos parciales.
+El JWT conserva la versión passwordChangedAt validada y exige igualdad con la BD; esto cubre
+un cambio confirmado después de emitir JWT cuyo timestamp se tomó antes del login.
 
-## Configuración de NextAuth
+`lib/auth-session.ts` fija un vencimiento desde la autenticación: ocho horas sin recordar;
+siete días recordando; ocho horas para FINANZAS o permisos FINANZAS/FINANZAS_LECTURA.
+Agregar permiso financiero a una sesión larga reduce su límite, nunca lo extiende.
+La fecha inicial en milisegundos persiste, independiente del iat que NextAuth renueva.
+Los JWT anteriores conservan su exp, limitado además a ocho horas desde el iat original.
 
-### Provider
-- `CredentialsProvider` — login con email y contraseña
-- No usar OAuth en V1
+`lib/auth-jwt.ts` conserva la codificación estándar de NextAuth con exp fijo, compatible con
+el decoder predeterminado del middleware. Refrescar sesión no amplía ese plazo. El cookie puede
+durar siete días, pero el JWT y la sesión imponen el límite efectivo más corto. Cookie httpOnly,
+sameSite lax y secure en producción. session.expires publica el vencimiento efectivo.
 
-### Lógica de authorize
-1. Recibe `email` y `password` del formulario
-2. Busca el usuario en la base de datos por email
-3. Verifica que el usuario esté activo (`active = true`)
-4. Compara la contraseña con el hash usando `bcrypt.compare()`
-5. Si todo es válido, retorna `{ id, name, email, role }`
-6. Si no, retorna `null` (NextAuth lo interpreta como error de credenciales)
+Cambiar contraseña por recuperación o administración escribe User.passwordChangedAt en
+servidor. Un JWT emitido antes se revoca en la próxima validación de sesión. Middleware no
+consulta BD: los handlers y páginas protegidas deben seguir validando la sesión en servidor.
 
-### Session callback
-- Agrega `role` y `id` del usuario a la sesión, para que el frontend pueda leer el rol
-- La sesión contiene: `{ id, name, email, role }`
-
-### JWT callback
-- Persiste `role` e `id` en el JWT token
-
-## Middleware (`middleware.ts` en la raíz del proyecto)
-
-Protege rutas según rol:
-- `/chofer/*` → requiere rol CHOFER
-- `/recepcion/*` → requiere rol RECEPCION
-- `/admin/*` → requiere rol ADMIN
-- `/login` → redirige a dashboard si ya hay sesión activa
-- Si el usuario está autenticado pero intenta acceder a una ruta de otro rol → redirige a su propio dashboard
-
-## Utilidad: `getSessionOrRedirect()`
-Helper de server component que obtiene la sesión y redirige si no hay ninguna.
-Evita repetir el mismo código en cada página.
-
-## Contraseñas
-- Hash con `bcryptjs` (no `bcrypt` nativo — evita problemas de compilación en Next.js)
-- Rounds: 10
+Cerrar sesión cierra turnos GPS abiertos con razón LOGOUT. Un fallo de cierre de turno no
+impide logout. Los logs sólo imprimen códigos genéricos, sin credenciales.

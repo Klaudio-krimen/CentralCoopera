@@ -71,7 +71,7 @@ export default async function ClientesPage() {
       </div>
 
       <div className="animate-fade-up" style={{ animationDelay: "60ms" }}>
-        <ClientesConContactos empresas={empresas as any} />
+        <ClientesConContactos empresas={empresas} />
       </div>
     </div>
   );

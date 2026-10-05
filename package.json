@@ -2,6 +2,9 @@
   "name": "track-residuos",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=20.9.0"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "prisma generate && next build",
@@ -19,8 +22,11 @@
     "import:prospects": "ts-node --project tsconfig.scripts.json scripts/import-prospects.ts",
     "import:radar": "ts-node --project tsconfig.scripts.json scripts/import-radar-pallets.ts",
     "backfill:inventario": "ts-node --project tsconfig.scripts.json scripts/backfill-inventario.ts",
+    "backfill:epp-inventario": "ts-node --project tsconfig.scripts.json scripts/backfill-epp-inventario.ts",
     "seed:outreach-campaigns": "ts-node --project tsconfig.scripts.json scripts/seed-outreach-campaigns.ts",
-    "prepare": "husky"
+    "prepare": "husky",
+    "brand:assets": "ts-node --project tsconfig.scripts.json scripts/generate-brand-assets.ts",
+    "qa:security-concurrency": "ts-node --project tsconfig.scripts.json scripts/verify-security-concurrency.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
@@ -36,20 +42,21 @@
     "geist": "^1.3.1",
     "leaflet": "^1.9.4",
     "lucide-react": "^1.27.0",
-    "next": "^14.2.35",
+    "next": "^15.5.27",
     "next-auth": "^4.24.7",
-    "nodemailer": "^7.0.13",
+    "nodemailer": "^10.0.14",
     "react": "^18",
     "react-dom": "^18",
     "react-leaflet": "^4.2.1",
     "recharts": "^3.10.1",
-    "sharp": "^0.33.5",
+    "sharp": "^0.35.5",
     "signature_pad": "^4.2.0",
     "sonner": "^2.0.7",
     "tailwindcss-animate": "^1.0.7",
     "zod": "4.4.3"
   },
   "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.3",
     "@types/bcryptjs": "^2.4.6",
     "@types/leaflet": "^1.9.21",
     "@types/node": "^20",
@@ -58,18 +65,31 @@
     "@types/react-dom": "^18",
     "autoprefixer": "^10",
     "eslint": "^8",
-    "eslint-config-next": "14.2.5",
+    "eslint-config-next": "14.2.35",
     "husky": "^9.1.7",
     "lint-staged": "^17.2.0",
     "postcss": "^8",
     "prettier": "^3.9.6",
     "prisma": "^5.16.1",
-    "tailwindcss": "^3.4.4",
+    "tailwindcss": "^4.3.3",
     "ts-node": "^10.9.2",
     "typescript": "^5",
     "vitest": "^4.1.9"
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+  },
+  "overrides": {
+    "next": {
+      "postcss": "^8.5.28"
+    },
+    "@next/eslint-plugin-next": {
+      "glob": "^10.5.0"
+    },
+    "eslint": {
+      "minimatch": {
+        "brace-expansion": "^1.1.21"
+      }
+    }
   }
 }

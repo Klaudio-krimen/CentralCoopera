@@ -4,15 +4,11 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { apiError } from "@/lib/utils";
 import { hasModuleAccess } from "@/lib/access";
+import {
+  isInventoryCategory,
+  resolverCategoriaInventario,
+} from "@/lib/inventario/category";
 
-const CATEGORIAS = [
-  "MATERIA_PRIMA",
-  "PALLET",
-  "PINTURA",
-  "MATERIAL",
-  "HERRAMIENTA",
-  "OTRO",
-];
 const CONDICIONES = ["NUEVO", "USADO"];
 const MEDIDAS = ["LITROS", "METROS", "KILOS"];
 const MAX_FILAS = 500;
@@ -56,7 +52,7 @@ export async function POST(req: NextRequest) {
     const fila = filas[i];
     if (!fila.name?.trim())
       return apiError(`Fila ${i + 1}: el nombre es requerido`);
-    if (fila.category !== undefined && !CATEGORIAS.includes(fila.category)) {
+    if (fila.category !== undefined && !isInventoryCategory(fila.category)) {
       return apiError(`Fila ${i + 1}: categoría inválida`);
     }
     if (fila.condition != null && !CONDICIONES.includes(fila.condition)) {
@@ -85,7 +81,10 @@ export async function POST(req: NextRequest) {
         data: {
           numero: siguienteNumero++,
           name: fila.name.trim(),
-          category: (fila.category as never) ?? "OTRO",
+          category: resolverCategoriaInventario(
+            fila.name.trim(),
+            isInventoryCategory(fila.category) ? fila.category : undefined
+          ),
           details: fila.details?.trim() || null,
           format: fila.format?.trim() || null,
           color: fila.color?.trim() || null,

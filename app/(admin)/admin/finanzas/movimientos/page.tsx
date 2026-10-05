@@ -30,24 +30,25 @@ function construirQuery(
 export default async function MovimientosPage({
   searchParams,
 }: {
-  searchParams: SearchParams;
+  searchParams: Promise<SearchParams>;
 }) {
+  const filtros = await searchParams;
   const session = await getServerSession(authOptions);
   const puedeEscribir = canWriteFinance(session!.user);
 
   const { page, pageSize, take, skip } = resolverPaginacion({
-    page: searchParams.page,
+    page: filtros.page,
   });
 
   const where: Record<string, unknown> = {};
-  if (searchParams.kind === "INGRESO" || searchParams.kind === "EGRESO") {
-    where.kind = searchParams.kind;
+  if (filtros.kind === "INGRESO" || filtros.kind === "EGRESO") {
+    where.kind = filtros.kind;
   }
-  if (searchParams.categoryId) where.categoryId = searchParams.categoryId;
-  if (searchParams.desde || searchParams.hasta) {
+  if (filtros.categoryId) where.categoryId = filtros.categoryId;
+  if (filtros.desde || filtros.hasta) {
     where.date = {
-      ...(searchParams.desde ? { gte: new Date(searchParams.desde) } : {}),
-      ...(searchParams.hasta ? { lte: new Date(searchParams.hasta) } : {}),
+      ...(filtros.desde ? { gte: new Date(filtros.desde) } : {}),
+      ...(filtros.hasta ? { lte: new Date(filtros.hasta) } : {}),
     };
   }
 
@@ -57,7 +58,10 @@ export default async function MovimientosPage({
       orderBy: { date: "desc" },
       skip,
       take,
-      include: { category: true, supplier: true },
+      include: {
+        category: { select: { id: true, name: true } },
+        supplier: { select: { id: true, name: true } },
+      },
     }),
     prisma.financeTransaction.count({ where }),
     prisma.financeCategory.findMany({
@@ -83,7 +87,7 @@ export default async function MovimientosPage({
             </label>
             <select
               name="kind"
-              defaultValue={searchParams.kind ?? ""}
+              defaultValue={filtros.kind ?? ""}
               className="rounded-md border border-[#E2E8F0] px-2 py-1.5 text-sm text-[#0F172A]"
             >
               <option value="">Todos</option>
@@ -97,7 +101,7 @@ export default async function MovimientosPage({
             </label>
             <select
               name="categoryId"
-              defaultValue={searchParams.categoryId ?? ""}
+              defaultValue={filtros.categoryId ?? ""}
               className="rounded-md border border-[#E2E8F0] px-2 py-1.5 text-sm text-[#0F172A]"
             >
               <option value="">Todas</option>
@@ -115,7 +119,7 @@ export default async function MovimientosPage({
             <input
               type="date"
               name="desde"
-              defaultValue={searchParams.desde ?? ""}
+              defaultValue={filtros.desde ?? ""}
               className="rounded-md border border-[#E2E8F0] px-2 py-1.5 text-sm text-[#0F172A]"
             />
           </div>
@@ -126,7 +130,7 @@ export default async function MovimientosPage({
             <input
               type="date"
               name="hasta"
-              defaultValue={searchParams.hasta ?? ""}
+              defaultValue={filtros.hasta ?? ""}
               className="rounded-md border border-[#E2E8F0] px-2 py-1.5 text-sm text-[#0F172A]"
             />
           </div>
@@ -223,7 +227,7 @@ export default async function MovimientosPage({
             <div className="flex gap-2">
               {meta.page > 1 && (
                 <Link
-                  href={construirQuery(searchParams, {
+                  href={construirQuery(filtros, {
                     page: String(meta.page - 1),
                   })}
                   className="rounded-md border border-[#E2E8F0] px-2.5 py-1 hover:bg-[#F8FAFC]"
@@ -233,7 +237,7 @@ export default async function MovimientosPage({
               )}
               {meta.page < meta.totalPages && (
                 <Link
-                  href={construirQuery(searchParams, {
+                  href={construirQuery(filtros, {
                     page: String(meta.page + 1),
                   })}
                   className="rounded-md border border-[#E2E8F0] px-2.5 py-1 hover:bg-[#F8FAFC]"

@@ -7,6 +7,7 @@ import { hasFinanceAccess, canWriteFinance } from "@/lib/access";
 import { crearTransaccionSchema } from "@/lib/finanzas/schemas";
 import { resolverPaginacion, construirMeta } from "@/lib/finanzas/paginacion";
 import { withAudit } from "@/lib/finanzas/audit";
+import { serializeTransaction } from "@/lib/finanzas/serialize";
 
 // GET /api/finanzas/transacciones — paginado en la base, con filtros
 export async function GET(req: NextRequest) {
@@ -43,13 +44,16 @@ export async function GET(req: NextRequest) {
       orderBy: { date: "desc" },
       skip,
       take,
-      include: { category: true, supplier: true },
+      include: {
+        category: { select: { id: true, name: true } },
+        supplier: { select: { id: true, name: true } },
+      },
     }),
     prisma.financeTransaction.count({ where }),
   ]);
 
   return NextResponse.json({
-    data: transacciones,
+    data: transacciones.map(serializeTransaction),
     meta: construirMeta(total, page, pageSize),
   });
 }

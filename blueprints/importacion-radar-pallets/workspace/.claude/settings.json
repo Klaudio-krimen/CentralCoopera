@@ -15,7 +15,6 @@
       "Bash(npm run seed:outreach-campaigns)",
       "Bash(npm ci)",
       "Bash(npm install)",
-      "Bash(npm install --save-exact zod@4.4.3)",
       "Bash(npm audit)",
       "Bash(npx vitest run:*)",
       "Bash(npx prisma validate)",

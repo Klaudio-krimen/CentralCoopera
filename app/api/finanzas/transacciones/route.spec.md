@@ -19,3 +19,8 @@ audita.**
 
 **Implementación:** crea la `FinanceTransaction` y audita `CREAR` (`entityType:
 "FinanceTransaction"`) en la misma transacción. Devuelve `201`.
+
+## Proyección segura AUD-002
+
+GET selecciona category y supplier sólo como { id, name }, luego serializeTransaction.
+No incluye cuentas, contacto ni RUT del proveedor.

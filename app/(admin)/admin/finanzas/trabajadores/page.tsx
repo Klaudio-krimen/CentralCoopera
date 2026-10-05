@@ -9,12 +9,12 @@ import NuevoTrabajadorForm from "./NuevoTrabajadorForm";
 export default async function TrabajadoresPage({
   searchParams,
 }: {
-  searchParams: { status?: string };
+  searchParams: Promise<{ status?: string }>;
 }) {
   const session = await getServerSession(authOptions);
   const puedeEscribir = canWriteFinance(session!.user);
-  const status =
-    searchParams.status === "DESVINCULADO" ? "DESVINCULADO" : "ACTIVO";
+  const { status: requestedStatus } = await searchParams;
+  const status = requestedStatus === "DESVINCULADO" ? "DESVINCULADO" : "ACTIVO";
 
   const empleados = await prisma.employee.findMany({
     where: { status },

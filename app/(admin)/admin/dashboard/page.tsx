@@ -184,7 +184,7 @@ export default async function AdminDashboardPage() {
                     </span>
                   )}
 
-                  <StatusBadge status={order.status as any} size="sm" />
+                  <StatusBadge status={order.status} size="sm" />
 
                   <ArrowRight
                     size={14}

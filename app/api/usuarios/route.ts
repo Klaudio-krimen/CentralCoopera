@@ -1,3 +1,4 @@
+import { ModuleAccess, Prisma, UserRole } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
@@ -16,8 +17,13 @@ export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
   const role = searchParams.get("role");
 
+  const parsedRole = role
+    ? Object.values(UserRole).find((value) => value === role)
+    : undefined;
+  if (role && !parsedRole) return apiError("Rol inválido");
+
   const users = await prisma.user.findMany({
-    where: role ? { role: role as any } : {},
+    where: parsedRole ? { role: parsedRole } : {},
     select: {
       id: true,
       name: true,
@@ -34,18 +40,12 @@ export async function GET(req: NextRequest) {
   return NextResponse.json(users);
 }
 
-const VALID_MODULES = [
-  "OPERACIONES",
-  "CRM",
-  "INVENTARIO",
-  "FINANZAS",
-  "FINANZAS_LECTURA",
-];
+const VALID_MODULES = Object.values(ModuleAccess);
 
-const FINANCE_MODULES = ["FINANZAS", "FINANZAS_LECTURA"];
+const FINANCE_MODULES: ModuleAccess[] = ["FINANZAS", "FINANZAS_LECTURA"];
 
 /** true si moduleAccess tiene FINANZAS y/o FINANZAS_LECTURA. */
-function tieneModulosFinanzas(moduleAccess: string[]): boolean {
+function tieneModulosFinanzas(moduleAccess: readonly ModuleAccess[]): boolean {
   return moduleAccess.some((m) => FINANCE_MODULES.includes(m));
 }
 
@@ -55,8 +55,8 @@ function tieneModulosFinanzas(moduleAccess: string[]): boolean {
 async function notificarCambioPermisosFinanzas(
   actorEmail: string,
   targetEmail: string,
-  antes: string[],
-  despues: string[]
+  antes: readonly ModuleAccess[],
+  despues: readonly ModuleAccess[]
 ) {
   const destinatarios = (process.env.FINANZAS_NOTIFY_EMAILS ?? "")
     .split(",")
@@ -80,8 +80,24 @@ async function notificarCambioPermisosFinanzas(
 }
 
 /** true si `input` es un array donde cada valor es un módulo válido (array vacío incluido). */
-function isValidModuleAccess(input: unknown): input is string[] {
-  return Array.isArray(input) && input.every((m) => VALID_MODULES.includes(m));
+function isValidModuleAccess(input: unknown): input is ModuleAccess[] {
+  return (
+    Array.isArray(input) &&
+    input.every(
+      (module): module is ModuleAccess =>
+        typeof module === "string" &&
+        VALID_MODULES.some((valid) => valid === module)
+    )
+  );
+}
+
+function isJsonObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function parseUserRole(value: unknown): UserRole | undefined {
+  if (typeof value !== "string") return undefined;
+  return Object.values(UserRole).find((role) => role === value);
 }
 
 // POST /api/usuarios — crear usuario (solo ADMIN)
@@ -96,21 +112,21 @@ export async function POST(req: NextRequest) {
     return apiError("Acceso denegado", 403);
   }
 
-  const { name, email, password, role, moduleAccess } = await req.json();
+  const body: unknown = await req.json().catch(() => null);
+  if (!isJsonObject(body)) return apiError("Body inválido");
+  const { name, email, password, role, moduleAccess } = body;
 
-  if (!name?.trim()) return apiError("Nombre requerido");
-  if (!email?.trim()) return apiError("Email requerido");
-  if (!password?.trim()) return apiError("Contraseña requerida");
+  if (typeof name !== "string" || !name.trim())
+    return apiError("Nombre requerido");
+  if (typeof email !== "string" || !email.trim())
+    return apiError("Email requerido");
+  if (typeof password !== "string" || !password.trim())
+    return apiError("Contraseña requerida");
   if (password.length < 8)
     return apiError("La contraseña debe tener al menos 8 caracteres");
-  if (
-    !["CHOFER", "RECEPCION", "ADMIN", "VENTAS", "BODEGA", "FINANZAS"].includes(
-      role
-    )
-  ) {
-    return apiError("Rol inválido");
-  }
-  const modules = moduleAccess ?? [];
+  const userRole = parseUserRole(role);
+  if (!userRole) return apiError("Rol inválido");
+  const modules: unknown = moduleAccess === undefined ? [] : moduleAccess;
   if (!isValidModuleAccess(modules)) return apiError("Módulos inválidos");
 
   const existing = await prisma.user.findUnique({
@@ -120,37 +136,39 @@ export async function POST(req: NextRequest) {
 
   const hashed = await hash(password, 12);
 
-  const user = await prisma.user.create({
-    data: {
-      name: name.trim(),
-      email: email.trim().toLowerCase(),
-      password: hashed,
-      role,
-      moduleAccess: modules as any,
-    },
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      role: true,
-      moduleAccess: true,
-      isActive: true,
-      createdAt: true,
-    },
-  });
-
-  if (user.role === "CHOFER") {
-    await prisma.tracker.upsert({
-      where: { userId: user.id },
-      update: { label: user.name, isActive: true },
-      create: {
-        label: user.name,
-        type: "USUARIO",
-        kind: "CHOFER",
-        userId: user.id,
+  const user = await prisma.$transaction(async (tx) => {
+    const created = await tx.user.create({
+      data: {
+        name: name.trim(),
+        email: email.trim().toLowerCase(),
+        password: hashed,
+        role: userRole,
+        moduleAccess: modules,
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        moduleAccess: true,
+        isActive: true,
+        createdAt: true,
       },
     });
-  }
+    if (created.role === "CHOFER") {
+      await tx.tracker.upsert({
+        where: { userId: created.id },
+        update: { label: created.name, isActive: true },
+        create: {
+          label: created.name,
+          type: "USUARIO",
+          kind: "CHOFER",
+          userId: created.id,
+        },
+      });
+    }
+    return created;
+  });
 
   return NextResponse.json(user, { status: 201 });
 }
@@ -167,17 +185,35 @@ export async function PATCH(req: NextRequest) {
     return apiError("Acceso denegado", 403);
   }
 
-  const { id, name, email, password, role, moduleAccess, isActive } =
-    await req.json();
+  const body: unknown = await req.json().catch(() => null);
+  if (!isJsonObject(body)) return apiError("Body inválido");
+  const { id, name, email, password, role, moduleAccess, isActive } = body;
 
-  if (!id) return apiError("id requerido");
+  if (typeof id !== "string" || !id.trim()) return apiError("id requerido");
+  if (name !== undefined && typeof name !== "string")
+    return apiError("Nombre inválido");
+  if (email !== undefined && typeof email !== "string")
+    return apiError("Email inválido");
+  if (password !== undefined && typeof password !== "string")
+    return apiError("Contraseña inválida");
+  if (isActive !== undefined && typeof isActive !== "boolean")
+    return apiError("Estado inválido");
+  const userRole = role === undefined ? undefined : parseUserRole(role);
+  if (role !== undefined && !userRole) return apiError("Rol inválido");
+  if (moduleAccess !== undefined && !isValidModuleAccess(moduleAccess)) {
+    return apiError("Módulos inválidos");
+  }
 
   // Prevent self-deactivation
   if (id === session.user.id && isActive === false) {
     return apiError("No puedes desactivarte a ti mismo");
   }
   // Prevent self-demotion (te dejaría sin acceso al panel de usuarios)
-  if (id === session.user.id && role !== undefined && role !== "ADMIN") {
+  if (
+    id === session.user.id &&
+    userRole !== undefined &&
+    userRole !== UserRole.ADMIN
+  ) {
     return apiError("No puedes quitarte el rol de administrador a ti mismo");
   }
 
@@ -187,13 +223,11 @@ export async function PATCH(req: NextRequest) {
   });
   if (!previousUser) return apiError("Usuario no encontrado", 404);
 
-  if (moduleAccess !== undefined && !isValidModuleAccess(moduleAccess)) {
-    return apiError("Módulos inválidos");
-  }
   // Estado resultante tras este PATCH — se calcula ANTES del chequeo de
   // contraseña de más abajo. Mirar sólo el estado previo dejaría colar el
   // caso "otorgar FINANZAS y fijar password en la misma llamada".
-  const moduleAccessFinal: string[] = moduleAccess ?? previousUser.moduleAccess;
+  const moduleAccessFinal: ModuleAccess[] =
+    moduleAccess === undefined ? previousUser.moduleAccess : moduleAccess;
 
   // Cierra el hallazgo #4: un ADMIN no elige la contraseña de una cuenta de
   // Finanzas, ni de una que esté por pasar a serlo en esta misma llamada.
@@ -210,7 +244,7 @@ export async function PATCH(req: NextRequest) {
     );
   }
 
-  const data: any = {};
+  const data: Prisma.UserUpdateInput = {};
   if (name !== undefined) data.name = name.trim();
   if (email !== undefined) data.email = email.trim().toLowerCase();
   if (isActive !== undefined) data.isActive = isActive;
@@ -218,22 +252,9 @@ export async function PATCH(req: NextRequest) {
     if (password.length < 8)
       return apiError("La contraseña debe tener al menos 8 caracteres");
     data.password = await hash(password, 12);
+    data.passwordChangedAt = new Date();
   }
-  if (role !== undefined) {
-    if (
-      ![
-        "CHOFER",
-        "RECEPCION",
-        "ADMIN",
-        "VENTAS",
-        "BODEGA",
-        "FINANZAS",
-      ].includes(role)
-    ) {
-      return apiError("Rol inválido");
-    }
-    data.role = role;
-  }
+  if (userRole !== undefined) data.role = userRole;
   if (moduleAccess !== undefined) {
     data.moduleAccess = moduleAccess;
   }
@@ -276,29 +297,31 @@ export async function PATCH(req: NextRequest) {
       });
     }
 
+    const shouldTrackAsChofer =
+      actualizado.role === "CHOFER" && actualizado.isActive;
+    if (shouldTrackAsChofer) {
+      await tx.tracker.upsert({
+        where: { userId: actualizado.id },
+        update: { label: actualizado.name, isActive: true },
+        create: {
+          label: actualizado.name,
+          type: "USUARIO",
+          kind: "CHOFER",
+          userId: actualizado.id,
+        },
+      });
+    } else if (
+      actualizado.role === "CHOFER" ||
+      previousUser.role === "CHOFER"
+    ) {
+      await tx.tracker.updateMany({
+        where: { userId: actualizado.id },
+        data: { isActive: false },
+      });
+    }
+
     return actualizado;
   });
-
-  // Un chofer solo debe verse en el mapa mientras sea CHOFER y esté activo —
-  // ya sea que cambió de rol o que simplemente se desactivó su cuenta.
-  const shouldTrackAsChofer = user.role === "CHOFER" && user.isActive;
-  if (shouldTrackAsChofer) {
-    await prisma.tracker.upsert({
-      where: { userId: user.id },
-      update: { label: user.name, isActive: true },
-      create: {
-        label: user.name,
-        type: "USUARIO",
-        kind: "CHOFER",
-        userId: user.id,
-      },
-    });
-  } else if (user.role === "CHOFER" || previousUser.role === "CHOFER") {
-    await prisma.tracker.updateMany({
-      where: { userId: user.id },
-      data: { isActive: false },
-    });
-  }
 
   // Después de que la transacción confirmó, nunca antes: el aviso no debe
   // salir si el cambio termina revirtiéndose por un error posterior.
@@ -350,24 +373,29 @@ export async function DELETE(req: NextRequest) {
 
   try {
     await prisma.user.delete({ where: { id } });
-  } catch (e: any) {
+  } catch (error: unknown) {
     // Foreign key: el usuario tiene historial (órdenes, evidencias, discrepancias, etc.).
     // Prisma mapea la mayoría de estas violaciones a P2003/P2014, pero las relaciones
     // requeridas (ej. PickupOrder.driverId) generan un RESTRICT que Postgres reporta con
     // el código 23001 en vez de 23503 — Prisma no lo reconoce como "known error" y lo
     // envuelve en PrismaClientUnknownRequestError sin `.code`, así que hay que detectarlo
     // también por el mensaje.
+    const errorCode =
+      error instanceof Prisma.PrismaClientKnownRequestError
+        ? error.code
+        : undefined;
+    const errorMessage = error instanceof Error ? error.message : "";
     const isForeignKeyViolation =
-      e?.code === "P2003" ||
-      e?.code === "P2014" ||
-      /foreign key constraint/i.test(e?.message ?? "");
+      errorCode === "P2003" ||
+      errorCode === "P2014" ||
+      /foreign key constraint/i.test(errorMessage);
     if (isForeignKeyViolation) {
       return apiError(
         "No se puede eliminar: este usuario tiene actividad registrada (órdenes, evidencias u otro historial). Desactívalo en su lugar.",
         409
       );
     }
-    throw e;
+    throw error;
   }
 
   return NextResponse.json({ ok: true });

@@ -17,6 +17,8 @@ declare module "next-auth" {
     id: string;
     role: string;
     moduleAccess: string[];
+    remember?: boolean;
+    passwordChangedAt?: number | null;
   }
 }
 
@@ -25,5 +27,8 @@ declare module "next-auth/jwt" {
     id: string;
     role: string;
     moduleAccess: string[];
+    authenticatedAt?: number;
+    sessionExpiresAt?: number;
+    passwordVersion?: number | null;
   }
 }

@@ -1,5 +1,7 @@
 "use client";
 
+import BrandLogo from "@/components/ui/BrandLogo";
+
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -8,7 +10,6 @@ import { signOut } from "next-auth/react";
 import {
   List,
   X,
-  Recycle,
   ChartBar,
   Warning,
   Truck,
@@ -258,14 +259,7 @@ export default function AdminSidebar({
     <>
       <div className="px-5 pt-5 pb-4">
         <div className="flex items-center gap-2.5">
-          <div className="flex size-8 items-center justify-center rounded-xl bg-emerald-700">
-            <Recycle
-              size={16}
-              weight="bold"
-              className="text-white"
-              aria-hidden="true"
-            />
-          </div>
+          <BrandLogo size={32} decorative />
           <div className="leading-none">
             <p className="text-sm font-semibold tracking-tight text-zinc-900">
               Central Coopera

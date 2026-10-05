@@ -25,14 +25,17 @@ El rol (`UserRole`) define quién es el usuario; `ModuleAccess[]` define qué m�
 
 ## Stack tecnológico
 
-- **Framework:** Next.js 14 (App Router) + TypeScript 5
+- **Framework:** Next.js 15 (App Router) + TypeScript 5 · Node.js 20.9 o superior
 - **ORM / BD:** Prisma 5 sobre PostgreSQL (Neon)
 - **Autenticación:** NextAuth v4 (credenciales + bcrypt), protección por `middleware.ts`
-- **Estilos / UI:** Tailwind 3, `@base-ui/react`, Phosphor y Lucide
+- **Estilos / UI:** Tailwind 4, `@base-ui/react`, Phosphor y Lucide
 - **Imágenes (firmas y evidencias):** Vercel Blob en producción; carpeta local `public/uploads` solo como respaldo de desarrollo
 - **Mapas y gráficos:** Leaflet · Recharts
 - **Correo (outreach):** SMTP vía `nodemailer`
 - **Despliegue / tests:** Vercel · Vitest
+
+Tailwind 4 requiere navegadores modernos (Safari 16.4+, Chrome 111+ y Firefox 128+).
+La integración continua ejecuta auditoría de dependencias, typecheck, tests y build en cada PR.
 
 ---
 

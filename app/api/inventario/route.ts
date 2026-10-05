@@ -5,20 +5,12 @@ import { prisma } from "@/lib/db";
 import { apiError } from "@/lib/utils";
 import { hasModuleAccess } from "@/lib/access";
 import { resolverPaginacion, construirMeta } from "@/lib/finanzas/paginacion";
-import type {
-  Prisma,
-  InventoryCategory,
-  InventoryCondition,
-} from "@prisma/client";
+import {
+  isInventoryCategory,
+  resolverCategoriaInventario,
+} from "@/lib/inventario/category";
+import type { Prisma, InventoryCondition } from "@prisma/client";
 
-const CATEGORIAS = [
-  "MATERIA_PRIMA",
-  "PALLET",
-  "PINTURA",
-  "MATERIAL",
-  "HERRAMIENTA",
-  "OTRO",
-];
 const CONDICIONES = ["NUEVO", "USADO"];
 
 // GET /api/inventario — lista paginada: búsqueda (nombre/marca), filtro por
@@ -45,9 +37,7 @@ export async function GET(req: NextRequest) {
       { details: { contains: q, mode: "insensitive" } },
     ];
   }
-  if (category && CATEGORIAS.includes(category)) {
-    where.category = category as InventoryCategory;
-  }
+  if (category && isInventoryCategory(category)) where.category = category;
   if (condition && CONDICIONES.includes(condition)) {
     where.condition = condition as InventoryCondition;
   }
@@ -93,7 +83,7 @@ export async function POST(req: NextRequest) {
   } = body;
 
   if (!name?.trim()) return apiError("El nombre es requerido");
-  if (category !== undefined && !CATEGORIAS.includes(category)) {
+  if (category !== undefined && !isInventoryCategory(category)) {
     return apiError("Categoría inválida");
   }
   if (
@@ -124,7 +114,10 @@ export async function POST(req: NextRequest) {
       data: {
         numero,
         name: name.trim(),
-        category: category ?? "OTRO",
+        category: resolverCategoriaInventario(
+          name.trim(),
+          isInventoryCategory(category) ? category : undefined
+        ),
         details: details?.trim() || null,
         format: format?.trim() || null,
         color: color?.trim() || null,

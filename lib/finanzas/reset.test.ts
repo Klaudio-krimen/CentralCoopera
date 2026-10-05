@@ -4,7 +4,32 @@ import {
   hashToken,
   esTokenUtilizable,
   armarEnlace,
+  consumirTokenReset,
 } from "./reset";
+
+it("sólo el ganador del canje puede continuar y revoca otros tokens del usuario", async () => {
+  let usado = false;
+  let revocaciones = 0;
+  const tx = {
+    passwordResetToken: {
+      updateMany: async (args: { where: { id?: string } }) => {
+        if (!args.where.id) {
+          revocaciones++;
+          return { count: 2 };
+        }
+        if (usado) return { count: 0 };
+        usado = true;
+        return { count: 1 };
+      },
+    },
+  };
+  const resultados = await Promise.allSettled([
+    consumirTokenReset(tx, { id: "token", userId: "user" }, new Date()),
+    consumirTokenReset(tx, { id: "token", userId: "user" }, new Date()),
+  ]);
+  expect(resultados.filter((r) => r.status === "fulfilled")).toHaveLength(1);
+  expect(revocaciones).toBe(1);
+});
 
 describe("generarToken", () => {
   it("genera tokens distintos en cada llamada", () => {

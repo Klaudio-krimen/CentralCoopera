@@ -4,21 +4,22 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { apiError } from "@/lib/utils";
 import { hasModuleAccess } from "@/lib/access";
+import { canListCompanies } from "@/lib/operations/authorization";
 
 // GET /api/empresas?active=true&q=texto
 export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session) return apiError("No autorizado", 401);
+  if (!canListCompanies(session.user)) return apiError("Acceso denegado", 403);
 
   const { searchParams } = req.nextUrl;
-  const active = searchParams.get("active") === "true";
   const q = searchParams.get("q") ?? "";
-
   const isChofer = session.user.role === "CHOFER";
+  const activeOnly = isChofer || searchParams.get("active") === "true";
 
   const companies = await prisma.company.findMany({
     where: {
-      ...(active ? { isActive: true } : {}),
+      ...(activeOnly ? { isActive: true } : {}),
       ...(q ? { name: { contains: q } } : {}),
     },
     select: {

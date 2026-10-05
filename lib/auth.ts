@@ -2,12 +2,19 @@ import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcryptjs";
 import { prisma } from "./db";
+import {
+  calcularVencimiento,
+  sesionVencida,
+  SESSION_LONG_MS,
+  SESSION_SHORT_MS,
+} from "./auth-session";
+import { encodeSessionToken } from "./auth-jwt";
 import { checkRateLimit, reiniciarRateLimit } from "./finanzas/rate-limit";
 
 const LOGIN_RATE_LIMIT = 5;
 const LOGIN_RATE_WINDOW_MS = 15 * 60 * 1000;
 
-const SESSION_MAX_AGE = 8 * 60 * 60; // 8 horas
+const SESSION_MAX_AGE = SESSION_LONG_MS / 1000;
 
 export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
@@ -17,6 +24,7 @@ export const authOptions: NextAuthOptions = {
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
+        remember: { label: "Mantener sesión", type: "text" },
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials.password) return null;
@@ -29,9 +37,7 @@ export const authOptions: NextAuthOptions = {
           LOGIN_RATE_WINDOW_MS
         );
         if (!limite.ok) {
-          console.warn("[auth] login bloqueado por rate limit", {
-            email: credentials.email,
-          });
+          console.warn("[auth] login blocked by rate limit");
           return null;
         }
 
@@ -40,25 +46,17 @@ export const authOptions: NextAuthOptions = {
         });
 
         if (!user) {
-          console.warn("[auth] login fallido: usuario no encontrado", {
-            email: credentials.email,
-          });
+          console.warn("[auth] credentials rejected");
           return null;
         }
         if (!user.isActive) {
-          console.warn("[auth] login fallido: cuenta inactiva", {
-            email: credentials.email,
-            userId: user.id,
-          });
+          console.warn("[auth] credentials rejected");
           return null;
         }
 
         const ok = await compare(credentials.password, user.password);
         if (!ok) {
-          console.warn("[auth] login fallido: contraseña incorrecta", {
-            email: credentials.email,
-            userId: user.id,
-          });
+          console.warn("[auth] credentials rejected");
           return null;
         }
 
@@ -70,32 +68,80 @@ export const authOptions: NextAuthOptions = {
           name: user.name,
           role: user.role,
           moduleAccess: user.moduleAccess,
+          remember: credentials.remember === "1",
+          passwordChangedAt: user.passwordChangedAt?.getTime() ?? null,
         };
       },
     }),
   ],
   callbacks: {
     jwt: async ({ token, user }) => {
+      const ahora = Date.now();
       if (user) {
         token.id = user.id;
-        token.role = (user as any).role;
-        token.moduleAccess = (user as any).moduleAccess ?? [];
-      }
-      // Re-validar rol y módulos desde DB en cada renovación (detecta cambios)
-      if (!user && token.id) {
-        const dbUser = await prisma.user.findUnique({
-          where: { id: token.id as string },
-          select: { role: true, isActive: true, moduleAccess: true },
+        token.role = user.role;
+        token.moduleAccess = user.moduleAccess;
+        token.authenticatedAt = ahora;
+        token.passwordVersion = user.passwordChangedAt ?? null;
+        token.sessionExpiresAt = calcularVencimiento({
+          ahora,
+          recordar: user.remember === true,
+          moduleAccess: user.moduleAccess,
+          role: user.role,
         });
-        if (dbUser?.isActive) {
-          token.role = dbUser.role;
-          token.moduleAccess = dbUser.moduleAccess;
-        } else {
-          // Usuario inactivo: limpiar rol para que el middleware rechace la sesión
-          token.role = undefined as any;
-          token.moduleAccess = [];
-        }
       }
+      const dbUser = token.id
+        ? await prisma.user.findUnique({
+            where: { id: token.id },
+            select: {
+              role: true,
+              isActive: true,
+              moduleAccess: true,
+              passwordChangedAt: true,
+            },
+          })
+        : null;
+      if (
+        !dbUser?.isActive ||
+        (user &&
+          (dbUser.passwordChangedAt?.getTime() ?? null) !==
+            (user.passwordChangedAt ?? null))
+      ) {
+        throw new Error("Sesión revocada");
+      }
+      // Migración de JWT anteriores: conserva su exp existente, nunca amplía su duración.
+      token.authenticatedAt ??=
+        typeof token.iat === "number" ? token.iat * 1000 : 0;
+      token.sessionExpiresAt ??= Math.min(
+        typeof token.exp === "number" ? token.exp * 1000 : 0,
+        token.authenticatedAt + SESSION_SHORT_MS
+      );
+      if (
+        dbUser.role === "FINANZAS" ||
+        dbUser.moduleAccess.some(
+          (m) => m === "FINANZAS" || m === "FINANZAS_LECTURA"
+        )
+      ) {
+        token.sessionExpiresAt = Math.min(
+          token.sessionExpiresAt,
+          token.authenticatedAt + SESSION_SHORT_MS
+        );
+      }
+      if (
+        sesionVencida({
+          ahora,
+          sessionExpiresAt: token.sessionExpiresAt,
+          passwordChangedAt: dbUser.passwordChangedAt,
+          passwordVersion: token.passwordVersion,
+          iat: typeof token.iat === "number" ? token.iat : undefined,
+          authenticatedAt: token.authenticatedAt,
+        })
+      )
+        throw new Error("Sesión expirada o revocada");
+      if (token.passwordVersion === undefined)
+        token.passwordVersion = dbUser.passwordChangedAt?.getTime() ?? null;
+      token.role = dbUser.role;
+      token.moduleAccess = dbUser.moduleAccess;
       return token;
     },
     session: async ({ session, token }) => {
@@ -103,6 +149,7 @@ export const authOptions: NextAuthOptions = {
         session.user.id = token.id as string;
         session.user.role = token.role as string;
         session.user.moduleAccess = token.moduleAccess ?? [];
+        session.expires = new Date(token.sessionExpiresAt!).toISOString();
       }
       return session;
     },
@@ -112,17 +159,17 @@ export const authOptions: NextAuthOptions = {
     // su propia app pero sigue pintado en el mapa de Operaciones hasta que el
     // cierre por inactividad lo alcance, 15 min después.
     signOut: async ({ token }) => {
-      const userId = token?.id as string | undefined;
+      const userId = token?.id;
       if (!userId) return;
       try {
         await prisma.shift.updateMany({
           where: { userId, endedAt: null },
           data: { endedAt: new Date(), endedReason: "LOGOUT" },
         });
-      } catch (e) {
+      } catch {
         // Un fallo acá no puede impedir el logout. El cierre por inactividad
         // recoge el turno de todas formas.
-        console.error("[auth] no se pudo cerrar el turno al cerrar sesión", e);
+        console.error("[auth] failed to close shift after logout");
       }
     },
   },
@@ -142,5 +189,10 @@ export const authOptions: NextAuthOptions = {
   },
   pages: { signIn: "/login" },
   session: { strategy: "jwt", maxAge: SESSION_MAX_AGE },
-  jwt: { maxAge: SESSION_MAX_AGE },
+  jwt: { maxAge: SESSION_MAX_AGE, encode: encodeSessionToken },
+  logger: {
+    error(code) {
+      console.error("[auth] session processing failed", { code });
+    },
+  },
 };

@@ -5,7 +5,7 @@ import { canWriteFinance } from "@/lib/access";
 import NuevoAnticipoForm from "./NuevoAnticipoForm";
 import AccionesAnticipo from "./AccionesAnticipo";
 
-const ESTADOS = ["PENDIENTE", "PAGADO", "DESCONTADO", "ANULADO"];
+const ESTADOS = ["PENDIENTE", "PAGADO", "DESCONTADO", "ANULADO"] as const;
 
 const ESTADO_COLOR: Record<string, string> = {
   PENDIENTE: "text-[#B45309]",
@@ -17,17 +17,16 @@ const ESTADO_COLOR: Record<string, string> = {
 export default async function AnticiposPage({
   searchParams,
 }: {
-  searchParams: { status?: string };
+  searchParams: Promise<{ status?: string }>;
 }) {
   const session = await getServerSession(authOptions);
   const puedeEscribir = canWriteFinance(session!.user);
-  const status = ESTADOS.includes(searchParams.status ?? "")
-    ? searchParams.status
-    : undefined;
+  const { status: requestedStatus } = await searchParams;
+  const status = ESTADOS.find((estado) => estado === requestedStatus);
 
   const [anticipos, empleados] = await Promise.all([
     prisma.advance.findMany({
-      where: status ? { status: status as any } : {},
+      where: status ? { status } : {},
       orderBy: { requestedAt: "desc" },
       take: 100,
       include: { employee: { select: { fullName: true } } },

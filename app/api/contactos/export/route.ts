@@ -1,3 +1,4 @@
+import { ContactTemperature } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
@@ -6,7 +7,7 @@ import { apiError, CONTACT_SOURCE_LABELS } from "@/lib/utils";
 import { toCsv } from "@/lib/csv";
 import { hasModuleAccess } from "@/lib/access";
 
-const TEMPERATURES = ["FRIO", "TIBIO", "CALIENTE"];
+const TEMPERATURES = Object.values(ContactTemperature);
 
 // GET /api/contactos/export?temperature=&search= — descarga CSV del listado global
 export async function GET(req: NextRequest) {
@@ -21,8 +22,8 @@ export async function GET(req: NextRequest) {
   const contacts = await prisma.contact.findMany({
     where: {
       isActive: true,
-      ...(temperature && TEMPERATURES.includes(temperature)
-        ? { temperature: temperature as any }
+      ...(temperature && TEMPERATURES.some((value) => value === temperature)
+        ? { temperature: TEMPERATURES.find((value) => value === temperature)! }
         : {}),
       ...(search
         ? {

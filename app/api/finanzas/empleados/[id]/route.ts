@@ -13,8 +13,9 @@ import { withAudit } from "@/lib/finanzas/audit";
 // GET /api/finanzas/empleados/[id] — ficha del trabajador
 export async function GET(
   _req: NextRequest,
-  { params }: { params: { id: string } }
+  props: { params: Promise<{ id: string }> }
 ) {
+  const params = await props.params;
   const session = await getServerSession(authOptions);
   if (!session) return apiError("No autorizado", 401);
   if (!hasFinanceAccess(session.user)) return apiError("Acceso denegado", 403);
@@ -30,8 +31,9 @@ export async function GET(
 // PATCH /api/finanzas/empleados/[id] — edita, con auditoría before/after
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  props: { params: Promise<{ id: string }> }
 ) {
+  const params = await props.params;
   const session = await getServerSession(authOptions);
   if (!session) return apiError("No autorizado", 401);
   if (!canWriteFinance(session.user)) return apiError("Acceso denegado", 403);

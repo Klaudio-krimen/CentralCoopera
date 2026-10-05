@@ -2,6 +2,8 @@ import { describe, it, expect } from "vitest";
 import {
   serializeEmployee,
   serializeSupplier,
+  serializeAuditLog,
+  serializeTransaction,
   type EmployeeParaSerializar,
   type SupplierParaSerializar,
 } from "./serialize";
@@ -46,6 +48,54 @@ const marcela = { role: "FINANZAS", moduleAccess: ["FINANZAS"] };
 const elizabeth = { role: "ADMIN", moduleAccess: ["FINANZAS_LECTURA"] };
 const adminSinGrant = { role: "ADMIN", moduleAccess: [] };
 const sinModulos = { role: "CHOFER", moduleAccess: [] };
+
+describe("salida de transacciones y auditoría", () => {
+  const audit = {
+    action: "EDITAR",
+    before: {
+      rut: "12345678-K",
+      email: "private@example.com",
+      phone: "123",
+      address: "Privada",
+      bankAccountLast4: "4567",
+      nested: [{ password: "hash", bankAccountEnc: "cipher" }],
+    },
+    after: null,
+  };
+  it("proyecta proveedor y categoría aunque la entrada incluya más datos", () => {
+    const fila = {
+      amount: 1500,
+      supplier: proveedor,
+      category: { id: "cat", name: "Insumos", extra: "privado" },
+    };
+    expect(serializeTransaction(fila)).toEqual({
+      amount: 1500,
+      supplier: { id: "sup1", name: proveedor.name },
+      category: { id: "cat", name: "Insumos" },
+    });
+  });
+  it("enmascara contactos para lectura y elimina secretos anidados sin mutar el original", () => {
+    const resultado = serializeAuditLog(audit, elizabeth);
+    expect(resultado.before).toMatchObject({
+      rut: "12.***.***-K",
+      email: "[enmascarado]",
+      phone: "[enmascarado]",
+      address: "[enmascarado]",
+      bankAccountLast4: "[enmascarado]",
+      nested: [{}],
+    });
+    expect(audit.before.email).toBe("private@example.com");
+    expect(JSON.stringify(resultado)).not.toContain("cipher");
+  });
+  it("escritura ve contactos vigentes, pero no los de una entidad purgada", () => {
+    expect(serializeAuditLog(audit, marcela).before).toMatchObject({
+      email: "private@example.com",
+    });
+    expect(serializeAuditLog(audit, marcela, true).before).toMatchObject({
+      email: "[enmascarado]",
+    });
+  });
+});
 
 describe("serializeEmployee", () => {
   it("FINANZAS_LECTURA recibe el RUT enmascarado como 12.345.***-*", () => {

@@ -11,8 +11,9 @@ import { withAudit } from "@/lib/finanzas/audit";
 // Nunca borra: no existe DELETE en este archivo.
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  props: { params: Promise<{ id: string }> }
 ) {
+  const params = await props.params;
   const session = await getServerSession(authOptions);
   if (!session) return apiError("No autorizado", 401);
   if (!canWriteFinance(session.user)) return apiError("Acceso denegado", 403);

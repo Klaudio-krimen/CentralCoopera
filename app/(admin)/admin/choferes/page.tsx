@@ -11,6 +11,7 @@ import {
   CheckCircle,
   XCircle,
 } from "@phosphor-icons/react/dist/ssr";
+import type { Icon } from "@phosphor-icons/react";
 
 async function getByRole(role: "CHOFER" | "RECEPCION" | "VENTAS" | "BODEGA") {
   return prisma.user.findMany({
@@ -101,7 +102,7 @@ function Section({
   children,
 }: {
   title: string;
-  icon: any;
+  icon: Icon;
   count: number;
   children: React.ReactNode;
 }) {

@@ -102,6 +102,7 @@ const SINONIMOS: Record<string, string[]> = {
   metros: ["metros"],
   kilos: ["kilos", "kg"],
   cantidad: ["cantidad"],
+  category: ["categoria", "category"],
   nuevo: ["nuevo"],
   usado: ["usado"],
   notes: ["comentario", "comentarios", "notas", "observacion", "observaciones"],

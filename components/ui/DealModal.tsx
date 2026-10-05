@@ -124,8 +124,8 @@ export default function DealModal({
       }
       toast.success(isEdit ? "Deal actualizado" : "Deal creado");
       router.refresh();
-    } catch (e: any) {
-      setError(e.message);
+    } catch (error: unknown) {
+      setError(error instanceof Error ? error.message : "Error inesperado.");
     } finally {
       setLoading(false);
     }

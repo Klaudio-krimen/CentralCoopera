@@ -22,6 +22,8 @@ Lista paginada de `InventoryItem` activos (`isActive: true`), ordenados por `num
 
 Crea un ítem. `numero` se asigna dentro de la transacción como `max(numero) + 1` — nunca se
 reutiliza ni se renumera, es el número por el que la bodega ubica las cosas.
+`category` acepta `EPP`. El servidor asigna `EPP` si el nombre corresponde a un artículo de
+protección personal, aunque el cliente envíe otra categoría.
 
 ## PATCH /api/inventario/[id]
 
@@ -47,7 +49,14 @@ Recibe filas **ya interpretadas por el cliente** (`{ items: FilaImportada[] }`) 
 la planilla pegada/subida vive en `lib/inventario/parse.ts` y corre en el navegador para poder
 mostrar la previsualización antes de confirmar. El servidor valida cada fila y las crea todas
 en una sola transacción, asignando `numero` consecutivo desde el máximo existente. Tope 500
-filas por importación.
+filas por importación. La previsualización incluye categoría y tanto ella como el servidor clasifican
+automáticamente los nombres EPP; el servidor vuelve a determinarla para no confiar en el cliente.
+
+## Clasificación de EPP
+
+`lib/inventario/category.ts` es la fuente única de categorías, sugerencias y detección por nombre.
+`POST`, `PATCH` e importación guardan `EPP` para los nombres reconocidos. El backfill de filas
+existentes es explícito y sólo escribe con `--apply` (`scripts/backfill-epp-inventario.ts`).
 
 ## GET /api/inventario/export
 
@@ -64,3 +73,12 @@ CSV con las mismas 12 columnas de la planilla original de bodega (`NUMERO`, `NOM
 Movimiento explícito (no edición en línea): `ENTRADA` suma, `SALIDA` resta (rechaza si deja el
 stock negativo), `AJUSTE` fija el valor exacto. Guarda `quantityBefore`/`quantityAfter`. `NIVEL`
 no se acepta aquí — sólo lo genera `PATCH /api/inventario/[id]` al editar `fillPercent`.
+
+## Concurrencia y validación AUD-002
+
+PATCH y movimientos explícitos adquieren el mismo bloqueo de fila con increment:0 dentro de
+la transacción antes de leer stock. El historial usa el valor previo exacto bloqueado y el valor
+persistido, sin reconstrucción por resta de floats. Entradas usan increment; salidas decrement
+condicionado a quantity >= cantidad. Conflicto de stock responde 409. Ajustes absolutos se
+serializan con entradas/salidas. Cantidades finitas; ENTRADA/SALIDA >0 y AJUSTE >=0.
+PATCH valida esquema y enum, porcentajes enteros 0..100 o null, cantidades no negativas.

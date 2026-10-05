@@ -15,6 +15,7 @@ import {
 } from "@/components/crm/ui/table";
 import TemperatureBadge from "@/components/ui/TemperatureBadge";
 import { CONTACT_SOURCE_LABELS, formatDate } from "@/lib/utils";
+import type { ContactSource, ContactTemperature } from "@prisma/client";
 
 export interface ContactoDeEmpresa {
   id: string;
@@ -23,9 +24,9 @@ export interface ContactoDeEmpresa {
   email: string | null;
   phone: string | null;
   notes: string | null;
-  temperature: "FRIO" | "TIBIO" | "CALIENTE";
+  temperature: ContactTemperature;
   score: number;
-  source: keyof typeof CONTACT_SOURCE_LABELS;
+  source: ContactSource;
   createdAt: string | Date;
 }
 
@@ -55,7 +56,7 @@ interface Row {
   contact: ContactoDeEmpresa | null;
 }
 
-type Temp = "FRIO" | "TIBIO" | "CALIENTE";
+type Temp = ContactTemperature;
 
 const TEMP_FILTERS: { value: Temp | null; label: string }[] = [
   { value: null, label: "Todos" },

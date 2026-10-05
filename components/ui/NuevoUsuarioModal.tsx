@@ -76,8 +76,8 @@ export default function NuevoUsuarioModal() {
       setOpen(false);
       setForm(EMPTY_FORM);
       router.refresh();
-    } catch (e: any) {
-      setError(e.message);
+    } catch (error: unknown) {
+      setError(error instanceof Error ? error.message : "Error inesperado.");
     } finally {
       setLoading(false);
     }

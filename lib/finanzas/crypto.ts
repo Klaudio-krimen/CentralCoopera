@@ -44,7 +44,11 @@ function intentarDescifrar(valor: string, claveBase64: string): string {
   const authTag = Buffer.from(authTagB64, "base64");
   const ciphertext = Buffer.from(ciphertextB64, "base64");
 
-  const decipher = createDecipheriv(ALGORITMO, clave, iv);
+  if (iv.length !== IV_BYTES || authTag.length !== 16)
+    throw new Error("IV o tag GCM inválido");
+  const decipher = createDecipheriv(ALGORITMO, clave, iv, {
+    authTagLength: 16,
+  });
   decipher.setAuthTag(authTag);
   const textoPlano = Buffer.concat([
     decipher.update(ciphertext),

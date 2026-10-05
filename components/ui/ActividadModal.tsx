@@ -90,8 +90,8 @@ export default function ActividadModal({
       });
       toast.success("Actividad registrada");
       router.refresh();
-    } catch (e: any) {
-      setError(e.message);
+    } catch (error: unknown) {
+      setError(error instanceof Error ? error.message : "Error inesperado.");
     } finally {
       setLoading(false);
     }

@@ -4,6 +4,67 @@
 import { canWriteFinance } from "../access";
 import { enmascararRut } from "./rut";
 
+export function serializeTransaction<
+  T extends {
+    supplier?: { id: string; name: string } | null;
+    category?: { id: string; name: string } | null;
+  },
+>(fila: T) {
+  const { supplier, category, ...campos } = fila;
+  return {
+    ...campos,
+    ...(supplier !== undefined
+      ? { supplier: supplier ? { id: supplier.id, name: supplier.name } : null }
+      : {}),
+    ...(category !== undefined
+      ? { category: category ? { id: category.id, name: category.name } : null }
+      : {}),
+  };
+}
+
+const CONTACTO_AUDITORIA = new Set([
+  "email",
+  "phone",
+  "address",
+  "bankAccountLast4",
+]);
+
+function serializarDetalle(valor: unknown, enmascarar: boolean): unknown {
+  if (Array.isArray(valor))
+    return valor.map((v) => serializarDetalle(v, enmascarar));
+  if (valor === null || typeof valor !== "object") return valor;
+  const objeto = valor as Record<string, unknown>;
+  const purgado = enmascarar || objeto.purgedAt != null;
+  const resultado: Record<string, unknown> = {};
+  for (const [clave, dato] of Object.entries(objeto)) {
+    if (clave === "bankAccountEnc" || clave === "password") continue;
+    if (purgado && CONTACTO_AUDITORIA.has(clave)) {
+      resultado[clave] = dato == null ? dato : "[enmascarado]";
+    } else if (purgado && clave === "rut" && typeof dato === "string") {
+      const normalizado = dato.replace(/[^0-9kK]/g, "");
+      resultado[clave] =
+        normalizado.length >= 2
+          ? `${normalizado.slice(0, 2)}.***.***-${normalizado.slice(-1).toUpperCase()}`
+          : "[enmascarado]";
+    } else {
+      resultado[clave] = serializarDetalle(dato, purgado);
+    }
+  }
+  return resultado;
+}
+
+export function serializeAuditLog<
+  T extends { before: unknown; after: unknown; action: string },
+>(fila: T, viewer: Viewer, entidadPurgada = false) {
+  const enmascarar =
+    !canWriteFinance(viewer) || entidadPurgada || fila.action === "DESVINCULAR";
+  return {
+    ...fila,
+    before: serializarDetalle(fila.before, enmascarar),
+    after: serializarDetalle(fila.after, enmascarar),
+  };
+}
+
 interface Viewer {
   role: string;
   moduleAccess: string[];

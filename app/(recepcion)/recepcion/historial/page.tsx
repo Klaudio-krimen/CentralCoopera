@@ -1,40 +1,42 @@
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
-import { prisma } from '@/lib/db'
-import { formatDate } from '@/lib/utils'
-import StatusBadge from '@/components/ui/StatusBadge'
-import Link from 'next/link'
-import { ArrowRight, ClipboardText } from '@phosphor-icons/react/dist/ssr'
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/db";
+import { formatDate } from "@/lib/utils";
+import StatusBadge from "@/components/ui/StatusBadge";
+import Link from "next/link";
+import { ArrowRight, ClipboardText } from "@phosphor-icons/react/dist/ssr";
 
 export default async function RecepcionHistorialPage() {
-  const session = await getServerSession(authOptions)
-  if (!session) return null
+  const session = await getServerSession(authOptions);
+  if (!session) return null;
 
   const orders = await prisma.pickupOrder.findMany({
     where: {
-      status: { in: ['RECIBIDA', 'DISCREPANCIA', 'CERRADA'] },
+      status: { in: ["RECIBIDA", "DISCREPANCIA", "CERRADA"] },
     },
     include: {
       company: { select: { name: true } },
-      driver:  { select: { name: true } },
-      items:   { select: { id: true } },
-      _count:  { select: { discrepancies: true } },
+      driver: { select: { name: true } },
+      items: { select: { id: true } },
+      _count: { select: { discrepancies: true } },
     },
-    orderBy: { updatedAt: 'desc' },
+    orderBy: { updatedAt: "desc" },
     take: 80,
-  })
+  });
 
-  const grouped: Record<string, typeof orders> = {}
+  const grouped: Record<string, typeof orders> = {};
   for (const order of orders) {
-    const key = formatDate(order.updatedAt)
-    if (!grouped[key]) grouped[key] = []
-    grouped[key].push(order)
+    const key = formatDate(order.updatedAt);
+    if (!grouped[key]) grouped[key] = [];
+    grouped[key].push(order);
   }
 
   return (
     <div className="max-w-3xl mx-auto px-6 py-8 space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight text-zinc-900">Historial de recepción</h1>
+        <h1 className="text-2xl font-semibold tracking-tight text-zinc-900">
+          Historial de recepción
+        </h1>
         <p className="text-zinc-500 text-sm mt-1">
           {orders.length} órdenes recibidas
         </p>
@@ -46,12 +48,16 @@ export default async function RecepcionHistorialPage() {
             <ClipboardText size={22} className="text-zinc-400" />
           </div>
           <p className="text-zinc-700 font-medium">Sin órdenes recibidas aún</p>
-          <p className="text-zinc-500 text-sm mt-1">Las órdenes aparecerán aquí una vez recepcionadas</p>
+          <p className="text-zinc-500 text-sm mt-1">
+            Las órdenes aparecerán aquí una vez recepcionadas
+          </p>
         </div>
       ) : (
         Object.entries(grouped).map(([date, dayOrders]) => (
           <div key={date}>
-            <p className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider mb-2">{date}</p>
+            <p className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider mb-2">
+              {date}
+            </p>
             <div className="space-y-2">
               {dayOrders.map((order) => (
                 <Link
@@ -60,20 +66,30 @@ export default async function RecepcionHistorialPage() {
                   className="card flex items-center justify-between p-4 hover:shadow-card-hover active:translate-y-[1px] transition-all group"
                 >
                   <div>
-                    <p className="text-sm font-semibold text-zinc-900">{order.company.name}</p>
-                    <p className="text-xs font-mono text-zinc-500 tabular-nums mt-0.5">{order.orderCode}</p>
+                    <p className="text-sm font-semibold text-zinc-900">
+                      {order.company.name}
+                    </p>
+                    <p className="text-xs font-mono text-zinc-500 tabular-nums mt-0.5">
+                      {order.orderCode}
+                    </p>
                     <div className="flex items-center gap-3 mt-1">
-                      <p className="text-xs text-zinc-500">{order.driver?.name}</p>
+                      <p className="text-xs text-zinc-500">
+                        {order.driver?.name}
+                      </p>
                       {order._count.discrepancies > 0 && (
                         <span className="text-[11px] px-1.5 py-0.5 rounded-full bg-red-50 text-red-600 border border-red-100 font-medium">
-                          {order._count.discrepancies} discrepancia{order._count.discrepancies !== 1 ? 's' : ''}
+                          {order._count.discrepancies} discrepancia
+                          {order._count.discrepancies !== 1 ? "s" : ""}
                         </span>
                       )}
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
-                    <StatusBadge status={order.status as any} size="sm" />
-                    <ArrowRight size={14} className="text-zinc-300 group-hover:text-zinc-500 group-hover:translate-x-0.5 transition-all" />
+                    <StatusBadge status={order.status} size="sm" />
+                    <ArrowRight
+                      size={14}
+                      className="text-zinc-300 group-hover:text-zinc-500 group-hover:translate-x-0.5 transition-all"
+                    />
                   </div>
                 </Link>
               ))}
@@ -82,5 +98,5 @@ export default async function RecepcionHistorialPage() {
         ))
       )}
     </div>
-  )
+  );
 }

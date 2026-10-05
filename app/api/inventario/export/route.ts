@@ -5,15 +5,7 @@ import { prisma } from "@/lib/db";
 import { apiError } from "@/lib/utils";
 import { hasModuleAccess } from "@/lib/access";
 import { toCsv } from "@/lib/csv";
-
-const CATEGORIA_LABEL: Record<string, string> = {
-  MATERIA_PRIMA: "Materia prima",
-  PALLET: "Pallet",
-  PINTURA: "Pintura",
-  MATERIAL: "Material",
-  HERRAMIENTA: "Herramienta",
-  OTRO: "Otro",
-};
+import { INVENTORY_CATEGORY_LABEL } from "@/lib/inventario/category";
 
 // GET /api/inventario/export — CSV con las mismas 12 columnas de la planilla
 // original de bodega, en el mismo orden, para que quien lo abra en Excel no
@@ -43,7 +35,7 @@ export async function GET() {
     nuevo: item.condition === "NUEVO" ? "X" : "",
     usado: item.condition === "USADO" ? "X" : "",
     comentario: item.notes ?? "",
-    categoria: CATEGORIA_LABEL[item.category] ?? item.category,
+    categoria: INVENTORY_CATEGORY_LABEL[item.category] ?? item.category,
   }));
 
   const csv = toCsv(filas, [

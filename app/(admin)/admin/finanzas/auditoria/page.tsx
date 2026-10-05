@@ -1,4 +1,10 @@
 import Link from "next/link";
+import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
+import { authOptions } from "@/lib/auth";
+import { hasFinanceAccess } from "@/lib/access";
+import { serializarAuditorias } from "@/lib/finanzas/audit-view";
+import { rangoFechas } from "@/lib/finanzas/fechas";
 import { prisma } from "@/lib/db";
 import { resolverPaginacion, construirMeta } from "@/lib/finanzas/paginacion";
 
@@ -21,29 +27,36 @@ function construirQuery(
   return `?${q.toString()}`;
 }
 
-// Visor de sólo lectura: FINANZAS y FINANZAS_LECTURA ven exactamente lo
-// mismo aquí. Que Elizabeth pueda leer este visor es la mitad del modelo de
-// amenaza del módulo — la defensa no es impedir, es que quede a la vista.
+// Visor sin mutaciones: ambas capacidades ven filas; el detalle se serializa
+// según permiso y estado actual de purga, igual que la API.
 export default async function AuditoriaPage({
   searchParams,
 }: {
-  searchParams: SearchParams;
+  searchParams: Promise<SearchParams>;
 }) {
+  const session = await getServerSession(authOptions);
+  if (!session || !hasFinanceAccess(session.user)) redirect("/login");
+  const filtros = await searchParams;
   const { page, pageSize, take, skip } = resolverPaginacion({
-    page: searchParams.page,
+    page: filtros.page,
   });
 
   const where: Record<string, unknown> = {};
-  if (searchParams.entityType) where.entityType = searchParams.entityType;
-  if (searchParams.actorId) where.actorId = searchParams.actorId;
-  if (searchParams.desde || searchParams.hasta) {
-    where.createdAt = {
-      ...(searchParams.desde ? { gte: new Date(searchParams.desde) } : {}),
-      ...(searchParams.hasta ? { lte: new Date(searchParams.hasta) } : {}),
-    };
+  if (filtros.entityType) where.entityType = filtros.entityType;
+  if (filtros.actorId) where.actorId = filtros.actorId;
+  try {
+    if (filtros.desde || filtros.hasta)
+      where.createdAt = rangoFechas(filtros.desde, filtros.hasta);
+  } catch {
+    return (
+      <div role="alert">
+        El rango de fechas no es válido.{" "}
+        <Link href="/admin/finanzas/auditoria">Limpiar filtros</Link>
+      </div>
+    );
   }
 
-  const [filas, total, tiposEntidad, actores] = await Promise.all([
+  const [filasCrudas, total, tiposEntidad, actores] = await Promise.all([
     prisma.financeAuditLog.findMany({
       where,
       orderBy: { createdAt: "desc" },
@@ -64,6 +77,7 @@ export default async function AuditoriaPage({
     }),
   ]);
 
+  const filas = await serializarAuditorias(prisma, filasCrudas, session.user);
   const meta = construirMeta(total, page, pageSize);
 
   return (
@@ -83,7 +97,7 @@ export default async function AuditoriaPage({
           <select
             id="aud-entityType"
             name="entityType"
-            defaultValue={searchParams.entityType ?? ""}
+            defaultValue={filtros.entityType ?? ""}
             className="rounded-md border border-[#E2E8F0] px-2 py-1.5 text-sm text-[#0F172A]"
           >
             <option value="">Todas</option>
@@ -104,7 +118,7 @@ export default async function AuditoriaPage({
           <select
             id="aud-actorId"
             name="actorId"
-            defaultValue={searchParams.actorId ?? ""}
+            defaultValue={filtros.actorId ?? ""}
             className="rounded-md border border-[#E2E8F0] px-2 py-1.5 text-sm text-[#0F172A]"
           >
             <option value="">Todos</option>
@@ -128,7 +142,7 @@ export default async function AuditoriaPage({
             id="aud-desde"
             type="date"
             name="desde"
-            defaultValue={searchParams.desde ?? ""}
+            defaultValue={filtros.desde ?? ""}
             className="rounded-md border border-[#E2E8F0] px-2 py-1.5 text-sm text-[#0F172A]"
           />
         </div>
@@ -143,7 +157,7 @@ export default async function AuditoriaPage({
             id="aud-hasta"
             type="date"
             name="hasta"
-            defaultValue={searchParams.hasta ?? ""}
+            defaultValue={filtros.hasta ?? ""}
             className="rounded-md border border-[#E2E8F0] px-2 py-1.5 text-sm text-[#0F172A]"
           />
         </div>
@@ -241,7 +255,7 @@ export default async function AuditoriaPage({
             <div className="flex gap-2">
               {meta.page > 1 && (
                 <Link
-                  href={construirQuery(searchParams, {
+                  href={construirQuery(filtros, {
                     page: String(meta.page - 1),
                   })}
                   className="rounded-md border border-[#E2E8F0] px-2.5 py-1 hover:bg-[#F8FAFC]"
@@ -251,7 +265,7 @@ export default async function AuditoriaPage({
               )}
               {meta.page < meta.totalPages && (
                 <Link
-                  href={construirQuery(searchParams, {
+                  href={construirQuery(filtros, {
                     page: String(meta.page + 1),
                   })}
                   className="rounded-md border border-[#E2E8F0] px-2.5 py-1 hover:bg-[#F8FAFC]"

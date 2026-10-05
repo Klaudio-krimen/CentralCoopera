@@ -2,6 +2,10 @@ import { describe, it, expect } from "vitest";
 import { escaparCampoCsv, filasACsv } from "./csv";
 
 describe("escaparCampoCsv", () => {
+  it("neutraliza tab y retorno iniciales", () => {
+    expect(escaparCampoCsv("\t=SUM(A1:A2)")).toBe("'\t=SUM(A1:A2)");
+    expect(escaparCampoCsv("\r=1+1")).toBe('"\'\r=1+1"');
+  });
   it("envuelve en comillas dobles un valor que contiene una coma", () => {
     expect(escaparCampoCsv("Fletes, combustible")).toBe(
       '"Fletes, combustible"'

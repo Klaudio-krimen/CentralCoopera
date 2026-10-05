@@ -337,6 +337,7 @@ enum InventoryCategory {
   MATERIAL
   HERRAMIENTA
   OTRO
+  EPP // Elementos de Protección Personal
 }
 
 // La planilla trae tres columnas de medida y jamás llena más de una: un tarro

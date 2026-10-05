@@ -7,6 +7,7 @@ import {
   type InventoryCondition,
   type InventoryMeasureUnit,
 } from "./types";
+import { EPP_ITEM_SUGGESTIONS, esArticuloEpp } from "@/lib/inventario/category";
 
 export interface FormState {
   name: string;
@@ -38,6 +39,9 @@ export default function ItemFormFields({
   formId: string;
   onChange: <K extends keyof FormState>(key: K, value: FormState[K]) => void;
 }) {
+  const nombreEsEpp = esArticuloEpp(form.name);
+  const listaEppId = `${formId}-epp-suggestions`;
+
   return (
     <>
       <div className="space-y-1.5">
@@ -52,10 +56,29 @@ export default function ItemFormFields({
           type="text"
           value={form.name}
           onChange={(event) => onChange("name", event.target.value)}
-          placeholder="Ej: ESMALTE AL AGUA"
+          list={form.category === "EPP" ? listaEppId : undefined}
+          placeholder="Ej: casco, chaleco reflectante..."
           className="input-base"
           required
         />
+        {form.category === "EPP" && (
+          <datalist id={listaEppId}>
+            {EPP_ITEM_SUGGESTIONS.map((nombre) => (
+              <option key={nombre} value={nombre} />
+            ))}
+          </datalist>
+        )}
+        {nombreEsEpp ? (
+          <p className="text-xs text-emerald-700" role="status">
+            Se clasificará automáticamente como EPP — Elementos de Protección
+            Personal.
+          </p>
+        ) : form.category === "EPP" ? (
+          <p className="text-xs text-zinc-500">
+            Puedes elegir un artículo frecuente o escribir otro elemento de
+            protección personal.
+          </p>
+        ) : null}
       </div>
 
       <div className="grid grid-cols-2 gap-3">
@@ -119,6 +142,10 @@ export default function ItemFormFields({
           <select
             id={`${formId}-category`}
             value={form.category}
+            disabled={nombreEsEpp}
+            aria-describedby={
+              nombreEsEpp ? `${formId}-category-hint` : undefined
+            }
             onChange={(event) => {
               const category = CATEGORIAS.find(
                 (value) => value === event.target.value
@@ -133,6 +160,12 @@ export default function ItemFormFields({
               </option>
             ))}
           </select>
+          {nombreEsEpp && (
+            <p id={`${formId}-category-hint`} className="sr-only">
+              La categoría se fija en EPP automáticamente por el nombre del
+              artículo.
+            </p>
+          )}
         </div>
       </div>
 

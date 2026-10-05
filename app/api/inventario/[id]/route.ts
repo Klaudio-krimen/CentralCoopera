@@ -4,16 +4,12 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { apiError } from "@/lib/utils";
 import { hasModuleAccess } from "@/lib/access";
-import type { InventoryCategory, InventoryCondition } from "@prisma/client";
+import {
+  isInventoryCategory,
+  resolverCategoriaInventario,
+} from "@/lib/inventario/category";
+import type { InventoryCondition } from "@prisma/client";
 
-const CATEGORIAS = [
-  "MATERIA_PRIMA",
-  "PALLET",
-  "PINTURA",
-  "MATERIAL",
-  "HERRAMIENTA",
-  "OTRO",
-];
 const CONDICIONES = ["NUEVO", "USADO"];
 const MEDIDAS = ["LITROS", "METROS", "KILOS"];
 
@@ -65,7 +61,7 @@ export async function PATCH(
     return apiError("Solo un administrador puede archivar un ítem", 403);
   }
 
-  if (body.category !== undefined && !CATEGORIAS.includes(body.category)) {
+  if (body.category !== undefined && !isInventoryCategory(body.category)) {
     return apiError("Categoría inválida");
   }
   if (
@@ -100,8 +96,14 @@ export async function PATCH(
         typeof body[campo] === "string" ? body[campo].trim() || null : null;
     }
   }
-  if (body.category !== undefined)
-    data.category = body.category as InventoryCategory;
+  const nombreFinal =
+    typeof body.name === "string" ? body.name.trim() : anterior.name;
+  if (body.category !== undefined || body.name !== undefined) {
+    data.category = resolverCategoriaInventario(
+      nombreFinal,
+      isInventoryCategory(body.category) ? body.category : anterior.category
+    );
+  }
   if (body.condition !== undefined)
     data.condition = body.condition as InventoryCondition | null;
   if (body.measureValue !== undefined) data.measureValue = body.measureValue;

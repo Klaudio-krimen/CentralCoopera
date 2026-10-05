@@ -60,29 +60,30 @@ Autor y propósito no confirmados. Preservarlos; no incluirlos en commits de otr
 
 ## Tareas compartidas
 
-| ID        | Tarea                                                              | Prioridad | Responsable | Estado      | Rama / alcance previsto                                                                                               |
-| --------- | ------------------------------------------------------------------ | --------- | ----------- | ----------- | --------------------------------------------------------------------------------------------------------------------- |
-| COORD-001 | Crear registro y enlazar las instrucciones de ambos agentes        | Alta      | Codex       | TERMINADA   | `master`; este documento, `AGENTS.md`, `CLAUDE.md`                                                                    |
-| REV-001   | Familiarización con arquitectura, módulos y Git                    | Alta      | Codex       | TERMINADA   | Revisión sobre `7a70dbb`; sin cambios de código                                                                       |
-| REV-002   | Revisión de interfaz con `emil-design-eng`                         | Alta      | Codex       | TERMINADA   | Revisión estática sobre `7a70dbb`; sin cambios de código                                                              |
-| UX-001    | Navegación adaptable del panel administrativo                      | Alta      | Codex       | TERMINADA   | `components/ui/AdminSidebar.tsx`, `app/(admin)/layout.tsx`                                                            |
-| UX-002    | Diálogos de usuarios/inventario y scroll CRM (primera fase)        | Alta      | Codex       | TERMINADA   | Modal compartido, dos formularios, diálogo CRM y specs                                                                |
-| UX-003    | Permitir zoom y mejorar contraste de botones                       | Alta      | Codex       | TERMINADA   | `app/layout.tsx`, `app/globals.css`                                                                                   |
-| UX-004    | Corregir y anunciar la sección activa del menú                     | Media     | Codex       | TERMINADA   | `components/ui/AdminSidebar.tsx`                                                                                      |
-| UX-005    | Enlaces accesibles en lista de llamadas                            | Media     | Claude      | TERMINADA   | `master`; `components/crm/ListaLlamadas.tsx` y su spec                                                                |
-| UX-006    | Mantener tamaño y foco del selector durante guardado               | Media     | Claude      | TERMINADA   | `master`; `components/crm/CallStatusSelect.tsx` y su spec                                                             |
-| UX-007    | Movimiento reducido y animación según frecuencia de uso            | Media     | Sin asignar | PROPUESTA   | CSS, dashboard y nueva orden del chofer, primitivas de UI                                                             |
-| UX-008    | Sustituir transiciones generales por propiedades explícitas        | Baja      | Sin asignar | PROPUESTA   | Botones, formularios y navegación                                                                                     |
-| DOC-001   | Actualizar afirmaciones antiguas de la documentación               | Media     | Claude      | TERMINADA   | `master`; `README.md`, `CLAUDE.md`, `PROSPECCION_OUTREACH.md`, `ARQUITECTURA.md`, `PRODUCT.md`                        |
-| UX-009    | Migrar los demás modales manuales al diálogo compartido            | Media     | Sin asignar | PROPUESTA   | Otros formularios de Operaciones/Inventario; asignar archivos antes de editar                                         |
-| DOC-002   | Alinear documentos con el proveedor de correo real                 | Baja      | Sin asignar | PROPUESTA   | Esperar decisión Hostinger/SiteGround; `PROSPECCION_OUTREACH.md`, `VARIABLES_ENTORNO.md`, specs                       |
-| AUD-001   | Auditoría de seguridad (Cyber Neo), POO y código limpio; solo plan | Alta      | Codex       | TERMINADA   | Revisión de solo lectura sobre `43a0827`; [informe y plan](docs/auditorias/AUD-001-seguridad-y-calidad-2026-10-04.md) |
-| SEC-001   | Corregir dependencias críticas/altas y actualizar Next.js          | Alta      | Codex       | EN REVISIÓN | Código y gates locales listos; falta ejecución de CI remota y preview Vercel                                          |
-| SEC-002   | Cerrar brechas de autorización en APIs operativas                  | Alta      | Codex       | TERMINADA   | Órdenes, evidencias y empresas; matriz por rol/módulo/estado y specs                                                  |
-| SEC-003   | Hacer atómico el rate limit de autenticación                       | Alta      | Codex       | TERMINADA   | `lib/finanzas/rate-limit.ts`; incremento atómico y prueba de concurrencia                                             |
-| SEC-004   | Exigir STARTTLS en SMTP                                            | Media     | Codex       | TERMINADA   | `lib/outreach/smtp.ts`; puertos y TLS validados con pruebas                                                           |
-| SEC-005   | Endurecer webhook, CSP, logs, errores y exclusiones                | Media     | Codex       | EN REVISIÓN | Implementado; revisar `unsafe-inline` y retirar `?secret=` tras migrar integraciones                                  |
-| CAL-001   | Modularizar pantallas grandes y reducir casts inseguros            | Media     | Codex       | TERMINADA   | Nueva orden, inventario y fronteras API/vistas con tipos                                                              |
+| ID        | Tarea                                                               | Prioridad | Responsable | Estado      | Rama / alcance previsto                                                                                               |
+| --------- | ------------------------------------------------------------------- | --------- | ----------- | ----------- | --------------------------------------------------------------------------------------------------------------------- |
+| COORD-001 | Crear registro y enlazar las instrucciones de ambos agentes         | Alta      | Codex       | TERMINADA   | `master`; este documento, `AGENTS.md`, `CLAUDE.md`                                                                    |
+| REV-001   | Familiarización con arquitectura, módulos y Git                     | Alta      | Codex       | TERMINADA   | Revisión sobre `7a70dbb`; sin cambios de código                                                                       |
+| REV-002   | Revisión de interfaz con `emil-design-eng`                          | Alta      | Codex       | TERMINADA   | Revisión estática sobre `7a70dbb`; sin cambios de código                                                              |
+| UX-001    | Navegación adaptable del panel administrativo                       | Alta      | Codex       | TERMINADA   | `components/ui/AdminSidebar.tsx`, `app/(admin)/layout.tsx`                                                            |
+| UX-002    | Diálogos de usuarios/inventario y scroll CRM (primera fase)         | Alta      | Codex       | TERMINADA   | Modal compartido, dos formularios, diálogo CRM y specs                                                                |
+| UX-003    | Permitir zoom y mejorar contraste de botones                        | Alta      | Codex       | TERMINADA   | `app/layout.tsx`, `app/globals.css`                                                                                   |
+| UX-004    | Corregir y anunciar la sección activa del menú                      | Media     | Codex       | TERMINADA   | `components/ui/AdminSidebar.tsx`                                                                                      |
+| UX-005    | Enlaces accesibles en lista de llamadas                             | Media     | Claude      | TERMINADA   | `master`; `components/crm/ListaLlamadas.tsx` y su spec                                                                |
+| UX-006    | Mantener tamaño y foco del selector durante guardado                | Media     | Claude      | TERMINADA   | `master`; `components/crm/CallStatusSelect.tsx` y su spec                                                             |
+| UX-007    | Movimiento reducido y animación según frecuencia de uso             | Media     | Sin asignar | PROPUESTA   | CSS, dashboard y nueva orden del chofer, primitivas de UI                                                             |
+| UX-008    | Sustituir transiciones generales por propiedades explícitas         | Baja      | Sin asignar | PROPUESTA   | Botones, formularios y navegación                                                                                     |
+| DOC-001   | Actualizar afirmaciones antiguas de la documentación                | Media     | Claude      | TERMINADA   | `master`; `README.md`, `CLAUDE.md`, `PROSPECCION_OUTREACH.md`, `ARQUITECTURA.md`, `PRODUCT.md`                        |
+| UX-009    | Migrar los demás modales manuales al diálogo compartido             | Media     | Sin asignar | PROPUESTA   | Otros formularios de Operaciones/Inventario; asignar archivos antes de editar                                         |
+| DOC-002   | Alinear documentos con el proveedor de correo real                  | Baja      | Sin asignar | PROPUESTA   | Esperar decisión Hostinger/SiteGround; `PROSPECCION_OUTREACH.md`, `VARIABLES_ENTORNO.md`, specs                       |
+| AUD-001   | Auditoría de seguridad (Cyber Neo), POO y código limpio; solo plan  | Alta      | Codex       | TERMINADA   | Revisión de solo lectura sobre `43a0827`; [informe y plan](docs/auditorias/AUD-001-seguridad-y-calidad-2026-10-04.md) |
+| SEC-001   | Corregir dependencias críticas/altas y actualizar Next.js           | Alta      | Codex       | EN REVISIÓN | Código y gates locales listos; falta ejecución de CI remota y preview Vercel                                          |
+| SEC-002   | Cerrar brechas de autorización en APIs operativas                   | Alta      | Codex       | TERMINADA   | Órdenes, evidencias y empresas; matriz por rol/módulo/estado y specs                                                  |
+| SEC-003   | Hacer atómico el rate limit de autenticación                        | Alta      | Codex       | TERMINADA   | `lib/finanzas/rate-limit.ts`; incremento atómico y prueba de concurrencia                                             |
+| SEC-004   | Exigir STARTTLS en SMTP                                             | Media     | Codex       | TERMINADA   | `lib/outreach/smtp.ts`; puertos y TLS validados con pruebas                                                           |
+| SEC-005   | Endurecer webhook, CSP, logs, errores y exclusiones                 | Media     | Codex       | EN REVISIÓN | Implementado; revisar `unsafe-inline` y retirar `?secret=` tras migrar integraciones                                  |
+| CAL-001   | Modularizar pantallas grandes y reducir casts inseguros             | Media     | Codex       | TERMINADA   | Nueva orden, inventario y fronteras API/vistas con tipos                                                              |
+| INV-001   | Agregar categoría EPP y clasificar artículos de protección personal | Alta      | Codex       | EN REVISIÓN | Código validado; falta aplicar schema y backfill con respaldo verificado. Ver [guía EPP](INVENTARIO_EPP.md)           |
 
 ## Historial de sesiones y entregas
 
@@ -319,6 +320,46 @@ Autor y propósito no confirmados. Preservarlos; no incluirlos en commits de otr
   `origin/security/aud001-remediation`. `git ls-remote` confirmó ese mismo hash en el remoto.
   El hook de precommit repitió typecheck y las 292 pruebas; ambos pasaron. No se abrió PR ni se
   mezcló con `main`/`master`.
+
+### 2026-10-04 — INV-001 — Codex
+
+- **Solicitud:** agregar `EPP — Elementos de Protección Personal` al Inventario y clasificar allí
+  antiparras, ropa reflectante, tapones auditivos, cascos, zapatos de seguridad y artículos afines.
+- **Responsable / rama / base:** Codex, `security/aud001-remediation`, HEAD al iniciar
+  `bd0ccca3c79c5892d130986cb209939e94befe05`.
+- **Archivos previstos:** `prisma/schema.prisma`, `prisma/schema.spec.md`,
+  `components/inventario/types.ts`, formulario/listado/importación, rutas API de inventario,
+  `lib/inventario/category.ts` y su prueba, script de backfill opcional con modo dry-run, y este
+  registro compartido.
+- **Decisión inicial:** asignar EPP por nombre validado en servidor tanto en altas como en cambios e
+  importaciones; conservar cantidades y demás datos existentes. No ejecutar `db push` ni tocar la
+  base de datos sin el respaldo verificado que exige AGENTS.md.
+- **Estado:** en curso; revisar posibles artículos existentes y documentar el procedimiento seguro
+  de actualización de esquema y clasificación de datos.
+
+#### Cierre de implementación INV-001
+
+- **Cambios completados:** se agregó `EPP` al enum de inventario; filtros, formulario, importación,
+  tabla, exportación CSV y APIs aceptan la categoría. El servidor fuerza EPP por nombre para altas,
+  cambios e importaciones; la importación conserva también las categorías legibles exportadas. El
+  formulario incluye sugerencias para antiparras, cascos, protección auditiva, ropa reflectante,
+  calzado de seguridad, guantes, respiradores y otros EPP frecuentes.
+- **Clasificación de filas existentes:** se agregó `scripts/backfill-epp-inventario.ts`, que por
+  defecto sólo lista coincidencias y sólo actualiza con `--apply`. No se inspeccionó la base real ni
+  se ejecutó el backfill.
+- **Documentación:** catálogo y procedimiento en `INVENTARIO_EPP.md`; reglas de esquema, APIs,
+  formulario y backfill en sus `*.spec.md`.
+- **Verificación:** Prisma `validate` y `generate` OK (URL ficticia, sin conexión a BD);
+  `npm run typecheck` OK; `npm run test` OK (25 archivos, 315 pruebas); `npm run build` OK (76
+  páginas); `git diff --check` OK. El build prerenderizó contra la URL ficticia y registró errores
+  de autenticación Prisma en `127.0.0.1`, sin impedir la compilación ni tocar una base real.
+- **Pendiente de base de datos:** antes de `npm run db:push`, crear y verificar respaldo según
+  `AGENTS.md`; luego revisar `npm run backfill:epp-inventario -- --dry-run` y aplicar sólo tras
+  confirmar sus coincidencias con `npm run backfill:epp-inventario -- --apply`. No se crearon ítems
+  ni se inventaron cantidades.
+- **Entrega Git:** implementación local lista en `security/aud001-remediation`; registrar hash y
+  push verificado después del commit. Los dos cambios previos de Claude en `blueprints/` continúan
+  preservados y fuera de staging.
 
 ## Plantilla para próximas entradas
 

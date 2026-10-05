@@ -18,7 +18,15 @@ import {
   mapearCabeceras,
   normalizarCelda,
 } from "@/lib/inventario/parse";
-import { formatearCantidad } from "./types";
+import {
+  CATEGORIA_LABEL,
+  formatearCantidad,
+  type InventoryCategory,
+} from "./types";
+import {
+  parsearCategoriaInventario,
+  resolverCategoriaInventario,
+} from "@/lib/inventario/category";
 
 // Orden estándar de la planilla real de bodega. Si el bloque pegado no trae
 // una fila de cabecera reconocible (usuario copió sólo las filas de datos),
@@ -36,10 +44,12 @@ const ORDEN_POR_DEFECTO = [
   "nuevo",
   "usado",
   "notes",
+  "category",
 ];
 
 interface FilaPrevia {
   name: string;
+  category: InventoryCategory;
   details: string | null;
   format: string | null;
   color: string | null;
@@ -85,6 +95,10 @@ function interpretar(texto: string): { filas: FilaPrevia[]; error: string } {
 
     filas.push({
       name: nombre,
+      category: resolverCategoriaInventario(
+        nombre,
+        parsearCategoriaInventario(celda.category)
+      ),
       details: normalizarCelda(celda.details),
       format: normalizarCelda(celda.format),
       color: normalizarCelda(celda.color),
@@ -266,6 +280,7 @@ export default function ImportarInventarioModal() {
                           <thead className="sticky top-0 bg-zinc-50">
                             <tr className="text-left text-[10px] font-semibold uppercase tracking-wide text-zinc-500">
                               <th className="px-2 py-1.5">Nombre</th>
+                              <th className="px-2 py-1.5">Categoría</th>
                               <th className="px-2 py-1.5">Marca/detalles</th>
                               <th className="px-2 py-1.5">Formato</th>
                               <th className="px-2 py-1.5">Medida</th>
@@ -280,6 +295,9 @@ export default function ImportarInventarioModal() {
                               <tr key={i} className="border-t border-zinc-100">
                                 <td className="px-2 py-1.5 font-medium text-zinc-800">
                                   {f.name}
+                                </td>
+                                <td className="px-2 py-1.5 text-zinc-600">
+                                  {CATEGORIA_LABEL[f.category]}
                                 </td>
                                 <td className="px-2 py-1.5 text-zinc-600">
                                   {f.details ?? "—"}

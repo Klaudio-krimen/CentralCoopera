@@ -22,6 +22,8 @@ Lista paginada de `InventoryItem` activos (`isActive: true`), ordenados por `num
 
 Crea un ítem. `numero` se asigna dentro de la transacción como `max(numero) + 1` — nunca se
 reutiliza ni se renumera, es el número por el que la bodega ubica las cosas.
+`category` acepta `EPP`. El servidor asigna `EPP` si el nombre corresponde a un artículo de
+protección personal, aunque el cliente envíe otra categoría.
 
 ## PATCH /api/inventario/[id]
 
@@ -47,7 +49,14 @@ Recibe filas **ya interpretadas por el cliente** (`{ items: FilaImportada[] }`) 
 la planilla pegada/subida vive en `lib/inventario/parse.ts` y corre en el navegador para poder
 mostrar la previsualización antes de confirmar. El servidor valida cada fila y las crea todas
 en una sola transacción, asignando `numero` consecutivo desde el máximo existente. Tope 500
-filas por importación.
+filas por importación. La previsualización incluye categoría y tanto ella como el servidor clasifican
+automáticamente los nombres EPP; el servidor vuelve a determinarla para no confiar en el cliente.
+
+## Clasificación de EPP
+
+`lib/inventario/category.ts` es la fuente única de categorías, sugerencias y detección por nombre.
+`POST`, `PATCH` e importación guardan `EPP` para los nombres reconocidos. El backfill de filas
+existentes es explícito y sólo escribe con `--apply` (`scripts/backfill-epp-inventario.ts`).
 
 ## GET /api/inventario/export
 

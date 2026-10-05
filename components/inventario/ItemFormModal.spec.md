@@ -12,3 +12,5 @@ del formulario se renderizan en `ItemFormFields.tsx`.
   deshabilita Cancelar. El botón de guardado conserva texto junto al spinner.
 - Una respuesta correcta cierra y refresca; una respuesta fallida conserva el formulario.
 - Altura adaptada al viewport y scroll interno mantienen accesibles las acciones finales.
+- Al escribir un artículo reconocido como EPP, selecciona esa categoría antes de enviar; el servidor
+  aplica la misma regla como autoridad final.

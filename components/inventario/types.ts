@@ -3,8 +3,13 @@
 // propósito — los objetos reales de Prisma igual calzan (TS no aplica excess
 // property check sobre valores que no son literales).
 
-export type InventoryCategory =
-  "MATERIA_PRIMA" | "PALLET" | "PINTURA" | "MATERIAL" | "HERRAMIENTA" | "OTRO";
+import {
+  INVENTORY_CATEGORIES,
+  INVENTORY_CATEGORY_LABEL,
+  type InventoryCategory,
+} from "@/lib/inventario/category";
+
+export type { InventoryCategory };
 
 export type InventoryMeasureUnit = "LITROS" | "METROS" | "KILOS";
 export type InventoryCondition = "NUEVO" | "USADO";
@@ -26,23 +31,10 @@ export interface InventoryItemRow {
   isActive: boolean;
 }
 
-export const CATEGORIA_LABEL: Record<InventoryCategory, string> = {
-  MATERIA_PRIMA: "Materia prima",
-  PALLET: "Pallet",
-  PINTURA: "Pintura",
-  MATERIAL: "Material",
-  HERRAMIENTA: "Herramienta",
-  OTRO: "Otro",
-};
+export const CATEGORIA_LABEL: Record<InventoryCategory, string> =
+  INVENTORY_CATEGORY_LABEL;
 
-export const CATEGORIAS: InventoryCategory[] = [
-  "MATERIA_PRIMA",
-  "PALLET",
-  "PINTURA",
-  "MATERIAL",
-  "HERRAMIENTA",
-  "OTRO",
-];
+export const CATEGORIAS: readonly InventoryCategory[] = INVENTORY_CATEGORIES;
 
 export const MEDIDA_LABEL: Record<InventoryMeasureUnit, string> = {
   LITROS: "L",

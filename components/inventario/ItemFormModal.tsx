@@ -11,6 +11,7 @@ import {
 } from "@phosphor-icons/react";
 import { type InventoryItemRow } from "./types";
 import ItemFormFields, { type FormState } from "./ItemFormFields";
+import { esArticuloEpp } from "@/lib/inventario/category";
 
 function itemToForm(item?: InventoryItemRow): FormState {
   if (!item) {
@@ -54,7 +55,13 @@ export default function ItemFormModal({ item }: { item?: InventoryItemRow }) {
   const [form, setForm] = useState<FormState>(itemToForm(item));
 
   const set = <K extends keyof FormState>(k: K, v: FormState[K]) =>
-    setForm((f) => ({ ...f, [k]: v }));
+    setForm((current) => {
+      const next = { ...current, [k]: v };
+      if (k === "name" && typeof v === "string" && esArticuloEpp(v)) {
+        next.category = "EPP";
+      }
+      return next;
+    });
 
   const openModal = () => {
     setForm(itemToForm(item));

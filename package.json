@@ -22,6 +22,7 @@
     "import:prospects": "ts-node --project tsconfig.scripts.json scripts/import-prospects.ts",
     "import:radar": "ts-node --project tsconfig.scripts.json scripts/import-radar-pallets.ts",
     "backfill:inventario": "ts-node --project tsconfig.scripts.json scripts/backfill-inventario.ts",
+    "backfill:epp-inventario": "ts-node --project tsconfig.scripts.json scripts/backfill-epp-inventario.ts",
     "seed:outreach-campaigns": "ts-node --project tsconfig.scripts.json scripts/seed-outreach-campaigns.ts",
     "prepare": "husky"
   },

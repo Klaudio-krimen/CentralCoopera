@@ -203,5 +203,7 @@ handlers dinámicos existentes. La migración Tailwind 4 conserva los tokens CRM
   no se leyó ni escribió una BD real y el comando terminó con código 0.
 - La CI está definida, pero aún no se verificó una ejecución en GitHub ni un preview de Vercel.
   Tampoco se ejecutó QA autenticado en navegador, `db push`, migración ni despliegue. La verificación
-  local completa y los riesgos residuales quedan registrados en `REGISTRO_TRABAJO.md`; los hashes
-  de entrega Git se añadirán allí tras crear y publicar los commits.
+  local completa y los riesgos residuales quedan registrados en `REGISTRO_TRABAJO.md`. La
+  implementación se publicó en la rama `security/aud001-remediation`, commit
+  `0767792475f8f4efaf539ea386f6ff5c37b6c92c`; el registro compartido conserva el resultado de la
+  verificación contra el remoto.

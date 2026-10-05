@@ -307,14 +307,18 @@ Autor y propósito no confirmados. Preservarlos; no incluirlos en commits de otr
   conexión Prisma a `127.0.0.1` falló durante prerender, pero Next generó las páginas y terminó
   con código 0. No se usó una BD real.
 - **Límites de verificación:** no se ejecutó CI en GitHub, preview de Vercel ni QA autenticado de
-  navegador. No se hizo `db push`, migración ni despliegue. En el siguiente cierre registrar los
-  hashes de commits y verificar el push de esta rama.
+  navegador. No se hizo `db push`, migración ni despliegue.
 - **Riesgos residuales:** CSP conserva `unsafe-inline` hasta probar nonce/hash en navegador; el
   receptor de webhook conserva `?secret=` por compatibilidad; `eslint-config-next` permanece en
   14.2.35 por la cadena vulnerable transitiva del 15 y Next runtime está en 15.5.27. La CI usa
   `npm ci --legacy-peer-deps` por el peer opcional de Nodemailer de NextAuth 4.
 - **Colaboración:** las modificaciones preexistentes de Claude en `blueprints/` se preservan y
   quedan fuera de los commits de esta tarea.
+- **Entrega Git:** implementación en commit `0767792475f8f4efaf539ea386f6ff5c37b6c92c`
+  (`security: remediate AUD-001 findings`), publicada en
+  `origin/security/aud001-remediation`. `git ls-remote` confirmó ese mismo hash en el remoto.
+  El hook de precommit repitió typecheck y las 292 pruebas; ambos pasaron. No se abrió PR ni se
+  mezcló con `main`/`master`.
 
 ## Plantilla para próximas entradas
 

@@ -77,7 +77,7 @@ Autor y propósito no confirmados. Preservarlos; no incluirlos en commits de otr
 | UX-009    | Migrar los demás modales manuales al diálogo compartido             | Media     | Sin asignar | PROPUESTA   | Otros formularios de Operaciones/Inventario; asignar archivos antes de editar                                         |
 | DOC-002   | Alinear documentos con el proveedor de correo real                  | Baja      | Sin asignar | PROPUESTA   | Esperar decisión Hostinger/SiteGround; `PROSPECCION_OUTREACH.md`, `VARIABLES_ENTORNO.md`, specs                       |
 | AUD-001   | Auditoría de seguridad (Cyber Neo), POO y código limpio; solo plan  | Alta      | Codex       | TERMINADA   | Revisión de solo lectura sobre `43a0827`; [informe y plan](docs/auditorias/AUD-001-seguridad-y-calidad-2026-10-04.md) |
-| SEC-001   | Corregir dependencias críticas/altas y actualizar Next.js           | Alta      | Codex       | EN REVISIÓN | Código y gates locales listos; falta ejecución de CI remota y preview Vercel                                          |
+| SEC-001   | Corregir dependencias críticas/altas y actualizar Next.js           | Alta      | Codex       | EN REVISIÓN | Código/CI9d validados; Preview y Production READY. Nuevas ejecuciones GitHub en cola; seguimiento DEP-001             |
 | SEC-002   | Cerrar brechas de autorización en APIs operativas                   | Alta      | Codex       | TERMINADA   | Órdenes, evidencias y empresas; matriz por rol/módulo/estado y specs                                                  |
 | SEC-003   | Hacer atómico el rate limit de autenticación                        | Alta      | Codex       | TERMINADA   | `lib/finanzas/rate-limit.ts`; incremento atómico y prueba de concurrencia                                             |
 | SEC-004   | Exigir STARTTLS en SMTP                                             | Media     | Codex       | TERMINADA   | `lib/outreach/smtp.ts`; puertos y TLS validados con pruebas                                                           |
@@ -96,6 +96,8 @@ Autor y propósito no confirmados. Preservarlos; no incluirlos en commits de otr
 | PWA-001   | Crear el manifest declarado en el layout (hoy 404)                  | Baja      | Codex       | TERMINADA   | `docs/auditorias/AUD-001-anexo-claude-2026-10-05.md` §2                                                               |
 
 | UX-010 | Corregir cascada del reset Tailwind4 y recarga ESM | Alta | Codex | TERMINADA | app/globals.css, tailwind.config.ts y QA de login/cabeceras |
+
+| DEP-001 | Publicar mejoras en producción y verificar dominio real | Alta | Codex | TERMINADA | master b935b9d; Vercel READY, evidencia docs/qa/DEP-001.md |
 
 ## Historial de sesiones y entregas
 
@@ -568,6 +570,33 @@ Autor y propósito no confirmados. Preservarlos; no incluirlos en commits de otr
   se commiteará antes de desplegar. Avisos Python (`.venv`, `__pycache__`) no aplican al servidor
   Next.js y no bloquean. Auditor ejecutado completo en Windows resolviendo npm a npm.cmd,
   sin desactivar ninguna comprobación. CI completa sobre 9d32486 ya verificada SUCCESS.
+
+### 2026-10-05 — DEP-001 — publicación verificada (Codex)
+
+- **Estado:** TERMINADA. Antes de guardar evidencia: docs/qa/DEP-001.md y capturas públicas
+  docs/qa/DEP-001/; únicamente pantalla de login anónima, sin datos personales ni credenciales.
+- **PR1 integrado:** merge b935b9dd9fe47e12445c0496958b40bcae719c53, 2026-10-05 17:38 Chile.
+  Corrección de instalación: 56a8317; template de entorno: a9e0237. Local sincronizado por
+  fast-forward, sin cambiar de rama ni sobrescribir trabajo ajeno.
+- **Preview:** dpl_EmKsiWDTRiznziSP75TPezLSsrTf READY. Health mediante vercel curl con protección
+  mantenida: login200, manifest200 y sesión anónima200; logo y checkbox presentes.
+- **Production:** dpl_vD2foHBSmYvFBZTpwoP8ywbEJpXU READY, commit b935b9d.
+  https://intranet.cooperapro.cl/login y https://track-residuos.vercel.app/login: 200 y nuevo logo/
+  checkbox; manifest200, imagen46009 bytes idéntica al archivo versionado, sesión anónima200 sin
+  usuario, ruta administrativa sin sesión307. No se cambió DNS ni claves de Production.
+- **Visual real:** Chromium sobre dominio público390x844 y1440x900; imagen completa48/56px,
+  campos46px, casilla desmarcada y labels accesibles. En móvil ancho/scroll390, sin overflow.
+  Capturas y comparación antes/después en docs/qa/DEP-001.md; navegador de QA cerrado.
+- **BD:** Production sin diff y22 EPP, sin nuevos cambios esta sesión. Preview separado actualizado
+  con respaldo/hash ya registrados. Copias locales temporales de env remotos se eliminarán al cerrar;
+  se conservan los respaldos y las variables originales de Vercel/.env.local.
+- **Validaciones:** typecheck/349 tests/build79 páginas local OK; npm audit nivel low:0 hallazgos;
+  auditor all-deploy sin bloqueos (avisos Python no aplican a Next). Builds Preview/Production OK.
+  CI sobre9d32486 SUCCESS; ejecuciones nuevas56a8317/b935b9d siguen QUEUED en GitHub. No se
+  afirma que esas ejecuciones pasaron ni se deshabilitó la CI. SEC-001 conserva seguimiento de cola.
+- **Reversión verificada:** vercel rollback dpl_DZ4gX6XNQkh9wvMMaYGYBMrxxphn --yes. No ejecutada.
+- **Entrega documental:** este cierre y evidencia se publicarán a master como documentación;
+  cualquier build adicional asociado tendrá el mismo código de producción ya verificado.
 
 ## Plantilla para próximas entradas
 

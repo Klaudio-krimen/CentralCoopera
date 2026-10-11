@@ -1,0 +1,38 @@
+{
+  "success": true,
+  "data": {
+    "lifecycle": {
+      "effectiveLaunch": {
+        "browserLaunched": true,
+        "engine": "chrome",
+        "launchHash": 12798390076057945372
+      },
+      "launched": false,
+      "relaunchedBrowser": false,
+      "restartedBackground": false,
+      "restoreStatus": "not_configured",
+      "reused": true,
+      "saveStatus": "not_attempted"
+    },
+    "origin": "http://127.0.0.1:3025/login",
+    "result": {
+      "averageFrameMs": 5.499999999983447,
+      "contrasts": {
+        "button": 6.7443781273077335,
+        "error": 5.383606496610304,
+        "input": 13.755757167594076,
+        "labels": 8.915011704760282,
+        "placeholder": 7.412063977965705,
+        "title": 5.165527985980377
+      },
+      "formOpacity": "1",
+      "fps": 181.81818181872904,
+      "motion": "animated",
+      "sceneResources": [],
+      "scroll": 1440,
+      "state": "MIRA",
+      "viewport": [1440, 900]
+    }
+  },
+  "error": null
+}

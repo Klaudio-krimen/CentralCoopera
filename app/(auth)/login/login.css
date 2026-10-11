@@ -1,0 +1,226 @@
+.login-pixel-title {
+  display: none;
+}
+.login-stage {
+  display: none;
+}
+
+@media (min-width: 1024px) and (pointer: fine) {
+  .login-page:not(.login-fallback) {
+    --scene-scale: 3;
+    --scene-form-opacity: 0.35;
+    display: grid;
+    place-items: center;
+    min-height: 100dvh;
+    background: #0b0e14;
+    isolation: isolate;
+    padding: 0;
+  }
+  .login-page:not(.login-fallback) .login-stage,
+  .login-page:not(.login-fallback) .login-form-panel {
+    grid-area: 1 / 1;
+    position: relative;
+    width: calc(320px * var(--scene-scale));
+    height: calc(180px * var(--scene-scale));
+  }
+  .login-page:not(.login-fallback) .login-stage {
+    display: block;
+  }
+  .login-scene-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    image-rendering: pixelated;
+  }
+  .login-page:not(.login-fallback) .login-classic {
+    display: contents;
+  }
+  .login-page:not(.login-fallback) .login-classic-panel {
+    display: none;
+  }
+  .login-page:not(.login-fallback) .login-form-panel {
+    display: block;
+    padding: 0;
+    background: transparent;
+    pointer-events: none;
+  }
+  .login-page:not(.login-fallback) .login-form-wrapper {
+    position: absolute;
+    left: calc(221px * var(--scene-scale));
+    top: calc(28px * var(--scene-scale));
+    width: calc(82px * var(--scene-scale));
+    min-height: calc(102px * var(--scene-scale));
+    max-width: none;
+    padding: 0.2em 0.15em;
+    font-size: clamp(11px, calc(4.3px * var(--scene-scale)), 16px);
+    background: #2a344d;
+    color: #eef2f8;
+    pointer-events: auto;
+    /* El revelado afecta al decorado; los campos siguen legibles desde el SSR. */
+    opacity: 1;
+    color-scheme: dark;
+  }
+  .login-page:not(.login-fallback) .login-form-wrapper:focus-within {
+    opacity: 1;
+  }
+  .login-page:not(.login-fallback) .login-normal-title,
+  .login-page:not(.login-fallback) .login-help {
+    display: none;
+  }
+  .login-page:not(.login-fallback) .login-pixel-title {
+    display: inline;
+  }
+  .login-page:not(.login-fallback) .login-heading {
+    margin-bottom: 0.6em;
+  }
+  .login-page:not(.login-fallback) .login-heading h2 {
+    color: #5bbd2f;
+    font-family: var(--font-night, ui-monospace, monospace);
+    font-size: 0.72em;
+    line-height: 1.5;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+  }
+  .login-page:not(.login-fallback) .login-heading p {
+    font-size: 0.8em;
+    color: #d5dbe8;
+    line-height: 1.5;
+  }
+  .login-page:not(.login-fallback) form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65em;
+  }
+  .login-page:not(.login-fallback) form > * {
+    margin-block: 0;
+  }
+  .login-page:not(.login-fallback) form label {
+    font-size: 0.82em;
+    color: #d5dbe8;
+    line-height: 1.5;
+  }
+  .login-page:not(.login-fallback) .input-base {
+    font: inherit;
+    font-size: 0.95em;
+    line-height: 1.5;
+    width: 100%;
+    min-width: 0;
+    padding: 0.38em 0.55em;
+    border: 2px solid #5d6a8c;
+    border-radius: 0;
+    background: #1c2438;
+    color: #eef2f8;
+    box-shadow: inset 0 2px #121828;
+    transition: none;
+  }
+  .login-page:not(.login-fallback) .input-base::placeholder {
+    color: #aab4c8;
+  }
+  .login-page:not(.login-fallback) #login-password {
+    padding-right: 2.5em;
+  }
+  .login-page:not(.login-fallback) button[aria-label] {
+    color: #d5dbe8;
+    border-radius: 0;
+    background: transparent;
+    padding: 0.35em;
+  }
+  .login-page:not(.login-fallback) button[aria-label]:hover {
+    background: #2a344d;
+  }
+  .login-page:not(.login-fallback) label[for="login-remember"] {
+    min-height: 32px;
+    gap: 0.5em;
+  }
+  .login-page:not(.login-fallback) #login-remember {
+    accent-color: #5bbd2f;
+  }
+  .login-page:not(.login-fallback) .btn-primary {
+    min-height: 34px;
+    padding: 0.7em 0.5em;
+    color: #15203a;
+    background: #5bbd2f;
+    border-radius: 0;
+    box-shadow: 0 4px #3b8a1a;
+    font-size: 0.82em;
+    line-height: 1.5;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    transition: none;
+  }
+  .login-page:not(.login-fallback) .btn-primary:not(:disabled):hover {
+    background: #70cf42;
+  }
+  .login-page:not(.login-fallback) .btn-primary:not(:disabled):active {
+    transform: translateY(3px);
+    box-shadow: 0 1px #3b8a1a;
+  }
+  .login-page:not(.login-fallback) [role="alert"] {
+    padding: 0;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    gap: 0.4em;
+  }
+  .login-page:not(.login-fallback) [role="alert"] p,
+  .login-page:not(.login-fallback) [role="alert"] svg {
+    font-size: 0.8em;
+    color: #ff8a73;
+  }
+  .login-page:not(.login-fallback) input:focus-visible,
+  .login-page:not(.login-fallback) button:focus-visible {
+    outline: 2px solid #f2c230;
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+}
+@media (min-width: 1280px) and (min-height: 720px) and (pointer: fine) {
+  .login-page:not(.login-fallback) {
+    --scene-scale: 4;
+  }
+}
+@media (min-width: 1600px) and (min-height: 900px) and (pointer: fine) {
+  .login-page:not(.login-fallback) {
+    --scene-scale: 5;
+  }
+}
+@media (min-width: 1920px) and (min-height: 1080px) and (pointer: fine) {
+  .login-page:not(.login-fallback) {
+    --scene-scale: 6;
+  }
+}
+@media (min-width: 2240px) and (min-height: 1260px) and (pointer: fine) {
+  .login-page:not(.login-fallback) {
+    --scene-scale: 7;
+  }
+}
+@media (min-width: 2560px) and (min-height: 1440px) and (pointer: fine) {
+  .login-page:not(.login-fallback) {
+    --scene-scale: 8;
+  }
+}
+@media (min-width: 2880px) and (min-height: 1620px) and (pointer: fine) {
+  .login-page:not(.login-fallback) {
+    --scene-scale: 9;
+  }
+}
+@media (min-width: 3200px) and (min-height: 1800px) and (pointer: fine) {
+  .login-page:not(.login-fallback) {
+    --scene-scale: 10;
+  }
+}
+@media (min-width: 3520px) and (min-height: 1980px) and (pointer: fine) {
+  .login-page:not(.login-fallback) {
+    --scene-scale: 11;
+  }
+}
+@media (min-width: 3840px) and (min-height: 2160px) and (pointer: fine) {
+  .login-page:not(.login-fallback) {
+    --scene-scale: 12;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .login-page:not(.login-fallback) {
+    --scene-form-opacity: 1;
+  }
+}

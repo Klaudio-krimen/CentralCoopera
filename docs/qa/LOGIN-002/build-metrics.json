@@ -1,0 +1,16 @@
+{
+  "scene_files": [
+    {
+      "file": "static/css/493d5fa4af71b9a9.css",
+      "bytes": 1650,
+      "gzip_bytes": 560
+    },
+    {
+      "file": "static/chunks/7838.e33d7d8cc67ae0a2.js",
+      "bytes": 14658,
+      "gzip_bytes": 6431
+    }
+  ],
+  "scene_js_gzip_bytes": 6431,
+  "preview": "static built HTML and assets, no server authentication"
+}

@@ -1,0 +1,599 @@
+<title>Turno de noche</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Press+Start+2P&display=swap">
+<style>
+/* Layout: una columna — escenario 320×180 escalado sin suavizado, formulario montado en el cartel, controles y notas debajo */
+:root{
+  --night:#0b0e14; --panel:#131824; --line:#283245; --fg:#dde2ea; --muted:#8f99ab;
+  --safety:#f2c230; --coopera:#2f9e5f; --danger:#ff8a73;
+  --board:#2a344d; --frame:#5b4229; --cream:#eef2f8;
+  --brand-blue:#2a344d; --brand-blue-deep:#1c2438; --brand-green:#5bbd2f; --brand-green-shadow:#3b8a1a; --brand-ink:#15203a;
+  --pixel:"Press Start 2P", ui-monospace, "Courier New", monospace;
+  --sans:"Geist", ui-sans-serif, system-ui, sans-serif;
+  color-scheme:dark;
+}
+html,body{background:var(--night);color:var(--fg)}
+body{font-family:var(--sans);font-size:15px;line-height:1.55;padding-inline:16px;padding-block:28px 56px}
+.wrap{max-width:1280px;margin:0 auto;display:grid;gap:22px}
+header{display:grid;gap:10px}
+.eyebrow{font-family:var(--pixel);font-size:10px;letter-spacing:.1em;color:var(--safety);margin:0}
+h1{font-family:var(--pixel);font-weight:400;font-size:clamp(18px,3.2vw,30px);line-height:1.35;margin:0;text-wrap:balance}
+.lede{color:var(--muted);max-width:70ch;margin:0}
+
+.stage{width:100%;min-width:0}
+.stage-inner{position:relative;margin:0 auto;box-shadow:0 0 0 2px var(--line)}
+#scene{display:block;width:100%;height:100%;image-rendering:pixelated;image-rendering:crisp-edges;cursor:default}
+
+/* Formulario: cartel del taller */
+.signform{display:flex;flex-direction:column;gap:.42em;color:var(--cream);font-size:14px;transition:opacity .25s linear}
+.signform.overlay{position:absolute;box-sizing:border-box;padding:.2em .15em}
+.signform.below{position:static;margin:16px auto 0;max-width:400px;background:var(--board);border:4px solid var(--frame);padding:18px}
+.sign-head{display:grid;gap:.35em;margin-bottom:.25em}
+.sign-title{font-family:var(--pixel);font-size:.72em;line-height:1.4;color:var(--brand-green);letter-spacing:.04em}
+.sign-sub{font-size:.8em;color:#aab4c8}
+.signform label{font-size:.82em;font-weight:500;color:#d5dbe8}
+.signform input[type=email],.signform input[type=password]{
+  font:inherit;font-size:.95em;color:var(--cream);background:var(--brand-blue-deep);border:2px solid #5d6a8c;border-radius:0;
+  padding:.38em .55em;box-shadow:inset 0 2px 0 #121828;min-width:0;width:100%;box-sizing:border-box}
+.signform input::placeholder{color:#7d89a6}
+.signform input:focus-visible,.signform button:focus-visible,.btn:focus-visible,.toggle input:focus-visible{outline:2px solid var(--safety);outline-offset:2px}
+.check{display:flex;align-items:center;gap:.5em;min-height:2.2em;cursor:pointer}
+.check input{width:1.05em;height:1.05em;accent-color:var(--brand-green);margin:0}
+.err{margin:0;font-size:.8em;color:var(--danger);font-weight:500}
+.signform button{font-family:var(--pixel);font-size:.62em;letter-spacing:.06em;color:var(--brand-ink);background:var(--brand-green);border:0;border-radius:0;
+  padding:1em .8em;box-shadow:0 4px 0 var(--brand-green-shadow);cursor:pointer;margin-top:.2em}
+.signform button:active{transform:translateY(3px);box-shadow:0 1px 0 var(--brand-green-shadow)}
+.signform button:disabled{filter:grayscale(.5) brightness(.8);cursor:progress}
+
+.done[hidden],.err[hidden]{display:none}
+.done{position:absolute;left:0;right:0;bottom:7%;display:grid;justify-items:center;gap:8px;text-align:center;pointer-events:none}
+.done-box{background:rgba(11,14,20,.88);border:2px solid var(--safety);padding:14px 18px;display:grid;gap:8px;justify-items:center;pointer-events:auto;max-width:90%}
+.done-title{font-family:var(--pixel);font-size:12px;color:var(--safety);margin:0}
+.done p{margin:0;font-size:13px;color:var(--fg)}
+
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.chip{font-family:var(--pixel);font-size:9px;letter-spacing:.06em;color:var(--safety);border:2px solid var(--line);padding:8px 10px;line-height:1.4}
+.btn{font:500 13px var(--sans);color:var(--fg);background:var(--panel);border:2px solid var(--line);border-radius:0;padding:8px 12px;cursor:pointer}
+.btn:hover{border-color:var(--muted)}
+.toggle{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--fg);padding:8px 4px;cursor:pointer}
+.toggle input{accent-color:var(--safety);width:16px;height:16px;margin:0}
+.hint{margin:0;color:var(--muted);font-size:13px}
+.hint b{color:var(--fg);font-weight:600}
+
+.notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.note{background:var(--panel);border:2px solid var(--line);padding:16px 18px;min-width:0}
+.note h2{font-family:var(--pixel);font-weight:400;font-size:10px;letter-spacing:.06em;color:var(--safety);margin:0 0 10px;line-height:1.5}
+.note ul{margin:0;padding-left:1.1em;display:grid;gap:6px;color:#c5ccd8;font-size:14px}
+@media (prefers-reduced-motion: reduce){.signform{transition:none}}
+</style>
+
+<div class="wrap">
+  <header>
+    <p class="eyebrow">LOGIN-002 · PROTOTIPO</p>
+    <h1>Turno de noche</h1>
+    <p class="lede">Escena de inicio de sesión de Central Coopera dibujada y animada solo con código: sin imágenes ni librerías. Escribe en el formulario para ver cómo reacciona la operaria; cualquier tecla o clic salta la intro.</p>
+  </header>
+
+  <div class="stage" id="stage">
+    <div class="stage-inner" id="stageInner">
+      <canvas id="scene" aria-hidden="true"></canvas>
+      <form id="signform" class="signform overlay" novalidate>
+        <div class="sign-head">
+          <span class="sign-title">CENTRAL COOPERA</span>
+          <span class="sign-sub">Intranet operativa</span>
+        </div>
+        <label for="email">Correo</label>
+        <input id="email" name="email" type="email" autocomplete="username" placeholder="tu@cooperapro.cl">
+        <label for="pw">Contraseña</label>
+        <input id="pw" name="pw" type="password" autocomplete="current-password">
+        <label class="check" for="remember"><input id="remember" name="remember" type="checkbox"> Mantener sesión iniciada</label>
+        <p id="err" class="err" role="alert" hidden></p>
+        <button id="submit" type="submit">INICIAR TURNO</button>
+      </form>
+      <div id="done" class="done" hidden>
+        <div class="done-box">
+          <p class="done-title">TURNO INICIADO</p>
+          <p>En el ERP, aquí se abre el panel según el rol.</p>
+          <button class="btn" id="again" type="button">Repetir</button>
+        </div>
+      </div>
+    </div>
+    <div id="belowSlot"></div>
+  </div>
+
+  <div class="controls">
+    <span class="chip" id="chip">ESTADO · OSCURO</span>
+    <button class="btn" type="button" id="btnFull">Intro completa (1.ª visita)</button>
+    <button class="btn" type="button" id="btnShort">Intro corta (visitas siguientes)</button>
+    <button class="btn" type="button" id="btnIdle">Simular 30 s sin actividad</button>
+    <label class="toggle" for="reduced"><input type="checkbox" id="reduced"> Reducir movimiento</label>
+  </div>
+  <p class="hint">Demo: cualquier correo. Contraseña <b>coopera</b> para entrar; cualquier otra muestra el error.</p>
+
+  <div class="notes">
+    <section class="note">
+      <h2>HECHO CON CÓDIGO</h2>
+      <ul>
+        <li>Escenario de 320×180 píxeles, escalado sin suavizado.</li>
+        <li>Operaria armada por piezas y articulaciones: camina, busca, tira de la cadena, mira, se tapa los ojos, se rasca el casco, baja la palanca y se sienta.</li>
+        <li>Luz calculada píxel a píxel con tramado Bayer 4×4, como en los juegos de los 90.</li>
+        <li>Lámpara con péndulo, polvo en el aire, luz de luna por la ventana.</li>
+      </ul>
+    </section>
+    <section class="note">
+      <h2>QUÉ EVALUAR</h2>
+      <ul>
+        <li>¿La operaria tiene personalidad suficiente, o conviene que un artista la pula?</li>
+        <li>¿La luz y el tramado transmiten la estética de los 90?</li>
+        <li>¿El ritmo se siente bien: 5 s la primera vez y 1,5 s después?</li>
+        <li>¿Las reacciones son simpáticas o distraen?</li>
+      </ul>
+    </section>
+    <section class="note">
+      <h2>REGLAS DEL PLAN QUE YA CUMPLE</h2>
+      <ul>
+        <li>El formulario se puede usar desde el primer instante.</li>
+        <li>La escena recibe solo avisos («foco en contraseña», «error»), nunca lo que se escribe.</li>
+        <li>Titileo de máximo 3 destellos por segundo.</li>
+        <li>Con «Reducir movimiento», escena estática ya iluminada.</li>
+      </ul>
+    </section>
+  </div>
+</div>
+
+<script>
+(() => {
+"use strict";
+const W = 320, H = 180;
+const C = {
+  sky:'#18264a', skyLow:'#2a4272', moon:'#efe9c8', star:'#c9d6ea',
+  wallA:'#3b4252', wallB:'#333947', beam:'#4d5566', beamDark:'#252a35',
+  floor:'#56585e', floorLine:'#494b51', floorHi:'#616369', safety:'#e0b434',
+  rackPost:'#c4562c', rackBeam:'#2f5f8c',
+  wood:'#b3844e', woodDark:'#7c5832', woodLight:'#d0a66c', gap:'#2b2219',
+  bale:'#9f7d52', baleDark:'#7b603f', strap:'#30343b', box:'#b08d5e', tape:'#d8c08a',
+  board:'#2a344d', boardFrame:'#5b4229', boardLight:'#7b5b39', bolt:'#9aa39e',
+  green:'#2f9e5f', greenDark:'#22744a',
+  skin:'#e2a97f', skinDark:'#bb815b', hair:'#3a2318',
+  helmet:'#f2c230', helmetHi:'#ffe383',
+  vest:'#f07a22', vestDark:'#c95e14', reflect:'#e4ebee',
+  pants:'#2c3c5f', pantsDark:'#202c46', boots:'#4b3020', belt:'#26221f',
+  metal:'#86948c', metalDark:'#525c58', metalHi:'#b4c0b9', cord:'#1b1c20',
+  bulbOff:'#7d775f', bulb:'#fff4c8', glow:'#ffe39a',
+  lever:'#c93b2c', leverBox:'#5e6772', leverBoxIn:'#444c56', tube:'#f3f9ff', dust:'#ffe6a8'
+};
+
+// Coordenadas clave de la escena (píxeles lógicos)
+const GROUND = 150;          // pies de la operaria
+const LAMP_ANCHOR = 184;     // x del cable en el techo
+const HOME = 185;            // donde se para bajo la lámpara
+const SEAT = 128;            // pallet bajo para sentarse
+const LEVER_X = 199;         // donde se para a bajar la palanca
+const RMAX = 172;            // radio de la luz
+const IDLE_MS = 30000;
+const FIX = [26, 106, 236];  // tubos fluorescentes del techo
+const SIGN = {x:221, y:28, w:82, h:102}; // área útil del cartel
+
+// ---------- utilidades de dibujo ----------
+function R(ctx, x, y, w, h, c){ ctx.fillStyle = c; ctx.fillRect(x|0, y|0, w, h); }
+function line(ctx, x0, y0, x1, y1, c, t){
+  t = t || 1;
+  x0 = Math.round(x0); y0 = Math.round(y0); x1 = Math.round(x1); y1 = Math.round(y1);
+  const dx = Math.abs(x1-x0), dy = -Math.abs(y1-y0), sx = x0<x1?1:-1, sy = y0<y1?1:-1;
+  let e = dx + dy; ctx.fillStyle = c;
+  for(;;){ ctx.fillRect(x0, y0, t, t); if(x0===x1 && y0===y1) break; const e2 = 2*e; if(e2>=dy){e+=dy;x0+=sx;} if(e2<=dx){e+=dx;y0+=sy;} }
+}
+const GLYPHS = {A:'010101111101101',B:'110101110101110',C:'011100100100011',D:'110101101101110',E:'111100110100111',
+  G:'011100101101011',O:'010101101101010',P:'110101110100100',R:'110101110101101','2':'110001010100111',' ':'000000000000000'};
+function text(ctx, str, x, y, c){
+  for(const ch of str){ const g = GLYPHS[ch]; if(g) for(let i=0;i<15;i++) if(g[i]==='1') R(ctx, x+i%3, y+((i/3)|0), 1, 1, c); x += 4; }
+}
+let seed = 7; const rnd = () => (seed = (seed*16807) % 2147483647) / 2147483647;
+
+function pallet(ctx, x, yb, w){
+  R(ctx, x, yb-5, w, 2, C.wood);
+  R(ctx, x, yb-5, w, 1, C.woodLight);
+  for(let i=6;i<w-1;i+=7) R(ctx, x+i, yb-5, 1, 2, C.woodDark);
+  R(ctx, x, yb-3, w, 2, C.gap);
+  for(const bx of [0, (w>>1)-1, w-3]) R(ctx, x+bx, yb-3, 3, 2, C.woodDark);
+  R(ctx, x, yb-1, w, 1, C.wood);
+}
+function bale(ctx, x, y, w, h){
+  R(ctx, x, y, w, h, C.bale);
+  for(let j=1;j<h;j+=2){ let px = x; while(px < x+w){ const len = 2 + ((rnd()*5)|0); if(rnd()<0.5) R(ctx, px, y+j, Math.min(len, x+w-px), 1, C.baleDark); px += len; } }
+  R(ctx, x, y, w, 1, C.tape);
+  R(ctx, x+4, y, 1, h, C.strap); R(ctx, x+w-5, y, 1, h, C.strap);
+}
+function box(ctx, x, y, w, h){ R(ctx, x, y, w, h, C.box); R(ctx, x, y, w, 1, C.tape); R(ctx, x+(w>>1), y, 1, h, C.tape); R(ctx, x+w-1, y, 1, h, C.baleDark); }
+
+// ---------- fondo (se dibuja una vez) ----------
+const bg = document.createElement('canvas'); bg.width = W; bg.height = H;
+(function buildBg(){
+  const g = bg.getContext('2d');
+  R(g, 0, 0, W, 142, C.wallA);
+  for(let x=0;x<W;x+=4) R(g, x, 12, 2, 130, C.wallB);
+  // techo y cerchas
+  R(g, 0, 0, W, 12, C.beamDark); R(g, 0, 10, W, 2, C.beam); R(g, 0, 1, W, 1, C.beam);
+  for(let i=0;i<W;i+=16){ line(g, i, 10, i+8, 2, C.beam); line(g, i+8, 2, i+16, 10, C.beam); }
+  for(const fx of FIX){ R(g, fx, 13, 24, 1, C.metalDark); R(g, fx+1, 14, 22, 2, C.metal); }
+  // ventana alta
+  R(g, 20, 22, 44, 28, C.beamDark); R(g, 22, 24, 40, 24, C.sky); R(g, 22, 41, 40, 7, C.skyLow);
+  for(const [sx,sy] of [[25,26],[31,30],[37,25],[47,27],[59,34],[27,38],[50,39],[35,44]]) R(g, sx, sy, 1, 1, C.star);
+  R(g, 41, 24, 2, 24, C.beamDark); R(g, 22, 35, 40, 2, C.beamDark); R(g, 18, 50, 48, 2, C.beam);
+  // rótulos pintados en el muro
+  text(g, 'COOPERA PRO', 84, 30, C.green);
+  text(g, 'BODEGA 2', 84, 38, C.safety);
+  // rack a la izquierda
+  for(const px of [6, 40, 74]) R(g, px, 52, 3, 90, C.rackPost);
+  for(const by of [52, 82, 112]) R(g, 6, by, 71, 3, C.rackBeam);
+  box(g, 10, 40, 14, 12); box(g, 26, 44, 11, 8); box(g, 46, 42, 16, 10);
+  box(g, 10, 70, 12, 12); box(g, 23, 74, 13, 8); pallet(g, 44, 82, 28); bale(g, 46, 66, 24, 11);
+  pallet(g, 9, 112, 29); box(g, 11, 98, 12, 9); box(g, 24, 100, 12, 7); bale(g, 44, 95, 27, 17);
+  for(let k=0;k<5;k++) pallet(g, 9, 142-k*5, 29);
+  for(let k=0;k<3;k++) pallet(g, 44, 142-k*5, 28);
+  // suelo
+  R(g, 0, 142, W, 38, C.floor); R(g, 0, 142, W, 1, C.floorLine); R(g, 0, 143, W, 1, C.floorHi);
+  R(g, 0, 156, W, 1, C.floorLine); R(g, 0, 172, W, 1, C.floorLine);
+  for(let x=20;x<W;x+=52){ R(g, x, 143, 1, 13, C.floorLine); R(g, x-10, 157, 1, 15, C.floorLine); }
+  for(let x=0;x<W;x+=12) R(g, x, 164, 8, 2, C.safety);
+  // ruma de pallets y pallet bajo
+  for(let k=0;k<11;k++) pallet(g, 84, 142-k*5, 28);
+  pallet(g, 118, 142, 26); pallet(g, 118, 137, 26);
+  // fardos de cartón
+  bale(g, 176, 128, 22, 14); bale(g, 177, 114, 20, 14);
+  // caja de la palanca y ducto
+  R(g, 205, 12, 1, 112, C.metalDark);
+  R(g, 202, 124, 7, 10, C.leverBox); R(g, 203, 125, 5, 8, C.leverBoxIn);
+  // cartel del taller
+  R(g, 214, 22, 96, 114, C.boardFrame); R(g, 214, 22, 96, 1, C.boardLight); R(g, 214, 22, 1, 114, C.boardLight);
+  R(g, 217, 25, 90, 108, C.board);
+  for(const [bx,by] of [[215,23],[308,23],[215,134],[308,134]]) R(g, bx, by, 1, 1, C.bolt);
+  R(g, 230, 136, 2, 6, C.boardFrame); R(g, 292, 136, 2, 6, C.boardFrame);
+})();
+
+// Mapa de luz de luna (ventana + haz)
+const moon = new Float32Array(W*H);
+for(let y=0;y<H;y++) for(let x=0;x<W;x++){
+  let v = 0;
+  if(x>=22 && x<62 && y>=24 && y<48) v = 0.55;
+  else if(y>=50){ const l = 22 + (y-48)*0.55, r = 62 + (y-48)*0.85; if(x>=l && x<=r) v = y>142 ? 0.26 : 0.3; }
+  moon[y*W+x] = v;
+}
+const BAYER = [0,8,2,10,12,4,14,6,3,11,1,9,15,7,13,5].map(v => v/16);
+const LV = [[0.16,0.18,0.30],[0.42,0.45,0.60],[1.0,0.91,0.74],[1,1,1]];
+const shadeCache = new Map();
+function shades(c){
+  let s = shadeCache.get(c); if(s) return s;
+  const r = c & 255, g = (c >>> 8) & 255, b = (c >>> 16) & 255;
+  s = new Uint32Array(4);
+  for(let i=0;i<4;i++){ const m = LV[i];
+    s[i] = ((255 << 24) | (Math.min(255, b*m[2])|0) << 16 | (Math.min(255, g*m[1])|0) << 8 | (Math.min(255, r*m[0])|0)) >>> 0; }
+  shadeCache.set(c, s); return s;
+}
+
+// ---------- estado ----------
+const out = document.getElementById('scene'); out.width = W; out.height = H;
+const octx = out.getContext('2d');
+const base = document.createElement('canvas'); base.width = W; base.height = H;
+const bctx = base.getContext('2d', {willReadFrequently:true});
+
+const S = {state:'OSCURO', t0:0, first:true, x0:0, dW:0, doneShown:false, formOp:0.35};
+const ch = {torch:false, hx:0, hy:0, x:-14, face:1, walk:null, head:'normal', lean:0, bob:0, blink:false, sit:false, armF:{a:0.15,l:8}, armB:{a:-0.12,l:8}};
+const lamp = {a:0, A:0.025, pull:0, X:LAMP_ANCHOR, Y:64, bx:LAMP_ANCHOR, by:72};
+const light = {I:0, R:0, sweep:0};
+const lever = {t:0};
+let reduced = false, lastAct = performance.now();
+const motes = Array.from({length:34}, () => ({x:120+rnd()*170, y:40+rnd()*108, p:rnd()*6.28, s:0.6+rnd()*0.8}));
+
+const INTRO = new Set(['OSCURO','ENTRA','BUSCA','ENCIENDE','REVELA']);
+const LABEL = {OSCURO:'OSCURO', ENTRA:'ENTRA', BUSCA:'BUSCA LA LÁMPARA', ENCIENDE:'ENCIENDE', REVELA:'REVELA',
+  ILUMINADO:'ILUMINADO', MIRA:'MIRA EL CORREO', TAPA_OJOS:'NO MIRA LA CLAVE', ERROR:'ERROR', SENTADA:'ESPERANDO', EXITO:'TURNO INICIADO'};
+
+const $ = id => document.getElementById(id);
+const form = $('signform'), email = $('email'), pw = $('pw'), err = $('err'), submitBtn = $('submit'), done = $('done'), chip = $('chip');
+
+function store(get, val){ try{ if(get) return localStorage.getItem('turno-noche-vista'); localStorage.setItem('turno-noche-vista', val); }catch(e){ return null; } }
+function focusState(){ const a = document.activeElement; return a === email ? 'MIRA' : a === pw ? 'TAPA_OJOS' : 'ILUMINADO'; }
+
+function go(state){
+  S.state = state; S.t0 = performance.now();
+  if(state !== 'SENTADA') ch.sit = false;
+  if(state === 'ENCIENDE') lamp.A = reduced ? 0 : 0.12;
+  if(state === 'EXITO'){
+    S.x0 = ch.x; S.doneShown = false;
+    S.dW = reduced ? 0 : Math.min(350, Math.abs(LEVER_X - ch.x) / 0.25);
+    if(reduced){ ch.x = LEVER_X; lever.t = 1; light.sweep = 330; showDone(); }
+  }
+  if(state === 'SENTADA' && reduced){ ch.x = SEAT; ch.sit = true; }
+  chip.textContent = 'ESTADO · ' + LABEL[state];
+}
+function skip(){ ch.x = HOME; ch.face = 1; lamp.pull = 0; light.I = 1; light.R = RMAX; store(false, '1'); go(focusState()); }
+function send(ev){
+  lastAct = performance.now();
+  if(S.state === 'EXITO') return;
+  if(INTRO.has(S.state)) skip();
+  switch(ev){
+    case 'FOCO_CORREO': go('MIRA'); break;
+    case 'FOCO_CLAVE': go('TAPA_OJOS'); break;
+    case 'BLUR': if(S.state !== 'ERROR') go('ILUMINADO'); break;
+    case 'ERROR': go('ERROR'); break;
+    case 'EXITO': go('EXITO'); break;
+    case 'INACTIVO': go('SENTADA'); break;
+    default: if(S.state === 'SENTADA') go(focusState());
+  }
+}
+function reset(first){
+  S.first = first; S.doneShown = false; done.hidden = true;
+  err.hidden = true; err.textContent = ''; submitBtn.disabled = false; submitBtn.textContent = 'INICIAR TURNO';
+  lever.t = 0; light.sweep = 0; lamp.pull = 0; ch.sit = false; ch.face = 1; lastAct = performance.now();
+  if(document.activeElement && document.activeElement.blur) document.activeElement.blur();
+  if(reduced){ ch.x = HOME; light.I = 1; light.R = RMAX; go('ILUMINADO'); return; }
+  light.I = 0; light.R = 0; ch.x = first ? -14 : HOME; go('OSCURO');
+}
+function showDone(){ if(S.doneShown) return; S.doneShown = true; done.hidden = false; }
+
+function flicker(p, first){
+  const seg = first ? [[0.2,1],[0.42,0.35],[0.58,1],[0.76,0.35],[2,1]] : [[0.36,1],[0.6,0.4],[2,1]];
+  for(const [end, v] of seg) if(p < end) return v; return 1;
+}
+function armTo(tx, ty){ // ángulo y largo del brazo delantero hacia un punto
+  const sx = Math.round(ch.x) + ch.face*(1+ch.lean), sy = GROUND - 19 + ch.bob;
+  const dx = (tx - sx) * ch.face, dy = ty - sy;
+  return {a: Math.atan2(dx, dy), l: Math.min(9, Math.hypot(dx, dy))};
+}
+function walkTo(target, dt, speed){
+  const dx = target - ch.x;
+  if(Math.abs(dx) < 0.6){ ch.x = target; return true; }
+  ch.face = dx > 0 ? 1 : -1; ch.x += Math.sign(dx) * Math.min(Math.abs(dx), dt*speed);
+  ch.walk = (performance.now()/330) % 1; return false;
+}
+
+// ---------- actualización ----------
+function update(now, dt){
+  const e = now - S.t0;
+  ch.walk = null; ch.head = 'normal'; ch.lean = 0; ch.torch = false;
+  ch.armF = {a:0.15, l:8}; ch.armB = {a:-0.12, l:8};
+  ch.blink = !reduced && (now % 3400) < 130;
+  ch.bob = (!reduced && ((now/850)|0) % 2 === 1) ? -1 : 0;
+
+  switch(S.state){
+    case 'OSCURO':
+      light.I = 0; ch.torch = S.first;
+      if(e > (S.first ? 1000 : 300)) go(S.first ? 'ENTRA' : 'ENCIENDE');
+      break;
+    case 'ENTRA': {
+      const k = Math.min(1, e/2000);
+      ch.x = -14 + (HOME + 14) * k; ch.face = 1; ch.walk = (e/330) % 1; ch.torch = true;
+      if(k >= 1) go('BUSCA');
+      break; }
+    case 'BUSCA':
+      ch.face = e < 380 ? -1 : 1; ch.head = e < 380 ? 'normal' : 'up'; ch.torch = true;
+      ch.armF = {a: e < 380 ? 1.35 : 2.35, l:7};
+      if(e > 760) go('ENCIENDE');
+      break;
+    case 'ENCIENDE': {
+      const D = S.first ? 700 : 520;
+      ch.face = 1; ch.head = 'up';
+      lamp.pull = e < 180 ? Math.round(e/180*3) : Math.max(0, Math.round(3 - (e-180)/70));
+      ch.armF = armTo(lamp.X + 5, 126 + lamp.pull);
+      light.R = 40; light.I = flicker(e/D, S.first);
+      if(e >= D) go('REVELA');
+      break; }
+    case 'REVELA': {
+      const D = S.first ? 800 : 600, k = Math.min(1, e/D), ease = 1 - Math.pow(1-k, 3);
+      light.I = 1; light.R = 40 + (RMAX - 40) * ease; ch.head = k < 0.5 ? 'up' : 'normal';
+      S.formOp = 0.35 + 0.65 * ease;
+      if(k >= 1){ store(false, '1'); go(focusState()); }
+      break; }
+    case 'ILUMINADO':
+      ch.face = 1; break;
+    case 'MIRA':
+      ch.face = 1; ch.head = 'up'; ch.lean = 1; ch.armF = {a:0.35, l:8}; break;
+    case 'TAPA_OJOS':
+      ch.face = -1; ch.head = 'down'; ch.armF = {a:2.75, l:6}; ch.armB = {a:2.55, l:6}; ch.bob = 0; break;
+    case 'ERROR':
+      ch.face = 1; ch.head = 'down';
+      ch.armF = {a: Math.PI - 0.12 + (reduced ? 0 : 0.18*Math.sin(e/55)), l:9};
+      light.I = (!reduced && e > 60 && e < 220) ? 0.45 : 1;
+      if(e > 1200){ light.I = 1; go(focusState()); }
+      break;
+    case 'SENTADA':
+      if(!ch.sit){ if(walkTo(SEAT, dt, 0.05)) ch.sit = true; else { const s = Math.sin(ch.walk*2*Math.PI); ch.armF = {a:0.45*s, l:8}; ch.armB = {a:-0.45*s, l:8}; } }
+      if(ch.sit){ ch.face = 1; ch.head = 'down'; ch.armF = {a:0.95, l:7}; ch.armB = {a:0.6, l:7}; }
+      break;
+    case 'EXITO':
+      if(e < S.dW){
+        const k = e / S.dW; ch.x = S.x0 + (LEVER_X - S.x0) * k; ch.face = LEVER_X >= S.x0 ? 1 : -1; ch.walk = (now/330) % 1;
+      } else {
+        ch.x = LEVER_X; ch.face = 1;
+        const k2 = reduced ? 1 : Math.min(1, (e - S.dW) / 250);
+        lever.t = k2; ch.armF = armTo(207, 120 + 14*k2);
+        if(!reduced){ const sd = Math.max(200, 800 - S.dW - 250); light.sweep = e > S.dW + 250 ? Math.min(330, (e - S.dW - 250) / sd * 330) : 0; }
+      }
+      if(e >= 800) showDone();
+      break;
+  }
+  if(ch.walk !== null && !ch.sit && S.state !== 'SENTADA'){ const s = Math.sin(ch.walk*2*Math.PI); ch.armF = ch.torch ? {a:1.3, l:7} : {a:0.45*s, l:8}; ch.armB = {a:-0.45*s, l:8}; }
+  if(ch.walk !== null) ch.bob = Math.sin(ch.walk*4*Math.PI) > 0.2 ? -1 : 0;
+  if(!INTRO.has(S.state)) S.formOp = 1; else if(S.state !== 'REVELA') S.formOp = 0.35;
+  if(reduced) S.formOp = 1;
+
+  if(reduced) lamp.a = 0;
+  else { lamp.A += (0.025 - lamp.A) * Math.min(1, dt/1400); lamp.a = lamp.A * Math.sin(now/1700*2*Math.PI); }
+
+  if((S.state === 'ILUMINADO' || S.state === 'MIRA' || S.state === 'TAPA_OJOS') && now - lastAct > IDLE_MS) go('SENTADA');
+
+  if(!reduced) for(const m of motes){ m.y -= dt*0.004*m.s; if(m.y < 34) m.y = 150; }
+}
+
+// ---------- dibujo de actores ----------
+function drawLamp(ctx){
+  const L = 52, lx = LAMP_ANCHOR + Math.sin(lamp.a)*L, ly = 12 + Math.cos(lamp.a)*L;
+  line(ctx, LAMP_ANCHOR, 12, lx, ly, C.cord, 1);
+  const X = Math.round(lx), Y = Math.round(ly); lamp.X = X; lamp.Y = Y; lamp.bx = X; lamp.by = Y + 7;
+  R(ctx, X-1, Y, 3, 1, C.metalDark);
+  R(ctx, X-3, Y+1, 7, 1, C.metalDark);
+  R(ctx, X-4, Y+2, 9, 1, C.metal); R(ctx, X-3, Y+2, 2, 1, C.metalHi);
+  R(ctx, X-5, Y+3, 11, 1, C.metal);
+  R(ctx, X-6, Y+4, 13, 1, C.metal);
+  R(ctx, X-7, Y+5, 15, 1, C.metalDark);
+  R(ctx, X-2, Y+6, 4, 2, C.bulbOff);
+  const cx = X + 5, bot = 124 + lamp.pull;
+  for(let y=Y+6; y<=bot; y++) R(ctx, cx, y, 1, 1, (y & 1) ? C.metal : C.metalDark);
+  R(ctx, cx-1, bot+1, 3, 2, C.lever);
+}
+function drawLever(ctx){
+  const ey = 120 + 14*lever.t;
+  line(ctx, 205, 128, 207, ey, C.metalHi, 1);
+  R(ctx, 206, ey-1, 3, 2, C.lever);
+}
+function drawChar(ctx){
+  const f = ch.face, X = Math.round(ch.x), Y = GROUND, b = ch.bob, l = ch.lean;
+  const P = (dx, dy, w, h, c) => R(ctx, f === 1 ? X+dx : X-dx-w+1, Y+dy, w, h, c);
+  const T = (dx, dy, w, h, c) => P(dx+l, dy+b, w, h, c);
+  const LN = (ax, ay, bx, by, c, t) => line(ctx, X+ax*f, Y+ay, X+bx*f, Y+by, c, t);
+  const arm = (sx, a, len, sleeve, sleeveLen) => {
+    const ox = sx + l, oy = -19 + b;
+    const mx = ox + Math.sin(a)*sleeveLen, my = oy + Math.cos(a)*sleeveLen;
+    const ex = ox + Math.sin(a)*len, ey = oy + Math.cos(a)*len;
+    LN(ox, oy, mx, my, sleeve, 2); LN(mx, my, ex, ey, C.skin, 2);
+    return [X + Math.round(ex)*f, Y + Math.round(ey)];
+  };
+  if(!ch.sit) R(ctx, X-3, Y, 8, 1, C.floorLine);
+  // brazo trasero
+  arm(0, ch.armB.a, ch.armB.l, C.greenDark, 3);
+  // piernas
+  if(ch.sit){
+    P(-1, -11, 7, 2, C.pants); P(4, -10, 2, 8, C.pants); P(4, -2, 4, 2, C.boots);
+  } else {
+    let fF = 0, fB = 0, lF = 0, lB = 0;
+    if(ch.walk !== null){ const s = Math.sin(ch.walk*2*Math.PI); fF = Math.round(s*3); fB = -fF; lF = s < -0.3 ? 1 : 0; lB = s > 0.3 ? 1 : 0; }
+    LN(0, -11, fB, -3-lB, C.pantsDark, 2); P(fB-1, -2-lB, 4, 2, C.boots);
+    LN(1, -11, fF+1, -3-lF, C.pants, 2); P(fF, -2-lF, 4, 2, C.boots);
+  }
+  // torso con chaleco
+  T(-2, -20, 6, 9, C.green);
+  T(-2, -20, 5, 7, C.vest); T(-2, -20, 1, 7, C.vestDark);
+  T(-2, -16, 5, 1, C.reflect);
+  T(-2, -12, 6, 1, C.belt);
+  // cabeza
+  T(0, -21, 2, 1, C.skinDark);
+  T(-2, -26, 5, 5, C.skin);
+  T(-2, -26, 2, 5, C.hair);
+  const pt = ch.walk !== null ? (Math.sin(ch.walk*4*Math.PI) > 0 ? 1 : 0) : 0;
+  T(-4, -25+pt, 2, 2, C.hair); T(-3, -24, 1, 1, C.hair);
+  const ey = ch.head === 'up' ? -25 : ch.head === 'down' ? -23 : -24;
+  T(3, ey+1, 1, 1, C.skin);
+  if(!ch.blink) T(1, ey, 1, 1, '#141414');
+  if(ch.head === 'down') T(1, -22, 2, 1, C.skinDark);
+  // casco con adhesivo verde
+  T(-3, -28, 7, 2, C.helmet); T(-2, -29, 5, 1, C.helmet); T(4, -27, 1, 1, C.helmet);
+  T(0, -29, 1, 1, C.helmetHi); T(-2, -28, 1, 1, C.green);
+  // brazo delantero (con linterna en la intro)
+  const hand = arm(1, ch.armF.a, ch.armF.l, C.green, 3);
+  ch.hx = hand[0] + f; ch.hy = hand[1];
+  if(ch.torch){ R(ctx, f === 1 ? hand[0] : hand[0]-1, hand[1], 2, 2, C.metalDark); }
+}
+
+// ---------- render con luz ----------
+function lightV(x, y){
+  let v = 0;
+  if(light.I > 0){ const dx = x - lamp.bx, dy = y - lamp.by; const d2 = dy < 0 ? dy*dy*5 : dy*dy*0.75;
+    v = (1 - Math.sqrt(dx*dx + d2) / light.R) * light.I * 1.7; }
+  return v;
+}
+function render(now){
+  bctx.drawImage(bg, 0, 0);
+  drawLever(bctx); drawLamp(bctx); drawChar(bctx);
+  const img = bctx.getImageData(0, 0, W, H), d = new Uint32Array(img.data.buffer);
+  const I = light.I, invR = light.R > 0 ? 1/light.R : 0, lx = lamp.bx, ly = lamp.by, sweep = light.sweep;
+  const torch = ch.torch && I < 0.9, thx = ch.hx, thy = ch.hy, tf = ch.face;
+  for(let y=0; y<H; y++){
+    const dy = y - ly, d2 = dy < 0 ? dy*dy*5 : dy*dy*0.75, row = (y & 3) * 4, off = y*W;
+    for(let x=0; x<W; x++){
+      const i = off + x; let lvl;
+      if(x < sweep) lvl = 3;
+      else {
+        let v = 0;
+        if(I > 0){ const dx = x - lx; v = (1 - Math.sqrt(dx*dx + d2) * invR) * I * 1.7; }
+        const m = moon[i]; if(m > v) v = m;
+        if(torch){ const tx = x - thx, ty = y - thy, fw = tx*tf;
+          if(fw > -2){ const dt2 = Math.sqrt(tx*tx + ty*ty*1.6); const vt = (1 - dt2/38) * 1.45; if(vt > v) v = vt; } }
+        lvl = (v*2 + BAYER[row + (x & 3)]) | 0; if(lvl < 0) lvl = 0; else if(lvl > 2) lvl = 2;
+      }
+      d[i] = shades(d[i])[lvl];
+    }
+  }
+  octx.putImageData(img, 0, 0);
+  // emisivos: luna, ampolleta, tubos, polvo
+  octx.fillStyle = C.moon;
+  for(let yy=-3; yy<=3; yy++) for(let xx=-3; xx<=3; xx++) if(xx*xx + yy*yy <= 9.5) octx.fillRect(54+xx, 30+yy, 1, 1);
+  R(octx, 53, 29, 1, 1, '#d9d2ad'); R(octx, 55, 31, 1, 1, '#d9d2ad');
+  if(I > 0.6){ R(octx, lamp.X-2, lamp.Y+6, 4, 2, C.bulb); R(octx, lamp.X-1, lamp.Y+8, 2, 1, C.glow); }
+  if(ch.torch && I < 0.9) R(octx, ch.hx, ch.hy, 1, 1, C.bulb);
+  for(const fx of FIX) if(sweep > fx) R(octx, fx+1, 14, 22, 2, C.tube);
+  if(!reduced && I > 0){
+    octx.fillStyle = C.dust;
+    for(const m of motes){ const x = Math.round(m.x + Math.sin(now/1400 + m.p)*2), y = Math.round(m.y);
+      if(lightV(x, y) > 0.85 && x < 214) octx.fillRect(x, y, 1, 1); }
+  }
+  form.style.opacity = S.formOp;
+}
+
+// ---------- escalado y montaje del formulario ----------
+const stage = $('stage'), inner = $('stageInner'), belowSlot = $('belowSlot');
+function layout(){
+  const w = stage.clientWidth;
+  const s = w >= 960 ? Math.floor(w / 320) : w / 320;
+  inner.style.width = (320*s) + 'px'; inner.style.height = (180*s) + 'px';
+  const overlay = s >= 2.6;
+  if(overlay){
+    if(form.parentElement !== inner) inner.insertBefore(form, done);
+    form.className = 'signform overlay';
+    form.style.left = (SIGN.x*s) + 'px'; form.style.top = (SIGN.y*s) + 'px';
+    form.style.width = (SIGN.w*s) + 'px'; form.style.height = (SIGN.h*s) + 'px';
+    form.style.fontSize = Math.max(11, Math.min(16, s*4.3)) + 'px';
+  } else {
+    if(form.parentElement !== belowSlot) belowSlot.appendChild(form);
+    form.className = 'signform below';
+    form.style.left = form.style.top = form.style.width = form.style.height = '';
+    form.style.fontSize = '15px';
+  }
+}
+new ResizeObserver(layout).observe(stage); layout();
+
+// ---------- eventos: la escena recibe solo el tipo, nunca valores ----------
+email.addEventListener('focus', () => send('FOCO_CORREO'));
+pw.addEventListener('focus', () => send('FOCO_CLAVE'));
+for(const el of [email, pw]){
+  el.addEventListener('blur', () => setTimeout(() => { if(document.activeElement !== email && document.activeElement !== pw) send('BLUR'); }, 0));
+  el.addEventListener('input', () => send('ACTIVIDAD'));
+}
+document.addEventListener('keydown', () => { if(INTRO.has(S.state) || S.state === 'SENTADA') send('SALTAR'); });
+inner.addEventListener('pointerdown', () => { if(INTRO.has(S.state) || S.state === 'SENTADA') send('SALTAR'); });
+form.addEventListener('submit', ev => {
+  ev.preventDefault();
+  if(S.state === 'EXITO') return;
+  submitBtn.disabled = true; submitBtn.textContent = 'INGRESANDO…'; err.hidden = true;
+  const ok = pw.value === 'coopera';  // en el ERP esto lo decide el servidor (signIn)
+  setTimeout(() => {
+    if(ok){ send('EXITO'); submitBtn.textContent = 'TURNO INICIADO'; }
+    else { submitBtn.disabled = false; submitBtn.textContent = 'INICIAR TURNO'; err.textContent = 'Correo o contraseña incorrectos'; err.hidden = false; send('ERROR'); }
+  }, 450);
+});
+$('btnFull').addEventListener('click', () => reset(true));
+$('btnShort').addEventListener('click', () => reset(false));
+$('btnIdle').addEventListener('click', () => { if(INTRO.has(S.state)) skip(); send('INACTIVO'); });
+$('again').addEventListener('click', () => reset(false));
+const rm = $('reduced');
+try{ reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(e){}
+rm.checked = reduced;
+rm.addEventListener('change', () => { reduced = rm.checked; reset(S.first); });
+
+reset(store(true) !== '1');
+let last = 0;
+function frame(now){ const dt = Math.min(50, now - (last || now)); last = now; update(now, dt); render(now); requestAnimationFrame(frame); }
+requestAnimationFrame(frame);
+})();
+</script>

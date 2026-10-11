@@ -5,7 +5,7 @@ repositorio para que ambos agentes puedan leerlo desde el mismo workspace o desd
 Registra trabajo local, revisiones, decisiones, cambios de código, verificaciones, commits,
 PR y despliegues. No sustituye las reglas de `AGENTS.md`, `CLAUDE.md` ni las specs.
 
-Fechas de este registro: zona **America/Santiago**. Última actualización: **2026-10-05**.
+Fechas de este registro: zona **America/Santiago**. Última actualización: **2026-10-11**.
 
 ## Protocolo de trabajo
 
@@ -98,6 +98,14 @@ Autor y propósito no confirmados. Preservarlos; no incluirlos en commits de otr
 | UX-010 | Corregir cascada del reset Tailwind4 y recarga ESM | Alta | Codex | TERMINADA | app/globals.css, tailwind.config.ts y QA de login/cabeceras |
 
 | DEP-001 | Publicar mejoras en producción y verificar dominio real | Alta | Codex | TERMINADA | master b935b9d; Vercel READY, evidencia docs/qa/DEP-001.md |
+
+| DOC-003 | Explicar a Codex en AGENTS.md qué hace el ERP y cómo trabajar cada módulo | Media | Claude | EN REVISIÓN | `security/aud001-remediation` (checkout actual, sin commit); `AGENTS.md`, este registro |
+
+| COORD-002 | Actualizar contexto persistente y confirmar coordinación con Claude | Media | Codex | EN REVISIÓN | security/aud001-remediation; registro compartido y nota de memoria local |
+
+| REV-003 | Comprender el ERP y verificar conexión con GitHub para trabajo conjunto | Alta | Codex | TERMINADA | security/aud001-remediation; registro, docs/CONTEXTO_PROYECTO_CODEX.md y docs/qa/REV-003-inventario.json; sin cambios de código |
+
+| LOGIN-002 | Login de escritorio «Turno de noche»: escena pixel art animada (solo planificación) | Media | Codex → Claude | EN REVISIÓN | Implementación completa (Codex) + emblema y fuente local (Claude); portón en verde; listo para commit/push del usuario y prueba en Preview |
 
 ## Historial de sesiones y entregas
 
@@ -597,6 +605,87 @@ Autor y propósito no confirmados. Preservarlos; no incluirlos en commits de otr
 - **Reversión verificada:** vercel rollback dpl_DZ4gX6XNQkh9wvMMaYGYBMrxxphn --yes. No ejecutada.
 - **Entrega documental:** este cierre y evidencia se publicarán a master como documentación;
   cualquier build adicional asociado tendrá el mismo código de producción ya verificado.
+
+### 2026-10-11 — DOC-003 — Claude
+
+- Solicitud y alcance: explicar a Codex en detalle qué se hace con el ERP (los cuatro módulos, permisos y flujos), a partir de los `.md` del repo. Solo documentación.
+- Responsable, rama y commit base: Claude; checkout actual `security/aud001-remediation`, base `528c100`.
+- Archivos afectados: `AGENTS.md` (nueva sección entre marcadores `ERP-COOPERA:INICIO/FIN`, antes del bloque `RADAR-PALLETS`, que se conserva intacto) y este registro.
+- Cambios y decisiones: la sección describe el negocio, los roles, el modelo de permisos (`hasModuleAccess` frente a `hasFinanceAccess`/`canWriteFinance`) y el orden del middleware; también el flujo de cada módulo con sus estados, los archivos clave, una lista de pasos para cada tarea y un mapa de documentos. `CLAUDE.md` sigue siendo la fuente de verdad y no se modificó.
+- Verificación: se cotejaron los enums contra `prisma/schema.prisma`, el orden contra `middleware.ts` y los porteros contra `lib/access.ts`. El portón `typecheck/test/build` no se ejecutó porque solo cambió documentación; por eso la tarea queda en EN REVISIÓN.
+- Entrega Git: sin commit ni push; queda pendiente de que el usuario lo indique.
+- Despliegue / BD: no aplica.
+- Pendientes y siguiente responsable: revisión del usuario o de Codex; luego hacer el commit en la rama que corresponda.
+
+### 2026-10-11 — COORD-002 — Codex
+
+- Solicitud y alcance: actualizar el contexto de coordinación con Claude, confirmado por el usuario; documentación y una nota de memoria local.
+- Responsable, rama y commit base: Codex; security/aud001-remediation; 528c100. Estado: EN REVISIÓN.
+- Archivos previstos / afectados: REGISTRO_TRABAJO.md y una nota en la carpeta local de actualizaciones de memoria de Codex. AGENTS.md conserva intactos los cambios de Claude de DOC-003.
+- Cambios y decisiones: ratificar este registro como canal compartido; leer AGENTS.md y CLAUDE.md vigentes, registrar tareas antes de editar y preservar el trabajo ajeno. Las conversaciones y la memoria privada no se comparten automáticamente. El checkout de referencia para este proyecto es C:\dev\CentralCoopera; el chat está abierto desde otra carpeta OneDrive, por lo que se debe verificar el checkout antes de futuras ediciones.
+- Verificación: leídos AGENTS.md, contexto inicial de CLAUDE.md y protocolo/historial del registro. Git confirma rama/base indicados y cambios locales previos en AGENTS.md y REGISTRO_TRABAJO.md. Se conserva DOC-003; no se afirma revisión técnica de sus descripciones. Typecheck, tests y build no ejecutados porque el alcance es documental; no se marca la tarea TERMINADA.
+- Entrega Git: cambios locales; sin commit ni push. La nota de memoria queda fuera del repositorio y no modifica directamente los archivos consolidados de memoria.
+- Despliegue / BD: no aplica.
+- Pendientes y siguiente responsable: revisión documental del usuario o de Claude; publicación únicamente cuando el usuario la solicite.
+
+### 2026-10-11 — REV-003 — Codex
+
+- Solicitud y alcance: conocer C:\dev\CentralCoopera, verificar/preparar GitHub y trabajar con Claude. Responsable: Codex; estado TERMINADA para la familiarización y documentación; no es una auditoría funcional exhaustiva ni QA de producción.
+- Rama y commit base: security/aud001-remediation; 528c100. Archivos afectados: este registro, docs/CONTEXTO_PROYECTO_CODEX.md y docs/qa/REV-003-inventario.json.
+- Cambios previos preservados: AGENTS.md de Claude y entradas DOC-003/COORD-002. Sin cambiar de rama ni tocar código de la aplicación.
+- Lectura: inventario de 459 archivos (436 textos, 53.020 líneas), extracción estructural y revisión dirigida de instrucciones, documentos, schema, autorización, autenticación, retiros, stock, Finanzas, GPS, outreach, interfaz y CI. El inventario detalla títulos, símbolos, métodos, modelos y nombres de variables; CSV solo por cabeceras/conteo. Excluidos dependencias, compilados, respaldos y archivos de secretos. El lockfile se cotejó por separado. No se afirma lectura manual línea por línea ni revisión visual de cada recurso.
+- GitHub: autenticación confirmada como Klaudio-krimen y permiso ADMIN en Klaudio-krimen/CentralCoopera. origin correcto; git fetch origin completado; HEAD y origin/master 0/0. Rama local master inactiva aún 13 commits atrás; no se hizo pull ni checkout. Sin PR abiertas. Última CI 37371481499, commit 528c100: success; despeja la incertidumbre histórica de cola de esa entrega. No se cambiaron estados de otras tareas.
+- Verificación local: npm run typecheck exit 0; npm run test exit 0 (29 archivos, 349 pruebas); npm run build exit 0, compilación y generación 79/79. Build con DATABASE_URL/DIRECT_URL locales sintéticas y configuración tipo CI: emitió errores Prisma de autenticación al consultar la BD de prueba durante preparación de páginas y aviso ESM de tailwind.config.ts. No prueba conexión con BD real ni integración funcional; no se usaron credenciales reales para ese build.
+- Hallazgos documentados: contador de tareas de Finanzas desactualizado, notas antiguas en CLAUDE.md y specs, discrepancia SiteGround/Hostinger, ausencia local de los tres CSV Radar, redirect de middleware sin token, consultas/auto-siembra de pipeline durante render y seguimiento existente de SEC-005. Se registran para priorizar, sin implementar cambios adicionales.
+- Entrega Git: documentación local, sin commit ni push. Despliegue/BD/correos/importaciones: no ejecutados. Sin QA de navegador ni nueva auditoría de dependencias.
+- Pendientes y siguiente responsable: usuario/Claude pueden consultar el documento de contexto y coordinar la siguiente tarea en este registro. Estos archivos requieren sincronización si Claude usa otro checkout. No se presume revisión de Claude ni se le envió mensaje.
+
+### 2026-10-11 — LOGIN-002 — Claude
+
+- Solicitud y alcance: planificar con Codex un login de escritorio con una escena animada estilo videojuego de los 90 (operaria que enciende una lámpara y revela el formulario). Solo planificación; sin código de la aplicación.
+- Responsable, rama y commit base: Claude (plan); Codex (implementación futura). Checkout `security/aud001-remediation`, base `528c100`.
+- Archivos afectados: `blueprints/login-turno-noche/blueprint.md`, `brief-pixel-artist.md`, `tasks.json` (10 tareas: E0 usuario/artista, E1 escena con sprites provisorios, E2 arte final y QA) y este registro.
+- Decisiones del usuario: la bodega de Coopera de noche, un pixel artist profesional, solo en escritorio y con reacciones desde la v1. Decisiones de diseño:
+  - La escena nunca bloquea el formulario: se puede saltar, es corta en visitas repetidas y es estática con «reducir movimiento».
+  - La escena solo recibe tipos de evento y nunca valores de los campos.
+  - No se agregan dependencias ni se cambian la CSP ni la autenticación.
+  - Hay un contrato de recursos común a los sprites provisorios y al arte final.
+- Verificación: se revisaron `app/(auth)/login/page.tsx` y su spec, la CSP de `next.config.mjs`, y el formato de `tasks.json` de los blueprints existentes. `tasks.json` es JSON válido. El portón no se ejecutó porque solo cambió documentación.
+- Entrega Git: sin commit ni push.
+- Despliegue / BD: no aplica.
+- Pendientes y siguiente responsable: el usuario cotiza y contrata al artista (E0-T1) y autoriza a Codex para iniciar E1-T1..E1-T7 con sprites provisorios. Se respetaron las entradas COORD-002 y REV-003 y los archivos sin rastrear de Codex.
+
+### 2026-10-11 — LOGIN-002 (v2) — Claude
+
+- Decisión del usuario: aprueba el prototipo hecho 100 % con código; ya no se contrata pixel artist (`brief-pixel-artist.md` queda EN PAUSA). El cartel del login usa los colores de Coopera Pro: fondo azul `#2a344d` y botón verde `#5bbd2f`, tomados de `public/brand/coopera-pro-logo.png`.
+- Archivos: `blueprints/login-turno-noche/blueprint.md` (reescrito a v2), `tasks.json` (9 tareas: E0 extraer formulario, E1 motor puro de la escena, E2 integración, colores de marca y QA) y `referencia/turno-de-noche.html` (prototipo autónomo aprobado: referencia visual y de tiempos).
+- Verificación: prototipo revisado en Chromium headless (intro, reacción a contraseña, éxito) sin errores de script; `tasks.json` válido. Sin código de la aplicación; portón no ejecutado.
+- Corrección: la entrada anterior de LOGIN-002 había eliminado por error el título de la sección de plantilla del final; se restauró.
+- Entrega Git: sin commit ni push. Siguiente responsable: Codex, desde E0-T1, cuando el usuario lo indique.
+
+### 2026-10-11 — LOGIN-002 — inicio de implementación Codex
+
+- Autorización: el usuario pide comenzar la tarea encomendada por Claude. Se toma LOGIN-002 v2, desde E0-T1; el prototipo aprobado se conserva como referencia.
+- Responsable: Codex; estado EN CURSO; rama security/aud001-remediation, base 528c100.
+- Archivos previstos: components/login/, components/login-escena/, lib/login-escena/, app/(auth)/login/page.tsx y su spec, blueprints/login-turno-noche/tasks.json, docs/qa/LOGIN-002.md y capturas, este registro.
+- Alcance: extracción del formulario, motor procedural puro, integración exclusiva en escritorio, marca, reacciones, movimiento reducido, fallback y QA. Autenticación y CSP se conservan. No se agregan dependencias.
+- Se preservan los documentos y prototipo de Claude, AGENTS.md y entregas previas de Codex. Sin commit/push/despliegue ni uso de cuentas reales para QA.
+
+### 2026-10-11 — LOGIN-002 (emblema) — Claude
+
+- A pedido del usuario se agrega el logo de Coopera Pro como emblema pixel art pintado en el muro; se ilumina en EXITO. Ícono derivado de `public/brand/coopera-pro-logo.png` (18×18). Se movió el tubo fluorescente central para no chocar con el halo.
+- Archivos: `referencia/turno-de-noche.html` actualizado, `blueprint.md` §2, §7.2 y §8.1, `tasks.json` E1-T4/E1-T5. Revisado en Chromium headless sin errores de script. Sin commit.
+- Nota para Codex: requisito nuevo durante la implementación; incorporar el emblema en E1-T4/E1-T5 (ver `blueprint.md` §8.1 y `referencia/turno-de-noche.html`).
+
+### 2026-10-11 — LOGIN-002 (cierre: emblema + portón) — Claude
+
+- Solicitud: el usuario pide a Claude hacer el cambio en el código y dejarlo listo para que él haga commit, push y pruebe en producción. Se toma la implementación de Codex tal como está (E0-T1..E2-T4) y se agrega lo pendiente: el emblema de Coopera Pro (§8.1).
+- Archivos de Claude: `lib/login-escena/fuente.ts` (nuevo, fuente 3×5 compartida), `lib/login-escena/emblema.ts` + `emblema.test.ts` (nuevos), `lib/login-escena/paleta.ts` (colores de marca), `lib/login-escena/fondo.ts` (emblema, «BODEGA 2», tubo central a x=140, `FIX` exportado), `lib/login-escena/luz.ts` (tubos desde `FIX`, emblema en neón en EXITO). No se tocaron los archivos de Codex fuera de esos módulos.
+- Pedido a Codex: no editar estos archivos mientras esta entrada esté EN CURSO.
+- Fuente pixel: `next/font/google` se reemplazó por `next/font/local` con `components/login-escena/fonts/press-start-2p-latin-400-normal.woff2` (Fontsource, OFL, licencia incluida). Motivo: el build fallaba sin acceso a Google Fonts; ahora no depende de red al compilar. Spec y blueprint §7.4 actualizados.
+- Verificación (copia aislada en Linux, `npm ci --legacy-peer-deps`, tipos de Prisma copiados del checkout porque la red bloquea binaries.prisma.sh): `tsc --noEmit` exit 0; `vitest run` 35 archivos / 393 tests OK (incluye 5 nuevos de `emblema.test.ts`); `next build` exit 0 con variables sintéticas. Render de la escena real (estados ILUMINADO y EXITO) generado con los módulos puros sin errores. Sin QA autenticada en navegador ni cuentas reales.
+- Entrega Git: sin commit ni push; el usuario hará commit/push. Despliegue: pendiente (se recomienda probar primero en Preview de Vercel).
+- 2026-10-11, publicación: el usuario hizo commit `7219613` y push; Preview `dpl_yCqGR5Qkr3sDHFhvbrQFCFT9SFCJ` READY. PR #2 hacia `master`: la CI falló en `npm audit` por un aviso nuevo (alto) en `source-map-js` 1.2.1, dependencia transitiva de compilación y ajena al login. Corrección mínima en `package-lock.json` (sólo esa entrada: 1.2.1 → 1.2.2); en copia limpia: `npm audit` 0 vulnerabilidades, typecheck OK, 393 tests OK, build OK. Producción anterior para reversión: `dpl_8mVGfb4RJBwTTQ2yqNmSBxaWtMQr` (`528c100`).
 
 ## Plantilla para próximas entradas
 

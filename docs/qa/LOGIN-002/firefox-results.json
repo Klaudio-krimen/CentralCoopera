@@ -1,0 +1,40 @@
+{
+  "browser": "155.0.1",
+  "desktop": {
+    "height": 900,
+    "scroll": 1440,
+    "state": "TAPA_OJOS",
+    "width": 1440
+  },
+  "credentials_error": "Correo o contraseña incorrectos",
+  "auth_payload": [
+    {
+      "fields": [
+        "email",
+        "password",
+        "remember",
+        "redirect",
+        "csrfToken",
+        "callbackUrl",
+        "json"
+      ],
+      "path": "/api/auth/callback/credentials",
+      "remember": "1"
+    }
+  ],
+  "network_error": "No se pudo iniciar sesión. Intenta nuevamente.",
+  "success_navigation_ms": 721.0,
+  "mobile": {
+    "canvas": false,
+    "height": 46,
+    "scroll": 500,
+    "width": 500
+  },
+  "final_debug": {
+    "alert": null,
+    "buttonDisabled": true,
+    "location": "/login",
+    "qa": null,
+    "state": null
+  }
+}

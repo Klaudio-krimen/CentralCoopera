@@ -1,0 +1,5888 @@
+{
+  "date": "2026-10-11",
+  "timezone": "America/Santiago",
+  "task": "REV-003",
+  "workspace": "C:/dev/CentralCoopera",
+  "baseCommit": "528c100",
+  "branch": "security/aud001-remediation",
+  "method": "Lectura automatizada para inventario y extracción estructural, con revisión dirigida de documentación y código. No equivale a auditoría funcional línea por línea.",
+  "excluded": [
+    "node_modules",
+    ".git",
+    ".next",
+    "backups",
+    ".env*",
+    "package-lock.json (inventario de dependencias separado)"
+  ],
+  "summary": {
+    "textLines": 53020.0,
+    "pageFiles": 40,
+    "files": 459,
+    "apiRouteFiles": 52,
+    "textFiles": 436
+  },
+  "files": [
+    {
+      "path": ".claude/launch.json",
+      "bytes": 175,
+      "kind": "text",
+      "sha256": "efe7a5850e2c24a6951dffde43a025e5b00576f49044a34549a18feb07d15b3c",
+      "lines": 12
+    },
+    {
+      "path": ".claude/rules/finanzas.md",
+      "bytes": 4008,
+      "kind": "text",
+      "sha256": "e0102e28bf0a9535eee491999b118620f8ec988a8c0c0ae35281283249c9b106",
+      "lines": 74,
+      "headings": [
+        "Reglas del módulo Finanzas",
+        "Autorización",
+        "Auditoría",
+        "Dinero",
+        "Módulos de `lib/finanzas/`",
+        "Rutas y páginas",
+        "Interfaz"
+      ]
+    },
+    {
+      "path": ".claude/rules/radar-pallets.md",
+      "bytes": 2418,
+      "kind": "text",
+      "sha256": "0fdce1339d085838911be8880ee620bebc97bb30991f347bfffc6313a8889a74",
+      "lines": 40,
+      "headings": ["Radar de Clientes Pallets — convenciones de área"]
+    },
+    {
+      "path": ".claude/settings.json",
+      "bytes": 1600,
+      "kind": "text",
+      "sha256": "c10afd97487e617fd4f71ebd2aff5212bc3b92aa5e55cf39163d2788a4398742",
+      "lines": 61
+    },
+    {
+      "path": ".claude/skills/verificar-porteros/SKILL.md",
+      "bytes": 3429,
+      "kind": "text",
+      "sha256": "d9329318ce7c36fdcee5eb5daba8b48112ac16cb49247338fd640cc25bb351a2",
+      "lines": 85,
+      "headings": [
+        "Verificar porteros de Finanzas",
+        "Cuándo usarlo",
+        "Por qué existe",
+        "Pasos",
+        "Verify",
+        "No hagas"
+      ]
+    },
+    {
+      "path": ".gitattributes",
+      "bytes": 39,
+      "kind": "text",
+      "sha256": "91c171a7f4e295966f6e40aba83b0a11a56b4c99b59b9c55fcf54f15df207bc0",
+      "lines": 3
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "bytes": 1123,
+      "kind": "text",
+      "sha256": "238f39152681281063853c67f09b4abdf5d9bf1e60c6146a9392c20144fc1166",
+      "lines": 48
+    },
+    {
+      "path": ".gitignore",
+      "bytes": 634,
+      "kind": "text",
+      "sha256": "f11b95c9a828ca0d3497563d60db66e473ef00336f16bae9f93b1fe632171a75",
+      "lines": 63
+    },
+    {
+      "path": ".husky/pre-commit",
+      "bytes": 47,
+      "kind": "text",
+      "sha256": "fd4ead49a76c63247b11def7ae9447d046985987b8eba68ff5cae23959adc161",
+      "lines": 4
+    },
+    {
+      "path": ".impeccable/critique/2026-07-30T05-18-25Z__app-admin-admin-crm.md",
+      "bytes": 11487,
+      "kind": "text",
+      "sha256": "3ddd310cd7b3076f8edc0201bc94b53ddc4e2580935f62509df1525bcc30fb47",
+      "lines": 102,
+      "headings": [
+        "Crítica de diseño — Módulo CRM (Central Coopera)",
+        "Design Health Score",
+        "Veredicto anti-patrones",
+        "Impresión general",
+        "Qué funciona bien",
+        "Problemas prioritarios",
+        "Persona red flags",
+        "Observaciones menores",
+        "Preguntas para considerar"
+      ]
+    },
+    {
+      "path": ".lintstagedrc",
+      "bytes": 47,
+      "kind": "text",
+      "sha256": "82cbd95175ddf2cf783437f3ffd9c59919e5bf758491beaeb54d522c26bf60d3",
+      "lines": 4
+    },
+    {
+      "path": ".prettierignore",
+      "bytes": 994,
+      "kind": "text",
+      "sha256": "b47bff03de8c74023541e99d223db957a7c16394415bae59491d160f05bb3c01",
+      "lines": 21
+    },
+    {
+      "path": ".prettierrc",
+      "bytes": 153,
+      "kind": "text",
+      "sha256": "2501b2933173be1b761d0fa131b175801f3c220198d70cb7f03c6df6c6004ab7",
+      "lines": 10
+    },
+    {
+      "path": "AGENTS.md",
+      "bytes": 20138,
+      "kind": "text",
+      "sha256": "345c74dfa9913f4361f0bd6ab5ab36fef782aebf0c5fd830794d333f327c46b6",
+      "lines": 295,
+      "headings": [
+        "TrackResiduos — instrucciones para agentes",
+        "Coordinación entre Codex y Claude",
+        "Comandos",
+        "No negociable",
+        "Qué es el ERP de Coopera Pro y qué se hace en él",
+        "El negocio en una frase",
+        "Quién lo usa y desde dónde",
+        "Modelo de permisos (leer antes de tocar cualquier ruta)",
+        "Módulo 1 — Operaciones (cadena de custodia) · productivo",
+        "Módulo 2 — Inventario (bodega y taller de pallets) · productivo",
+        "Módulo 3 — CRM (ventas del taller de pallets) · base implementada",
+        "Módulo 4 — Finanzas · implementado, sin bypass de ADMIN",
+        "Cómo trabajar una tarea en este repo (checklist para Codex)",
+        "Mapa de documentos",
+        "Cambio activo: Importación Radar de Clientes Pallets + segmento INDUSTRIA",
+        "Comandos",
+        "Las 5 reglas que más muerden"
+      ]
+    },
+    {
+      "path": "app/(admin)/admin/choferes/page.tsx",
+      "bytes": 6008,
+      "kind": "text",
+      "sha256": "3a23e9f1b3746b0578a15c3cb567e4edca2056a3e03139b8715ca5153eab9f8b",
+      "lines": 211,
+      "exports": ["EquipoPage"],
+      "httpMethods": [],
+      "prismaModels": ["user"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(admin)/admin/crm/actividades/page.tsx",
+      "bytes": 5652,
+      "kind": "text",
+      "sha256": "6de67540ad59d352c30855f00fd412ed56960c5eee9e594c2acbf7f74199783a",
+      "lines": 143,
+      "exports": ["ActividadesPage"],
+      "httpMethods": [],
+      "prismaModels": ["activity", "company"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(admin)/admin/crm/clientes/[id]/page.tsx",
+      "bytes": 12364,
+      "kind": "text",
+      "sha256": "6e110cc1217a012f8f21d8342598f1b5d9df1d7613b3a320d70f6349da5030c9",
+      "lines": 344,
+      "exports": ["ClienteDetailPage"],
+      "httpMethods": [],
+      "prismaModels": ["activity", "company"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(admin)/admin/crm/clientes/page.tsx",
+      "bytes": 2442,
+      "kind": "text",
+      "sha256": "4f648909f5d41036344957d452e997a6999bdf756febf7bca1c70eb170a51ee3",
+      "lines": 79,
+      "exports": ["ClientesPage"],
+      "httpMethods": [],
+      "prismaModels": ["company"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(admin)/admin/crm/configuracion/page.tsx",
+      "bytes": 1133,
+      "kind": "text",
+      "sha256": "bb0421502e24b614354038db58f70f30d967564634e86a744d0d3454d75c0c89",
+      "lines": 34,
+      "exports": ["ConfiguracionPage"],
+      "httpMethods": [],
+      "prismaModels": ["pipelineStage"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(admin)/admin/crm/contactos/[id]/page.tsx",
+      "bytes": 7822,
+      "kind": "text",
+      "sha256": "6d698301ced97d9e0222489fc63d1abd7e17859c001548aca4311da6cdaefc5b",
+      "lines": 213,
+      "exports": ["ContactoDetailPage"],
+      "httpMethods": [],
+      "prismaModels": ["contact"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(admin)/admin/crm/contactos/page.tsx",
+      "bytes": 259,
+      "kind": "text",
+      "sha256": "723671852a14249eecf294834acc4aabd923738295b3e015b51711e7568ca987",
+      "lines": 8,
+      "exports": ["ContactosPage"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(admin)/admin/crm/crm.css",
+      "bytes": 1173,
+      "kind": "text",
+      "sha256": "e0bacce8d409ca19ed41c1f51ca22c7788fd2841291398d2a93405ea4c1c3106",
+      "lines": 29
+    },
+    {
+      "path": "app/(admin)/admin/crm/dashboard/page.tsx",
+      "bytes": 2441,
+      "kind": "text",
+      "sha256": "0f668896a5c7ed0b3718082035520689645e213ab97aef0a00d135d2e9124a17",
+      "lines": 85,
+      "exports": ["CrmDashboardPage"],
+      "httpMethods": [],
+      "prismaModels": ["activity", "contact", "deal", "pipelineStage"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(admin)/admin/crm/deals/[id]/page.tsx",
+      "bytes": 6945,
+      "kind": "text",
+      "sha256": "d7eb6431bb51f3f601f22778b2dc92484c90a8c70861bb11279c7ef5397001b6",
+      "lines": 194,
+      "exports": ["DealDetailPage"],
+      "httpMethods": [],
+      "prismaModels": ["deal"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(admin)/admin/crm/deals/page.tsx",
+      "bytes": 1596,
+      "kind": "text",
+      "sha256": "cd2b1a429e255757c087399a8300fe2559ed6cae28ec514c2a671fc592ff33b1",
+      "lines": 61,
+      "exports": ["DealsPage"],
+      "httpMethods": [],
+      "prismaModels": ["company", "deal"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(admin)/admin/crm/layout.tsx",
+      "bytes": 368,
+      "kind": "text",
+      "sha256": "d6d7b921f12e3651cafed2041595189b32059ea8f70e3337a9f791a611495fd4",
+      "lines": 15,
+      "exports": ["CrmLayout"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(admin)/admin/crm/llamadas/page.spec.md",
+      "bytes": 2891,
+      "kind": "text",
+      "sha256": "9276c3e2332a67e98063ae8f9cd0656ec35f63abdff29f4ecb769c860f15a309",
+      "lines": 57,
+      "headings": [
+        "`/admin/crm/llamadas` — spec",
+        "Estructura",
+        "Interacción",
+        "Estados",
+        "Nav",
+        "Qué NO hace"
+      ]
+    },
+    {
+      "path": "app/(admin)/admin/crm/llamadas/page.tsx",
+      "bytes": 2064,
+      "kind": "text",
+      "sha256": "eaf48bee0e3e6b484b66824e413ecf544a06b1be702d8a9f1150f05aeb252e68",
+      "lines": 64,
+      "exports": ["LlamadasPage"],
+      "httpMethods": [],
+      "prismaModels": ["contact"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(admin)/admin/crm/outreach/page.spec.md",
+      "bytes": 1913,
+      "kind": "text",
+      "sha256": "3d0b65bf526bba391200820dc353e4ce2f4e7e3e9f298299e6f112cf327d9f1e",
+      "lines": 37,
+      "headings": [
+        "`/admin/crm/outreach` — spec",
+        "Qué muestra",
+        "Decisiones de diseño"
+      ]
+    },
+    {
+      "path": "app/(admin)/admin/crm/outreach/page.tsx",
+      "bytes": 8260,
+      "kind": "text",
+      "sha256": "701c1c6b32e0fd968650b8bc423c8827d81be29cac162aa4b38c3f7957cef7a8",
+      "lines": 256,
+      "exports": ["OutreachPage"],
+      "httpMethods": [],
+      "prismaModels": ["contact", "outreachCampaign", "outreachSend"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(admin)/admin/crm/page.tsx",
+      "bytes": 122,
+      "kind": "text",
+      "sha256": "48cb39cf004d2a63923d1ee83bc5d1850054509b52dee8b4648f3eeccbec5a72",
+      "lines": 6,
+      "exports": ["CrmIndexPage"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(admin)/admin/crm/pipeline/page.tsx",
+      "bytes": 2931,
+      "kind": "text",
+      "sha256": "718ecd18bb3c6be34eb00b580ccb3c472269b8bb2cea0032eedafdd39182324f",
+      "lines": 91,
+      "exports": ["PipelinePage"],
+      "httpMethods": [],
+      "prismaModels": ["pipelineStage"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(admin)/admin/dashboard/page.tsx",
+      "bytes": 6936,
+      "kind": "text",
+      "sha256": "ca587233faf894259822b6a110fb5aa7b290ec153b86dac924b82ba982ea8ff6",
+      "lines": 202,
+      "exports": ["AdminDashboardPage"],
+      "httpMethods": [],
+      "prismaModels": ["discrepancy", "pickupOrder"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(admin)/admin/discrepancias/page.tsx",
+      "bytes": 7224,
+      "kind": "text",
+      "sha256": "b297ee89568ddef5d335e6624ba685f2f7dff7acf05ce2d8fb2e732623a35b1e",
+      "lines": 252,
+      "exports": ["DiscrepanciasPage"],
+      "httpMethods": [],
+      "prismaModels": ["discrepancy"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(admin)/admin/finanzas/anticipos/AccionesAnticipo.tsx",
+      "bytes": 1668,
+      "kind": "text",
+      "sha256": "a3d58afd524d67c052feb1654a7a39f923ca09739324fb66ab75fa337a4ffbfb",
+      "lines": 57,
+      "exports": ["AccionesAnticipo"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(admin)/admin/finanzas/anticipos/NuevoAnticipoForm.tsx",
+      "bytes": 5533,
+      "kind": "text",
+      "sha256": "60b4de4c2b98b70849fe86de4ef62bbff0a732340e3b6a9981a56eb5c055f5f9",
+      "lines": 197,
+      "exports": ["NuevoAnticipoForm"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(admin)/admin/finanzas/anticipos/page.spec.md",
+      "bytes": 835,
+      "kind": "text",
+      "sha256": "4731ff9061dcd71345d5e19ea13dd86cf15871d3dbf0966d711274de5d311897",
+      "lines": 23,
+      "headings": ["Página: Anticipos", "Propósito", "Datos", "Interfaz"]
+    },
+    {
+      "path": "app/(admin)/admin/finanzas/anticipos/page.tsx",
+      "bytes": 4435,
+      "kind": "text",
+      "sha256": "a92d8d9527bf508e7a40b8ea4ce771387ad0816360b6908ef123a78c3dd262a1",
+      "lines": 126,
+      "exports": ["AnticiposPage"],
+      "httpMethods": [],
+      "prismaModels": ["advance", "employee"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(admin)/admin/finanzas/auditoria/page.spec.md",
+      "bytes": 1519,
+      "kind": "text",
+      "sha256": "6baf16e10fb9d41630a4c570c4f44cc5efaa26eac99c29d7bb087fbb9a5c4378",
+      "lines": 33,
+      "headings": [
+        "Página: Visor de auditoría",
+        "Propósito",
+        "Datos",
+        "Interfaz",
+        "Seguridad AUD-002"
+      ]
+    },
+    {
+      "path": "app/(admin)/admin/finanzas/auditoria/page.tsx",
+      "bytes": 10025,
+      "kind": "text",
+      "sha256": "32dbe1c420d613e4d3b4be7c3eb467545f8b05e977f80c77646f82323c8ecb2e",
+      "lines": 283,
+      "exports": ["AuditoriaPage"],
+      "httpMethods": [],
+      "prismaModels": ["financeAuditLog"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(admin)/admin/finanzas/GraficoCategorias.tsx",
+      "bytes": 1631,
+      "kind": "text",
+      "sha256": "7ace2816d43dfe0e21243811bca31904ee2e8e0d42c01c073ff1f0f56985afe0",
+      "lines": 62,
+      "exports": ["CategoriaDatum", "GraficoCategorias"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(admin)/admin/finanzas/layout.tsx",
+      "bytes": 1511,
+      "kind": "text",
+      "sha256": "91815bf3ac6877e0e00b221bb89bb02263c6eddd6a31c186446b73e8a8d891ce",
+      "lines": 43,
+      "exports": ["FinanzasLayout"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(admin)/admin/finanzas/movimientos/AnularMovimientoButton.tsx",
+      "bytes": 1353,
+      "kind": "text",
+      "sha256": "2f59b36835222745ed171f1e097ff87ffb1eac55b2c4f8acc71e41817262e5b9",
+      "lines": 52,
+      "exports": ["AnularMovimientoButton"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(admin)/admin/finanzas/movimientos/CategoriasPanel.tsx",
+      "bytes": 3532,
+      "kind": "text",
+      "sha256": "4818fa52ff267c6d27e3296c5d5d52f121c1927a89141c57cab05e0d1eb7038b",
+      "lines": 104,
+      "exports": ["CategoriasPanel"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(admin)/admin/finanzas/movimientos/NuevoMovimientoForm.tsx",
+      "bytes": 8110,
+      "kind": "text",
+      "sha256": "7afbf850b561f5e3755e126042bd8dae022c822337f49c30b85f56ef1cff124d",
+      "lines": 272,
+      "exports": ["NuevoMovimientoForm"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(admin)/admin/finanzas/movimientos/page.spec.md",
+      "bytes": 1273,
+      "kind": "text",
+      "sha256": "a95bda2c1c153f3da595be37a8b08adbfb1faf2ae2caecfe816fa15c6cadc820",
+      "lines": 30,
+      "headings": [
+        "Página: Movimientos",
+        "Propósito",
+        "Datos",
+        "Interfaz",
+        "Proyecciones AUD-002"
+      ]
+    },
+    {
+      "path": "app/(admin)/admin/finanzas/movimientos/page.tsx",
+      "bytes": 8922,
+      "kind": "text",
+      "sha256": "d1f6a3b442011153fbeea5ee277e85587e12f4894c274b29ed8fe28d322198f3",
+      "lines": 255,
+      "exports": ["MovimientosPage"],
+      "httpMethods": [],
+      "prismaModels": ["financeCategory", "financeTransaction", "supplier"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(admin)/admin/finanzas/nominas/[id]/AccionesNomina.tsx",
+      "bytes": 2104,
+      "kind": "text",
+      "sha256": "cf4fc0bbaa1e4a6c0926c2faae37f84fa7477d7f5dd2533314b958640b318a07",
+      "lines": 76,
+      "exports": ["AccionesNomina"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(admin)/admin/finanzas/nominas/[id]/page.spec.md",
+      "bytes": 1206,
+      "kind": "text",
+      "sha256": "86affe843f56d817090ee13fe3ff394adc0ed7a833aadd9aade9cf95e0e995e8",
+      "lines": 26,
+      "headings": [
+        "Página: Detalle de nómina",
+        "Propósito",
+        "Datos",
+        "Interfaz"
+      ]
+    },
+    {
+      "path": "app/(admin)/admin/finanzas/nominas/[id]/page.tsx",
+      "bytes": 4857,
+      "kind": "text",
+      "sha256": "ce72aa2deea2f88b8212c6957fb4444fc4693190ebd4a3dad247202aea41c0ca",
+      "lines": 128,
+      "exports": ["DetalleNominaPage"],
+      "httpMethods": [],
+      "prismaModels": ["payrollRun"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(admin)/admin/finanzas/nominas/[id]/PanelPago.tsx",
+      "bytes": 3600,
+      "kind": "text",
+      "sha256": "6b124b3b7e24b9515e80972d7b84cbc356a0969eef1edcda0428d6b0d984e5f0",
+      "lines": 108,
+      "exports": ["PanelPago"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(admin)/admin/finanzas/nominas/NuevaNominaForm.tsx",
+      "bytes": 9327,
+      "kind": "text",
+      "sha256": "7591bf83279581dcb91c9418937c2753fa05c61146540665928bc3f901bcfc6d",
+      "lines": 256,
+      "exports": ["NuevaNominaForm"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(admin)/admin/finanzas/nominas/page.spec.md",
+      "bytes": 986,
+      "kind": "text",
+      "sha256": "c347500a3b450f032ec428d7ca4fa92151adb99777459503f9fa2e4af1da3bb4",
+      "lines": 24,
+      "headings": ["Página: Nóminas", "Propósito", "Datos", "Interfaz"]
+    },
+    {
+      "path": "app/(admin)/admin/finanzas/nominas/page.tsx",
+      "bytes": 3091,
+      "kind": "text",
+      "sha256": "a61cdb35de1c24a7af4e76e7a27fc7bef513ae96d83ad58d80b50748967c1b96",
+      "lines": 94,
+      "exports": ["NominasPage"],
+      "httpMethods": [],
+      "prismaModels": ["employee", "payrollRun"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(admin)/admin/finanzas/page.spec.md",
+      "bytes": 865,
+      "kind": "text",
+      "sha256": "c8a42ac403b5a24c33908dffb0753d20ae29ca9bf0018717e5587217623f46a5",
+      "lines": 22,
+      "headings": [
+        "Página: Resumen de Finanzas",
+        "Propósito",
+        "Datos",
+        "Interfaz"
+      ]
+    },
+    {
+      "path": "app/(admin)/admin/finanzas/page.tsx",
+      "bytes": 2622,
+      "kind": "text",
+      "sha256": "804c844266b81a24cd546ef7c9e28fb620150912af704b9af48ab64b127e9b29",
+      "lines": 82,
+      "exports": ["ResumenFinanzasPage"],
+      "httpMethods": [],
+      "prismaModels": ["financeTransaction"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(admin)/admin/finanzas/proveedores/DesactivarProveedorButton.tsx",
+      "bytes": 1333,
+      "kind": "text",
+      "sha256": "081845e421d172ebb709cef786f15841c4055ea740367180d68667562a449e31",
+      "lines": 50,
+      "exports": ["DesactivarProveedorButton"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(admin)/admin/finanzas/proveedores/NuevoProveedorForm.tsx",
+      "bytes": 5653,
+      "kind": "text",
+      "sha256": "79e9ee9de1f898bc3fc62030e3a2c389986e4fa7da4824d37b1198c7d03dd9fd",
+      "lines": 197,
+      "exports": ["NuevoProveedorForm"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(admin)/admin/finanzas/proveedores/page.spec.md",
+      "bytes": 721,
+      "kind": "text",
+      "sha256": "ef75d04e27a4bc9cd6193248cbd1c29ee2b52f1ffa80dc7e8099e538ac3b0000",
+      "lines": 21,
+      "headings": ["Página: Proveedores", "Propósito", "Datos", "Interfaz"]
+    },
+    {
+      "path": "app/(admin)/admin/finanzas/proveedores/page.tsx",
+      "bytes": 2929,
+      "kind": "text",
+      "sha256": "005e6689f1c9b80ffb92d28f2aa42e065ab7c4111382dadc6f65af6d26fe6f36",
+      "lines": 78,
+      "exports": ["ProveedoresPage"],
+      "httpMethods": [],
+      "prismaModels": ["supplier"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(admin)/admin/finanzas/trabajadores/[id]/DesvincularTrabajadorButton.tsx",
+      "bytes": 1373,
+      "kind": "text",
+      "sha256": "61e858c18f6507ff173fb93402d93bd1546d551c110b1eb378b2cbe0b50340ff",
+      "lines": 54,
+      "exports": ["DesvincularTrabajadorButton"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(admin)/admin/finanzas/trabajadores/[id]/EditarTrabajadorForm.tsx",
+      "bytes": 8703,
+      "kind": "text",
+      "sha256": "fda2559a5eacb8e536360c196d2d4bded20fc0da243fc887577c594feba95658",
+      "lines": 288,
+      "exports": ["EditarTrabajadorForm"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(admin)/admin/finanzas/trabajadores/[id]/page.spec.md",
+      "bytes": 951,
+      "kind": "text",
+      "sha256": "04b382d34be990085e4ed5043efd5d052709d5734fe7a1832fd6c52e7b04abc0",
+      "lines": 24,
+      "headings": [
+        "Página: Ficha de trabajador",
+        "Propósito",
+        "Datos",
+        "Interfaz"
+      ]
+    },
+    {
+      "path": "app/(admin)/admin/finanzas/trabajadores/[id]/page.tsx",
+      "bytes": 1945,
+      "kind": "text",
+      "sha256": "472049445a1a2b4b86bac6f04881d76b10941baca29ba2a41030ab5e67481c96",
+      "lines": 60,
+      "exports": ["FichaTrabajadorPage"],
+      "httpMethods": [],
+      "prismaModels": ["employee"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(admin)/admin/finanzas/trabajadores/NuevoTrabajadorForm.tsx",
+      "bytes": 7716,
+      "kind": "text",
+      "sha256": "cdb834a88bd6b55eb10ed8c6c545f560397d6f160bd640f663fbf39c3a343b66",
+      "lines": 261,
+      "exports": ["NuevoTrabajadorForm"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(admin)/admin/finanzas/trabajadores/page.spec.md",
+      "bytes": 668,
+      "kind": "text",
+      "sha256": "fc2002e522939e0221668c9b145ad0af42bc446dbc9d5b2b139b64300c95904a",
+      "lines": 21,
+      "headings": ["Página: Trabajadores", "Propósito", "Datos", "Interfaz"]
+    },
+    {
+      "path": "app/(admin)/admin/finanzas/trabajadores/page.tsx",
+      "bytes": 3880,
+      "kind": "text",
+      "sha256": "792f75f17a2a9ccfca61077ed5c6bbb0b5ef8c62bf227effe8cd7a625283e018",
+      "lines": 106,
+      "exports": ["TrabajadoresPage"],
+      "httpMethods": [],
+      "prismaModels": ["employee"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(admin)/admin/inventario/movimientos/page.tsx",
+      "bytes": 5087,
+      "kind": "text",
+      "sha256": "5d90d98af3ed5f523e54a1a1bb91c516d83c19e076650c3b80aff478690adeb7",
+      "lines": 157,
+      "exports": ["MovimientosPage"],
+      "httpMethods": [],
+      "prismaModels": ["inventoryMovement"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(admin)/admin/inventario/stock/page.tsx",
+      "bytes": 5041,
+      "kind": "text",
+      "sha256": "7108c8c3747c657c790cf2849c4416fb7a49600f8644babd829cd89d6126ba37",
+      "lines": 133,
+      "exports": ["StockPage"],
+      "httpMethods": [],
+      "prismaModels": ["inventoryItem"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(admin)/admin/mapa/LeafletMap.tsx",
+      "bytes": 4248,
+      "kind": "text",
+      "sha256": "b5d6339ad6a072783c64210ce6fd7b9244f948fed56a7ad18924354d4c6987b8",
+      "lines": 115,
+      "exports": ["TrackerPosition", "LeafletMap"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(admin)/admin/mapa/MapaClient.tsx",
+      "bytes": 2070,
+      "kind": "text",
+      "sha256": "bbaaa7571cf3b6c6a2fe04a3cf8e9649e0de8b78abebd1d75f4e856f5b3f6aae",
+      "lines": 76,
+      "exports": ["MapaClient"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(admin)/admin/mapa/page.tsx",
+      "bytes": 382,
+      "kind": "text",
+      "sha256": "22492a78ba14eadd79695abbc8ee37a53068d907bd9b3f36528cc1e0074f1bb3",
+      "lines": 14,
+      "exports": ["MapaPage"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(admin)/admin/ordenes/[id]/page.tsx",
+      "bytes": 11627,
+      "kind": "text",
+      "sha256": "6163b506440ede11e461fa8fe939115343aa954e891466b3cb26ec894ca8b764",
+      "lines": 316,
+      "exports": ["AdminOrdenDetailPage"],
+      "httpMethods": [],
+      "prismaModels": ["pickupOrder"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(admin)/admin/ordenes/page.tsx",
+      "bytes": 6859,
+      "kind": "text",
+      "sha256": "05752e7a479a643ad465ad3d76aca86ec8fe28c333bf6b83b8a4f2c890b645ae",
+      "lines": 218,
+      "exports": ["OrdenesPage"],
+      "httpMethods": [],
+      "prismaModels": ["company", "pickupOrder", "user"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(admin)/admin/reportes/page.tsx",
+      "bytes": 2458,
+      "kind": "text",
+      "sha256": "2340e8c742f907baae648e37ad51a6214d43cf1d1c51c20942fe48f31549e6dc",
+      "lines": 78,
+      "exports": ["ReportesPage"],
+      "httpMethods": [],
+      "prismaModels": ["company", "user"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(admin)/layout.spec.md",
+      "bytes": 999,
+      "kind": "text",
+      "sha256": "daa1952bb664205857e4f944737a4ffa44407d6b24d9a9130f91f88f14a0fd0b",
+      "lines": 30,
+      "headings": [
+        "Layout: Administración",
+        "Propósito",
+        "Componentes",
+        "Comportamiento"
+      ]
+    },
+    {
+      "path": "app/(admin)/layout.tsx",
+      "bytes": 1503,
+      "kind": "text",
+      "sha256": "6834b3b745286a6b008f1240a87be1ddb985d9239c0eb8cad67076b748c2d9ff",
+      "lines": 42,
+      "exports": ["AdminLayout"],
+      "httpMethods": [],
+      "prismaModels": ["discrepancy"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(auth)/layout.spec.md",
+      "bytes": 360,
+      "kind": "text",
+      "sha256": "096730293a6fedfbebf22bb5ab8af1aaff21b5bb54c8abc9ccdeb07fb0704bae",
+      "lines": 13,
+      "headings": ["Layout: Auth", "Propósito", "Comportamiento"]
+    },
+    {
+      "path": "app/(auth)/layout.tsx",
+      "bytes": 109,
+      "kind": "text",
+      "sha256": "ba923b09abc2f12cac51109f8aa74e6aac6ec13af504991fbe242c8a30387749",
+      "lines": 4,
+      "exports": ["AuthLayout"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(auth)/login/page.spec.md",
+      "bytes": 1198,
+      "kind": "text",
+      "sha256": "6cf3963249532aa67d718ad637e40908a5af5af24cf98698559a67e31889fd3e",
+      "lines": 19,
+      "headings": ["Login `/login`"]
+    },
+    {
+      "path": "app/(auth)/login/page.tsx",
+      "bytes": 9056,
+      "kind": "text",
+      "sha256": "1b46c8067b58bbfc3ee24956986adc0732edd35b3a5a716d386616d96feeca0d",
+      "lines": 251,
+      "exports": ["LoginPage"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(chofer)/chofer/dashboard/page.tsx",
+      "bytes": 5845,
+      "kind": "text",
+      "sha256": "aefea890a1b882dd73094ef48038778c6040ab6a7018c2a918cfc52394492a4c",
+      "lines": 165,
+      "exports": ["ChoferDashboardPage"],
+      "httpMethods": [],
+      "prismaModels": ["pickupOrder"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(chofer)/chofer/historial/page.tsx",
+      "bytes": 3171,
+      "kind": "text",
+      "sha256": "de6dbf15468b607b8c840e0c54cc8f073fbe299ca3d22ee7426bb26a0e35e36d",
+      "lines": 89,
+      "exports": ["HistorialPage"],
+      "httpMethods": [],
+      "prismaModels": ["pickupOrder"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(chofer)/chofer/nueva-orden/page.tsx",
+      "bytes": 19100,
+      "kind": "text",
+      "sha256": "4ac8404585b4b1d3ac0a784edbdb02353f93b4f98ffe31d79ebc1d75872b0d2c",
+      "lines": 567,
+      "exports": ["NuevaOrdenPage"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(chofer)/chofer/orden/[id]/page.tsx",
+      "bytes": 6302,
+      "kind": "text",
+      "sha256": "63529ad1a4dcfe15ca9271059069e5149bd01b02802541af4e7751ec65fcae4c",
+      "lines": 200,
+      "exports": ["OrdenDetailPage"],
+      "httpMethods": [],
+      "prismaModels": ["pickupOrder"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(chofer)/layout.spec.md",
+      "bytes": 595,
+      "kind": "text",
+      "sha256": "74ec78f644fc6654c819435ca043f57d6f1de7d48cdbd6b58a7f298555abd65d",
+      "lines": 21,
+      "headings": [
+        "Layout: Chofer",
+        "Propósito",
+        "Componentes",
+        "Comportamiento"
+      ]
+    },
+    {
+      "path": "app/(chofer)/layout.tsx",
+      "bytes": 896,
+      "kind": "text",
+      "sha256": "30b33b4a05ec6f4accc4cffbfc54540ff35def92fc5a1cdc05f664eebff6aa9d",
+      "lines": 28,
+      "exports": ["ChoferLayout"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(recepcion)/layout.spec.md",
+      "bytes": 511,
+      "kind": "text",
+      "sha256": "aad7c85ee2ac3ac413c18460867ccdadceccab1064aeea5af492ba0e9fb96fe7",
+      "lines": 18,
+      "headings": [
+        "Layout: Recepción",
+        "Propósito",
+        "Componentes",
+        "Comportamiento"
+      ]
+    },
+    {
+      "path": "app/(recepcion)/layout.tsx",
+      "bytes": 694,
+      "kind": "text",
+      "sha256": "2fc4f5484528a832746984d75505b3e5c4ab9e0199b2784d75f76f162f5fb829",
+      "lines": 19,
+      "exports": ["RecepcionLayout"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(recepcion)/recepcion/dashboard/page.tsx",
+      "bytes": 4772,
+      "kind": "text",
+      "sha256": "b403bff2fe95e015f0ef734ed8155a5e0e265f23b4cf7325381c4e432bbaa2e7",
+      "lines": 138,
+      "exports": ["RecepcionDashboardPage"],
+      "httpMethods": [],
+      "prismaModels": ["pickupOrder"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(recepcion)/recepcion/historial/page.tsx",
+      "bytes": 3928,
+      "kind": "text",
+      "sha256": "51b4f4e7b72101bf48bad7fea6d3a1342016d4faf4eda514f2264c486d3ee565",
+      "lines": 103,
+      "exports": ["RecepcionHistorialPage"],
+      "httpMethods": [],
+      "prismaModels": ["pickupOrder"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/(recepcion)/recepcion/recibir/[ordenId]/page.tsx",
+      "bytes": 4435,
+      "kind": "text",
+      "sha256": "c202beecfa24d133230c058816fce05a42a9681df69195485b3a82bf78ccdc22",
+      "lines": 136,
+      "exports": ["RecibirPage"],
+      "httpMethods": [],
+      "prismaModels": ["pickupOrder"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/api/actividades/pendientes/route.ts",
+      "bytes": 1324,
+      "kind": "text",
+      "sha256": "170bd058f8f17a86dd4b7ed50fcb7d4dbd430f3ed6fefedaf5cea9cfe9eaa6d1",
+      "lines": 38,
+      "exports": ["GET"],
+      "httpMethods": ["GET"],
+      "prismaModels": ["activity"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/api/actividades/route.ts",
+      "bytes": 2743,
+      "kind": "text",
+      "sha256": "2d0ed4a45c9e3f4bdc31aca7bb48d45397b35296d3b4d9f7e474e52e8a2c8cb0",
+      "lines": 81,
+      "exports": ["GET", "POST", "PATCH"],
+      "httpMethods": ["GET", "POST", "PATCH"],
+      "prismaModels": ["activity"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/api/auth/[...nextauth]/route.ts",
+      "bytes": 156,
+      "kind": "text",
+      "sha256": "7f8f7b852d3a9acb9b4ebbd9127065d4ccf81fde100f75cb6391c619f9eb55b7",
+      "lines": 6,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "app/api/auth/recuperar/confirmar/route.spec.md",
+      "bytes": 784,
+      "kind": "text",
+      "sha256": "fc4f284cbfda97a5d0b8f099761e79eaf0aeed1d0adecf51f8f2c841d26dfd60",
+      "lines": 13,
+      "headings": ["POST /api/auth/recuperar/confirmar"]
+    },
+    {
+      "path": "app/api/auth/recuperar/confirmar/route.ts",
+      "bytes": 2339,
+      "kind": "text",
+      "sha256": "af86d3be778d5406efccc7c2ae7ed6170c4ffe1285625dad45aea5f693b7f606",
+      "lines": 70,
+      "exports": ["POST"],
+      "httpMethods": ["POST"],
+      "prismaModels": ["passwordResetToken", "user"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/api/auth/recuperar/route.ts",
+      "bytes": 2946,
+      "kind": "text",
+      "sha256": "907fc4aa54d1361a9c0922a931cfd4b245ab30f8a367b269240d084b4fb0d2e4",
+      "lines": 84,
+      "exports": ["POST"],
+      "httpMethods": ["POST"],
+      "prismaModels": ["passwordResetToken", "user"],
+      "environmentNames": ["NEXTAUTH_URL"]
+    },
+    {
+      "path": "app/api/auth/route.spec.md",
+      "bytes": 616,
+      "kind": "text",
+      "sha256": "ff5f364816fe40c27c2b60f12a75ef6b14efaf6a6134196e099233313733cacc",
+      "lines": 18,
+      "headings": [
+        "API Route: /api/auth/[...nextauth]",
+        "Propósito",
+        "Implementación",
+        "Rutas que maneja NextAuth automáticamente"
+      ]
+    },
+    {
+      "path": "app/api/configuracion/webhook/route.spec.md",
+      "bytes": 508,
+      "kind": "text",
+      "sha256": "e480aab436d3c6a5ca73f2d208702334ee9a1bb94db19bafd523dec315809f6a",
+      "lines": 10,
+      "headings": ["API Route: configuración del webhook CRM"]
+    },
+    {
+      "path": "app/api/configuracion/webhook/route.ts",
+      "bytes": 2575,
+      "kind": "text",
+      "sha256": "230de4be2c8db5948d6669205e582e0de6b26f001e3865500488de6d9a1d21b5",
+      "lines": 77,
+      "exports": ["GET", "PATCH"],
+      "httpMethods": ["GET", "PATCH"],
+      "prismaModels": ["crmWebhookConfig"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/api/contactos/classify/route.ts",
+      "bytes": 3413,
+      "kind": "text",
+      "sha256": "61c74e6a9c9802709165e1e957e5e8603eaec9efb97737cf1b104b044011e368",
+      "lines": 101,
+      "exports": ["POST"],
+      "httpMethods": ["POST"],
+      "prismaModels": ["contact", "deal", "pipelineStage"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/api/contactos/export/route.ts",
+      "bytes": 2326,
+      "kind": "text",
+      "sha256": "f6f43477e62f4bfe25fb38fe5271283490a0599f28f6d1e04081883500fe2cae",
+      "lines": 71,
+      "exports": ["GET"],
+      "httpMethods": ["GET"],
+      "prismaModels": ["contact"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/api/contactos/import/route.spec.md",
+      "bytes": 514,
+      "kind": "text",
+      "sha256": "560484b93f46f9a268504b737d135ace6dd68a9da67b567baae2981ccd2a7de0",
+      "lines": 11,
+      "headings": ["API Route: importación de contactos CRM"]
+    },
+    {
+      "path": "app/api/contactos/import/route.ts",
+      "bytes": 7444,
+      "kind": "text",
+      "sha256": "225c4d83093e1a769e19c78bb689a11c78367521072c607aba91fae91394d040",
+      "lines": 229,
+      "exports": ["POST"],
+      "httpMethods": ["POST"],
+      "prismaModels": ["company", "contact"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/api/contactos/route.ts",
+      "bytes": 4655,
+      "kind": "text",
+      "sha256": "91bf556f5aefabbfc1e6942551ec8acf706badd1f58fc37ffaf9b358886bd897",
+      "lines": 148,
+      "exports": ["GET", "POST", "PATCH"],
+      "httpMethods": ["GET", "POST", "PATCH"],
+      "prismaModels": ["contact"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/api/cron/outreach/route.spec.md",
+      "bytes": 5557,
+      "kind": "text",
+      "sha256": "d4c941e07df44707ba6e748fee28e059b33f394aa5a53fa74dd6c0e81ba80711",
+      "lines": 98,
+      "headings": [
+        "`GET /api/cron/outreach` — spec",
+        "Auth",
+        "Qué hace",
+        "Por qué el usuario \"sistema\" (`lib/outreach/system-user.ts`)",
+        "Idempotencia",
+        "Envío: SMTP, no Microsoft Graph",
+        "Qué NO hace"
+      ]
+    },
+    {
+      "path": "app/api/cron/outreach/route.ts",
+      "bytes": 9722,
+      "kind": "text",
+      "sha256": "b4809101be61b3ff9ab6818d3698fda7ab49a348847124b92747db66422d049c",
+      "lines": 296,
+      "exports": ["dynamic", "GET"],
+      "httpMethods": ["GET"],
+      "prismaModels": [
+        "activity",
+        "company",
+        "contact",
+        "outreachCampaign",
+        "outreachSend"
+      ],
+      "environmentNames": [
+        "CRON_SECRET",
+        "OUTREACH_DAILY_CAP",
+        "OUTREACH_PUBLIC_URL",
+        "OUTREACH_SENDER_ADDRESS",
+        "OUTREACH_SENDER_LEGAL_NAME",
+        "OUTREACH_SENDER_RUT"
+      ]
+    },
+    {
+      "path": "app/api/deals/export/route.ts",
+      "bytes": 1686,
+      "kind": "text",
+      "sha256": "bd502157353ba826d76b32208c47bae6fc15fdd2abb1deb62efd1203e28efbc2",
+      "lines": 55,
+      "exports": ["GET"],
+      "httpMethods": ["GET"],
+      "prismaModels": ["deal"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/api/deals/route.ts",
+      "bytes": 3230,
+      "kind": "text",
+      "sha256": "172e79083a5a41f6bfba107b48add094e3193dc66934a3244a19cf7a07c68a57",
+      "lines": 99,
+      "exports": ["GET", "POST", "PATCH"],
+      "httpMethods": ["GET", "POST", "PATCH"],
+      "prismaModels": ["deal", "pipelineStage"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/api/discrepancias/route.spec.md",
+      "bytes": 850,
+      "kind": "text",
+      "sha256": "c27194a41b116b5f5bbfd8fd3c3e8d1eae073a3cf0cf13dede8636e41a0c3d5a",
+      "lines": 23,
+      "headings": [
+        "API Route: /api/discrepancias",
+        "GET /api/discrepancias",
+        "PATCH /api/discrepancias/[id]"
+      ]
+    },
+    {
+      "path": "app/api/discrepancias/route.ts",
+      "bytes": 4024,
+      "kind": "text",
+      "sha256": "a5af6f30bec659701df5330af9d514a0aceca52bb18120cd2154f0b761cea9bb",
+      "lines": 119,
+      "exports": ["GET", "PATCH"],
+      "httpMethods": ["GET", "PATCH"],
+      "prismaModels": ["discrepancy", "pickupOrder"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/api/empresas/route.spec.md",
+      "bytes": 785,
+      "kind": "text",
+      "sha256": "cfc2a1486a07177f56170108be71ee364fbb1c5f265926357d9dfeaeb6fdb5e8",
+      "lines": 19,
+      "headings": [
+        "API Route: `/api/empresas`",
+        "GET `/api/empresas`",
+        "POST y PATCH"
+      ]
+    },
+    {
+      "path": "app/api/empresas/route.ts",
+      "bytes": 3134,
+      "kind": "text",
+      "sha256": "71004e1c472064f3f501200304a238da930da4841afa127bf3a7832231003200",
+      "lines": 98,
+      "exports": ["GET", "POST", "PATCH"],
+      "httpMethods": ["GET", "POST", "PATCH"],
+      "prismaModels": ["company"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/api/evidencias/route.spec.md",
+      "bytes": 840,
+      "kind": "text",
+      "sha256": "863a171687a3976a95dd72406944bd728c0acc2c16e973faa8335c33f98598be",
+      "lines": 19,
+      "headings": [
+        "API Route: `/api/evidencias`",
+        "POST `/api/evidencias`",
+        "DELETE `/api/evidencias?id=...` o `?path=...`"
+      ]
+    },
+    {
+      "path": "app/api/evidencias/route.ts",
+      "bytes": 6564,
+      "kind": "text",
+      "sha256": "801b657475c7a29d4d93522c09e46c3f9a18a376bcfaae700c8655c653c749d7",
+      "lines": 211,
+      "exports": ["POST", "DELETE"],
+      "httpMethods": ["POST", "DELETE"],
+      "prismaModels": ["evidence", "pickupOrder"],
+      "environmentNames": [
+        "BLOB_READ_WRITE_TOKEN",
+        "MAX_PHOTO_SIZE_MB",
+        "MAX_PHOTOS_PER_ORDER",
+        "UPLOAD_DIR"
+      ]
+    },
+    {
+      "path": "app/api/finanzas/anticipos/[id]/route.spec.md",
+      "bytes": 824,
+      "kind": "text",
+      "sha256": "c6c834706bc95f93a75716e04a1040a5931128ff9bbbcf43a1e06a35e4e79a0a",
+      "lines": 22,
+      "headings": [
+        "API Route: /api/finanzas/anticipos/[id]",
+        "PATCH /api/finanzas/anticipos/[id]"
+      ]
+    },
+    {
+      "path": "app/api/finanzas/anticipos/[id]/route.ts",
+      "bytes": 2442,
+      "kind": "text",
+      "sha256": "f0c5a01f707744c519eb3346558373e3014602250aa92a4eaee0c60b62b38fde",
+      "lines": 72,
+      "exports": ["PATCH"],
+      "httpMethods": ["PATCH"],
+      "prismaModels": ["advance"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/api/finanzas/anticipos/route.spec.md",
+      "bytes": 663,
+      "kind": "text",
+      "sha256": "e34c5bd0b37c6660c18cd9ddbd430037f1d64773d436d7df2709fbc22372bfcd",
+      "lines": 25,
+      "headings": [
+        "API Route: /api/finanzas/anticipos",
+        "GET /api/finanzas/anticipos",
+        "POST /api/finanzas/anticipos"
+      ]
+    },
+    {
+      "path": "app/api/finanzas/anticipos/route.ts",
+      "bytes": 2936,
+      "kind": "text",
+      "sha256": "2ab53304f6b365b342d5f38ca4020e3042bdd1e09da0b3bfb6f3c5e61deaab3e",
+      "lines": 91,
+      "exports": ["GET", "POST"],
+      "httpMethods": ["GET", "POST"],
+      "prismaModels": ["advance", "employee"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/api/finanzas/auditoria/route.spec.md",
+      "bytes": 1279,
+      "kind": "text",
+      "sha256": "3e009ed444f4c71b71fb1a96eeb7d370eee3150104ee54c925ac2072bb235308",
+      "lines": 26,
+      "headings": [
+        "API Route: /api/finanzas/auditoria",
+        "GET /api/finanzas/auditoria",
+        "Privacidad y fechas AUD-002"
+      ]
+    },
+    {
+      "path": "app/api/finanzas/auditoria/route.ts",
+      "bytes": 1955,
+      "kind": "text",
+      "sha256": "3cb3ebd421e1c10111be48eb2d888d5e6213fa3fc4f2fb506b56256c59c80597",
+      "lines": 54,
+      "exports": ["GET"],
+      "httpMethods": ["GET"],
+      "prismaModels": ["financeAuditLog"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/api/finanzas/categorias/route.spec.md",
+      "bytes": 788,
+      "kind": "text",
+      "sha256": "1291605c163dab011c62f50e708e4ae7fdc3d42b98af397750ddf35498e19f01",
+      "lines": 24,
+      "headings": [
+        "API Route: /api/finanzas/categorias",
+        "GET /api/finanzas/categorias",
+        "POST /api/finanzas/categorias"
+      ]
+    },
+    {
+      "path": "app/api/finanzas/categorias/route.ts",
+      "bytes": 2365,
+      "kind": "text",
+      "sha256": "aacb6f5a7034170c6dded969450befaded958224dc0c16b67e398487195511ef",
+      "lines": 70,
+      "exports": ["GET", "POST"],
+      "httpMethods": ["GET", "POST"],
+      "prismaModels": ["financeCategory"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/api/finanzas/empleados/[id]/desvincular/route.spec.md",
+      "bytes": 1137,
+      "kind": "text",
+      "sha256": "bdf7e4956b5d4ffb564c85f5b89cfc90369104568819f95ab5363c864fb9d68d",
+      "lines": 25,
+      "headings": [
+        "API Route: /api/finanzas/empleados/[id]/desvincular",
+        "POST /api/finanzas/empleados/[id]/desvincular"
+      ]
+    },
+    {
+      "path": "app/api/finanzas/empleados/[id]/desvincular/route.ts",
+      "bytes": 2097,
+      "kind": "text",
+      "sha256": "bf61c0665af5b5582e654fe7061b24096fe311ae551240ede815062205c274db",
+      "lines": 66,
+      "exports": ["POST"],
+      "httpMethods": ["POST"],
+      "prismaModels": ["employee"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/api/finanzas/empleados/[id]/route.spec.md",
+      "bytes": 1221,
+      "kind": "text",
+      "sha256": "a41795dd6d90021818bff89345e0ab72719dc17a3fcb29e283c45d0946c4c3a5",
+      "lines": 31,
+      "headings": [
+        "API Route: /api/finanzas/empleados/[id]",
+        "GET /api/finanzas/empleados/[id]",
+        "PATCH /api/finanzas/empleados/[id]"
+      ]
+    },
+    {
+      "path": "app/api/finanzas/empleados/[id]/route.ts",
+      "bytes": 3890,
+      "kind": "text",
+      "sha256": "00e6e851c94fc14166092aec299d3567568972f42658fca8699b1e2d2c23a5ee",
+      "lines": 106,
+      "exports": ["GET", "PATCH"],
+      "httpMethods": ["GET", "PATCH"],
+      "prismaModels": ["employee"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/api/finanzas/empleados/route.spec.md",
+      "bytes": 1155,
+      "kind": "text",
+      "sha256": "d41055ebffeaabf7c8002b6ee4e4953e0ff575f9fb857c3421b3de1a41f783c2",
+      "lines": 31,
+      "headings": [
+        "API Route: /api/finanzas/empleados",
+        "GET /api/finanzas/empleados",
+        "POST /api/finanzas/empleados"
+      ]
+    },
+    {
+      "path": "app/api/finanzas/empleados/route.ts",
+      "bytes": 3662,
+      "kind": "text",
+      "sha256": "a215e8bff5d02e6c719b3aad444056edba1c28bd391439c3f17fcbb403394edf",
+      "lines": 113,
+      "exports": ["GET", "POST"],
+      "httpMethods": ["GET", "POST"],
+      "prismaModels": ["employee"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/api/finanzas/export/route.spec.md",
+      "bytes": 1251,
+      "kind": "text",
+      "sha256": "abbd0024f5b6664c95e307a354eec55ed595bd93ae8eb4f7b8c6cd62ac9cfc06",
+      "lines": 29,
+      "headings": [
+        "API Route: /api/finanzas/export",
+        "GET /api/finanzas/export?desde=&hasta=",
+        "Salida segura AUD-002"
+      ]
+    },
+    {
+      "path": "app/api/finanzas/export/route.ts",
+      "bytes": 2996,
+      "kind": "text",
+      "sha256": "61b8de787cdc32088672f0b9c6e0b7f9f080b0e30095c92cd9b8529b1f031f2a",
+      "lines": 105,
+      "exports": ["GET"],
+      "httpMethods": ["GET"],
+      "prismaModels": ["financeTransaction"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/api/finanzas/nominas/[id]/pago/route.spec.md",
+      "bytes": 1641,
+      "kind": "text",
+      "sha256": "ffe6496b517ff6d878a83a24b5aff9b7d1e7821d3ca65bef151be9bae737062c",
+      "lines": 32,
+      "headings": [
+        "API Route: /api/finanzas/nominas/[id]/pago",
+        "GET /api/finanzas/nominas/[id]/pago"
+      ]
+    },
+    {
+      "path": "app/api/finanzas/nominas/[id]/pago/route.ts",
+      "bytes": 3567,
+      "kind": "text",
+      "sha256": "043e0c9134eab57f1d3d330f111922deb380e1d749aa2e180405077cae28ff02",
+      "lines": 104,
+      "exports": ["GET"],
+      "httpMethods": ["GET"],
+      "prismaModels": ["payrollRun"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/api/finanzas/nominas/[id]/route.spec.md",
+      "bytes": 923,
+      "kind": "text",
+      "sha256": "5ca7c2b48ccbdc55745565245916bd1ae338a9c9a005a628c80d7eeb8dcadb31",
+      "lines": 25,
+      "headings": [
+        "API Route: /api/finanzas/nominas/[id]",
+        "GET /api/finanzas/nominas/[id]",
+        "PATCH /api/finanzas/nominas/[id]"
+      ]
+    },
+    {
+      "path": "app/api/finanzas/nominas/[id]/route.ts",
+      "bytes": 3922,
+      "kind": "text",
+      "sha256": "a4b73e142e95aac627bb736de610c7aa30a6d006df339f95200406341d3aa4d5",
+      "lines": 122,
+      "exports": ["GET", "PATCH"],
+      "httpMethods": ["GET", "PATCH"],
+      "prismaModels": ["payrollRun"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/api/finanzas/nominas/route.spec.md",
+      "bytes": 1542,
+      "kind": "text",
+      "sha256": "7030b1a6395f2aeba7cca584c2e9d04831c0ce87945a635dea859c0ebd0ea3b5",
+      "lines": 32,
+      "headings": [
+        "API Route: /api/finanzas/nominas",
+        "GET /api/finanzas/nominas",
+        "POST /api/finanzas/nominas"
+      ]
+    },
+    {
+      "path": "app/api/finanzas/nominas/route.ts",
+      "bytes": 5005,
+      "kind": "text",
+      "sha256": "01cfa21ac4c2b65de78d90442e3963f3f51944faa4670c67c201573d64b63b84",
+      "lines": 159,
+      "exports": ["GET", "POST"],
+      "httpMethods": ["GET", "POST"],
+      "prismaModels": ["advance", "employee", "payrollItem", "payrollRun"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/api/finanzas/proveedores/[id]/route.spec.md",
+      "bytes": 795,
+      "kind": "text",
+      "sha256": "4c86ffcab40f2d1f9d5b3697b1b708352f4e3b89bea99b7e20f4f79f1e51969e",
+      "lines": 26,
+      "headings": [
+        "API Route: /api/finanzas/proveedores/[id]",
+        "GET /api/finanzas/proveedores/[id]",
+        "PATCH /api/finanzas/proveedores/[id]"
+      ]
+    },
+    {
+      "path": "app/api/finanzas/proveedores/[id]/route.ts",
+      "bytes": 3158,
+      "kind": "text",
+      "sha256": "e8af605b6d53896e45761745cf7671a99f9bcb18ee581b5e99e3810fb881d602",
+      "lines": 89,
+      "exports": ["GET", "PATCH"],
+      "httpMethods": ["GET", "PATCH"],
+      "prismaModels": ["supplier"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/api/finanzas/proveedores/route.spec.md",
+      "bytes": 794,
+      "kind": "text",
+      "sha256": "9b362fadbe0ec5219003f34a1ffb71edb91cc89822bed27aa3f2ef62af153448",
+      "lines": 26,
+      "headings": [
+        "API Route: /api/finanzas/proveedores",
+        "GET /api/finanzas/proveedores",
+        "POST /api/finanzas/proveedores"
+      ]
+    },
+    {
+      "path": "app/api/finanzas/proveedores/route.ts",
+      "bytes": 3030,
+      "kind": "text",
+      "sha256": "ce61a56ea3af8f67dad0881eef833d2014d08a28c36a3b811c59ae419792265e",
+      "lines": 98,
+      "exports": ["GET", "POST"],
+      "httpMethods": ["GET", "POST"],
+      "prismaModels": ["supplier"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/api/finanzas/reportes/route.spec.md",
+      "bytes": 745,
+      "kind": "text",
+      "sha256": "e5c6c1c63095000102198440be89ddd9a9b564ba23a499b9df62768cbd2736ce",
+      "lines": 21,
+      "headings": [
+        "API Route: /api/finanzas/reportes",
+        "GET /api/finanzas/reportes?desde=&hasta="
+      ]
+    },
+    {
+      "path": "app/api/finanzas/reportes/route.ts",
+      "bytes": 1289,
+      "kind": "text",
+      "sha256": "f658c5036cb0c3e482d71dfc949943fced2d67c3da70ea21f30f27c2e33148e9",
+      "lines": 37,
+      "exports": ["GET"],
+      "httpMethods": ["GET"],
+      "prismaModels": ["financeTransaction"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/api/finanzas/transacciones/[id]/route.spec.md",
+      "bytes": 620,
+      "kind": "text",
+      "sha256": "d2d86e7781e4156f0247a7044222d55db140d3cb0faa6bfe7a2de7ca9a0209f8",
+      "lines": 20,
+      "headings": [
+        "API Route: /api/finanzas/transacciones/[id]",
+        "PATCH /api/finanzas/transacciones/[id]"
+      ]
+    },
+    {
+      "path": "app/api/finanzas/transacciones/[id]/route.ts",
+      "bytes": 2487,
+      "kind": "text",
+      "sha256": "5e4b0e24cb48e627df359367b5ef62d305b2365131085fc64982431f179f20c6",
+      "lines": 68,
+      "exports": ["PATCH"],
+      "httpMethods": ["PATCH"],
+      "prismaModels": ["financeTransaction"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/api/finanzas/transacciones/route.spec.md",
+      "bytes": 943,
+      "kind": "text",
+      "sha256": "7c2fb880aadf6050aec8d89292604cfcf1cc849983a22baf88ee111cb31c330e",
+      "lines": 27,
+      "headings": [
+        "API Route: /api/finanzas/transacciones",
+        "GET /api/finanzas/transacciones",
+        "POST /api/finanzas/transacciones",
+        "Proyección segura AUD-002"
+      ]
+    },
+    {
+      "path": "app/api/finanzas/transacciones/route.ts",
+      "bytes": 3498,
+      "kind": "text",
+      "sha256": "dbfba090d7436e15b31fed94c53e15a45ccbf1975bcb38b29679a2746e39e782",
+      "lines": 104,
+      "exports": ["GET", "POST"],
+      "httpMethods": ["GET", "POST"],
+      "prismaModels": ["financeTransaction"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/api/inventario/[id]/route.ts",
+      "bytes": 6487,
+      "kind": "text",
+      "sha256": "bfb1e273deeafcbbb24fe848bb7509b7c2150d82632dd00b84f224d1737e7b94",
+      "lines": 169,
+      "exports": ["GET", "PATCH", "DELETE"],
+      "httpMethods": ["GET", "PATCH", "DELETE"],
+      "prismaModels": ["inventoryItem", "inventoryMovement"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/api/inventario/export/route.ts",
+      "bytes": 2461,
+      "kind": "text",
+      "sha256": "c0af19a6e5297f712ef719cb53c6b7071cdd6a2c3dae56706540b6c0138901cc",
+      "lines": 64,
+      "exports": ["GET"],
+      "httpMethods": ["GET"],
+      "prismaModels": ["inventoryItem"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/api/inventario/import/route.ts",
+      "bytes": 3742,
+      "kind": "text",
+      "sha256": "a21094abbda0ddc5e1ba24ab536e310668469fbe6e094206df1e789cc4c59ac4",
+      "lines": 109,
+      "exports": ["POST"],
+      "httpMethods": ["POST"],
+      "prismaModels": ["inventoryItem"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/api/inventario/movimientos/route.ts",
+      "bytes": 2270,
+      "kind": "text",
+      "sha256": "a2159fdbcb33f11cc3e786a4d784c93edc71adfb1f6811472dadc01cc36f43ca",
+      "lines": 63,
+      "exports": ["GET", "POST"],
+      "httpMethods": ["GET", "POST"],
+      "prismaModels": ["inventoryMovement"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/api/inventario/route.spec.md",
+      "bytes": 4495,
+      "kind": "text",
+      "sha256": "89bdae0a82ca027ca46cae41526363bc5cfb80d1bb3625185ad3aa1a9e62316e",
+      "lines": 85,
+      "headings": [
+        "API Route: /api/inventario",
+        "GET /api/inventario",
+        "POST /api/inventario",
+        "PATCH /api/inventario/[id]",
+        "DELETE /api/inventario/[id]",
+        "POST /api/inventario/import",
+        "Clasificación de EPP",
+        "GET /api/inventario/export",
+        "GET /api/inventario/movimientos",
+        "POST /api/inventario/movimientos",
+        "Concurrencia y validación AUD-002"
+      ]
+    },
+    {
+      "path": "app/api/inventario/route.ts",
+      "bytes": 4259,
+      "kind": "text",
+      "sha256": "ac9596f4fc6c06f75f07e65e7891a0bb37e6549f02d4bdb47fc8f63fddd6b6b7",
+      "lines": 136,
+      "exports": ["GET", "POST"],
+      "httpMethods": ["GET", "POST"],
+      "prismaModels": ["inventoryItem"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/api/llamadas/route.spec.md",
+      "bytes": 2533,
+      "kind": "text",
+      "sha256": "9984392d48585f97dc048c27e069ad3e219f284885acf0ee6ade24ee36a67af6",
+      "lines": 56,
+      "headings": ["`/api/llamadas` — spec", "Qué hace", "Auth", "Qué NO hace"]
+    },
+    {
+      "path": "app/api/llamadas/route.ts",
+      "bytes": 3142,
+      "kind": "text",
+      "sha256": "cb19b6f2e4ed85144da874fe6bf4ec9475e9430773bd8cab862faaafe9e70330",
+      "lines": 92,
+      "exports": ["GET", "PATCH"],
+      "httpMethods": ["GET", "PATCH"],
+      "prismaModels": ["contact"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/api/materiales/route.ts",
+      "bytes": 470,
+      "kind": "text",
+      "sha256": "67c1fd8fb7afeec5dd3643546bb27735335b0f6ef50efa101b85f31b11186dec",
+      "lines": 16,
+      "exports": ["GET"],
+      "httpMethods": ["GET"],
+      "prismaModels": ["materialType"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/api/ordenes/[id]/route.spec.md",
+      "bytes": 1127,
+      "kind": "text",
+      "sha256": "5add49b6373c9c3e789111456619121a48aded25bc4a28cdb177b2bab193899b",
+      "lines": 22,
+      "headings": ["API Route: `/api/ordenes/[id]`", "GET", "PATCH"]
+    },
+    {
+      "path": "app/api/ordenes/[id]/route.ts",
+      "bytes": 11600,
+      "kind": "text",
+      "sha256": "3f0a20cc1b26f98c805bb99d4d900b8cf3bffe63ff5dd3ede1ad3b68ec6baa6f",
+      "lines": 362,
+      "exports": ["GET", "PATCH"],
+      "httpMethods": ["GET", "PATCH"],
+      "prismaModels": [
+        "discrepancy",
+        "materialType",
+        "orderItem",
+        "pickupOrder"
+      ],
+      "environmentNames": [
+        "BLOB_READ_WRITE_TOKEN",
+        "DISCREPANCY_THRESHOLD_PERCENT",
+        "UPLOAD_DIR"
+      ]
+    },
+    {
+      "path": "app/api/ordenes/route.spec.md",
+      "bytes": 894,
+      "kind": "text",
+      "sha256": "515722033ccbe225ab4c07448f01686f075d209bf6653c44bd3eb400b166a1e3",
+      "lines": 19,
+      "headings": ["API Route: `/api/ordenes`", "GET", "POST"]
+    },
+    {
+      "path": "app/api/ordenes/route.ts",
+      "bytes": 4243,
+      "kind": "text",
+      "sha256": "2050f2c45419572e8c84209cd9ff7c2e017f8a5eb4a9a4f60e47ce2db9c93fba",
+      "lines": 125,
+      "exports": ["GET", "POST"],
+      "httpMethods": ["GET", "POST"],
+      "prismaModels": ["company", "orderCounter", "pickupOrder"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/api/outreach/stats/route.spec.md",
+      "bytes": 2102,
+      "kind": "text",
+      "sha256": "29633956bd17829fd097338c9823ccbe90735d66dbc9693046cb6616a035d932",
+      "lines": 62,
+      "headings": [
+        "`GET /api/outreach/stats` — spec",
+        "Auth",
+        "Respuesta",
+        "Decisiones de diseño"
+      ]
+    },
+    {
+      "path": "app/api/outreach/stats/route.ts",
+      "bytes": 2702,
+      "kind": "text",
+      "sha256": "abca902ff5ead21d4bc91b3e7ba360a98baf0a4dd009a555a3c21eac1b581ed2",
+      "lines": 79,
+      "exports": ["GET"],
+      "httpMethods": ["GET"],
+      "prismaModels": ["contact", "outreachCampaign", "outreachSend"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/api/outreach/unsubscribe/route.spec.md",
+      "bytes": 1839,
+      "kind": "text",
+      "sha256": "d903aa82892e97de4007e733742b0a0f2973682cd18ab1a78af5c8064b587fa3",
+      "lines": 42,
+      "headings": [
+        "`GET /api/outreach/unsubscribe` — spec",
+        "Query param",
+        "Qué hace",
+        "Por qué `optOut` es permanente, no por campaña",
+        "Qué NO hace"
+      ]
+    },
+    {
+      "path": "app/api/outreach/unsubscribe/route.ts",
+      "bytes": 1602,
+      "kind": "text",
+      "sha256": "59bc626004932569e2fa455c004cb86b902ec24c658ac9104f5ac0e6791af3fa",
+      "lines": 52,
+      "exports": ["GET"],
+      "httpMethods": ["GET"],
+      "prismaModels": ["contact"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/api/pipeline/route.ts",
+      "bytes": 1596,
+      "kind": "text",
+      "sha256": "18470f1a48ffcf79644052281a887e58122f02d3ba22755e6b1bad77922ad519",
+      "lines": 51,
+      "exports": ["GET", "PATCH"],
+      "httpMethods": ["GET", "PATCH"],
+      "prismaModels": ["deal", "pipelineStage"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/api/posiciones/activas/route.spec.md",
+      "bytes": 2131,
+      "kind": "text",
+      "sha256": "0b06137322eb64e7094036f230c53f2b91766c17c4a0c1c1f07ca5b7f6ff0c33",
+      "lines": 58,
+      "headings": [
+        "`/api/posiciones/activas` — quién está en la calle ahora",
+        "Quién entra",
+        "El bug que esta ruta tenía",
+        "Qué significa \"activo\" ahora",
+        "Respuesta",
+        "Frescura en el mapa"
+      ]
+    },
+    {
+      "path": "app/api/posiciones/activas/route.ts",
+      "bytes": 2941,
+      "kind": "text",
+      "sha256": "bb9dd9004a45751e0fdef072cab9501d4daf1970fa3df6d16cfee344544a9e5b",
+      "lines": 86,
+      "exports": ["GET"],
+      "httpMethods": ["GET"],
+      "prismaModels": ["position"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/api/posiciones/route.spec.md",
+      "bytes": 1808,
+      "kind": "text",
+      "sha256": "c64dda6e6e12dc8938e5229359b037cbe5675830bb891ea9197c158f1988ed2c",
+      "lines": 39,
+      "headings": [
+        "`/api/posiciones` — ingesta de posición",
+        "Está fuera del matcher del middleware",
+        "Dos caminos de autenticación",
+        "Validación",
+        "Pendiente conocido"
+      ]
+    },
+    {
+      "path": "app/api/posiciones/route.ts",
+      "bytes": 2367,
+      "kind": "text",
+      "sha256": "ff1b66af292c4fede934e9632cc70cab915f40f969052adbf3ba9a680114a20e",
+      "lines": 73,
+      "exports": ["POST"],
+      "httpMethods": ["POST"],
+      "prismaModels": ["position", "shift", "tracker"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/api/reportes/route.spec.md",
+      "bytes": 1022,
+      "kind": "text",
+      "sha256": "1fbbd966baf2f6163359a9193f3fb2241f2ab0314354238ece4bbe45201ec7a6",
+      "lines": 38,
+      "headings": [
+        "API Routes: /api/reportes",
+        "GET /api/reportes/ordenes",
+        "GET /api/reportes/discrepancias/export"
+      ]
+    },
+    {
+      "path": "app/api/reportes/route.ts",
+      "bytes": 5506,
+      "kind": "text",
+      "sha256": "cfb1424899e94efbe986aece6772034059111976d87e09d8fd27a9a0039ff20d",
+      "lines": 176,
+      "exports": ["GET"],
+      "httpMethods": ["GET"],
+      "prismaModels": ["discrepancy", "pickupOrder", "user"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/api/trackers/route.ts",
+      "bytes": 812,
+      "kind": "text",
+      "sha256": "39941318fb55d6de59f0881000f1d91562a450ec317b1af31e0d358657a1a913",
+      "lines": 28,
+      "exports": ["GET"],
+      "httpMethods": ["GET"],
+      "prismaModels": ["tracker"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/api/turnos/route.spec.md",
+      "bytes": 2744,
+      "kind": "text",
+      "sha256": "09e90c7b95417cfad44696cf868f9376c5af6daea432c836202dd70ff9b23809",
+      "lines": 63,
+      "headings": [
+        "`/api/turnos` — turno del chofer",
+        "Quién entra",
+        "`GET`",
+        "`POST` — iniciar",
+        "`DELETE` — terminar",
+        "Lo que NO hace",
+        "Los otros dos caminos de cierre"
+      ]
+    },
+    {
+      "path": "app/api/turnos/route.ts",
+      "bytes": 3651,
+      "kind": "text",
+      "sha256": "de7ac98b390c37fe2d4768e608f6b6aab32c3c13bb905b62db5e712446685430",
+      "lines": 104,
+      "exports": ["GET", "POST", "DELETE"],
+      "httpMethods": ["GET", "POST", "DELETE"],
+      "prismaModels": ["shift", "tracker", "user"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/api/ubicacion/consentimiento/route.spec.md",
+      "bytes": 1479,
+      "kind": "text",
+      "sha256": "bdd52bb2dd52a71cb02529c7c90b0b854a857c61a06f6df1899de2ecf7dba155",
+      "lines": 38,
+      "headings": [
+        "`/api/ubicacion/consentimiento` — permiso de rastreo",
+        "Por qué existe esta ruta y no un `localStorage`",
+        "`POST` — otorgar",
+        "`DELETE` — revocar",
+        "Efecto sobre el turno"
+      ]
+    },
+    {
+      "path": "app/api/ubicacion/consentimiento/route.ts",
+      "bytes": 1874,
+      "kind": "text",
+      "sha256": "25b080222620dd467c952a33e2f6d08d0ab20fd5f3ff8b31c3b9b424bbd83c35",
+      "lines": 51,
+      "exports": ["POST", "DELETE"],
+      "httpMethods": ["POST", "DELETE"],
+      "prismaModels": ["shift", "user"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/api/usuarios/route.spec.md",
+      "bytes": 1085,
+      "kind": "text",
+      "sha256": "63c5b99da9b8413c9af5bdfdf682b5fb560b0cd9e73922bbca4e61c45ea506b3",
+      "lines": 38,
+      "headings": [
+        "API Route: /api/usuarios",
+        "GET /api/usuarios",
+        "POST /api/usuarios",
+        "PATCH /api/usuarios/[id]",
+        "Revocación AUD-002"
+      ]
+    },
+    {
+      "path": "app/api/usuarios/route.ts",
+      "bytes": 13703,
+      "kind": "text",
+      "sha256": "3cb41c4a7492a9af43327b698119ef96403f2f28f07b741f0c027d604f94413b",
+      "lines": 403,
+      "exports": ["GET", "POST", "PATCH", "DELETE"],
+      "httpMethods": ["GET", "POST", "PATCH", "DELETE"],
+      "prismaModels": ["tracker", "user"],
+      "environmentNames": ["FINANZAS_NOTIFY_EMAILS"]
+    },
+    {
+      "path": "app/api/webhooks/leads/route.ts",
+      "bytes": 8999,
+      "kind": "text",
+      "sha256": "5e207f997c50802370935321b93a12a2a11fb8814500d15e755c5a4021b562e8",
+      "lines": 249,
+      "exports": ["POST"],
+      "httpMethods": ["POST"],
+      "prismaModels": ["company", "contact"],
+      "environmentNames": []
+    },
+    {
+      "path": "app/apple-icon.png",
+      "bytes": 8535,
+      "kind": "asset",
+      "sha256": "26635a4351cd0af4dd16f566a7ea75926f1fffe958bd07f454f9550fcfb5d2f0"
+    },
+    {
+      "path": "app/globals.css",
+      "bytes": 3523,
+      "kind": "text",
+      "sha256": "f71a82b03ca6cabe3a34365f84ad9354208a77d79b6c4fe3f1dd854b99da5448",
+      "lines": 112
+    },
+    {
+      "path": "app/globals.spec.md",
+      "bytes": 523,
+      "kind": "text",
+      "sha256": "c024ea89d19705570e5930f4d54d2a400de73e5d4bba062666b4eba5cd3791bd",
+      "lines": 10,
+      "headings": ["Estilos globales"]
+    },
+    {
+      "path": "app/icon.png",
+      "bytes": 46009,
+      "kind": "asset",
+      "sha256": "d01855794ca9e7f65c448a54d62382f92fe66aa77d1a445a59c51e7df6a5a7c4"
+    },
+    {
+      "path": "app/layout.tsx",
+      "bytes": 742,
+      "kind": "text",
+      "sha256": "d480a6564a200d4011814441b91d6086de999479d24d54b63c11fa1a55c2487a",
+      "lines": 30,
+      "exports": ["metadata", "viewport", "RootLayout"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "app/manifest.spec.md",
+      "bytes": 374,
+      "kind": "text",
+      "sha256": "abf76fa71e36bb5594de5eb228474c84488622caeb9aa3a3e51ea0f1f4aa0f0c",
+      "lines": 7,
+      "headings": ["Manifest Central Coopera"]
+    },
+    {
+      "path": "app/manifest.ts",
+      "bytes": 666,
+      "kind": "text",
+      "sha256": "2a27cc3a8d772d681f7956cacbf25a69e3c95395fc47dfd9f90d3e8d68ea0861",
+      "lines": 30,
+      "exports": ["manifest"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "app/page.spec.md",
+      "bytes": 301,
+      "kind": "text",
+      "sha256": "e547a41c32e079c80690bea27dad6f4819a0f4970335e17435c041795b747f4e",
+      "lines": 6,
+      "headings": ["Destino inicial `/`"]
+    },
+    {
+      "path": "app/page.tsx",
+      "bytes": 805,
+      "kind": "text",
+      "sha256": "8ef6a9e9f602af7370a9fa865133f19ca21cabcc8f53fbeb5362a30b42dd973d",
+      "lines": 29,
+      "exports": ["RootPage"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "ARQUITECTURA.md",
+      "bytes": 6066,
+      "kind": "text",
+      "sha256": "be714f52f82d89c25f8f6c15fece3295ac94d68307f49fecdac250bd9b6bde6d",
+      "lines": 138,
+      "headings": [
+        "Arquitectura del Sistema",
+        "Visión general",
+        "Módulos principales",
+        "1. Autenticación (`app/(auth)/`)",
+        "2. Módulo Chofer (`app/(chofer)/`)",
+        "3. Módulo Recepción (`app/(recepcion)/`)",
+        "4. Módulo Administración (`app/(admin)/`)",
+        "5. API Backend (`app/api/`)",
+        "Seguridad y trazabilidad",
+        "Prevención de robo hormiga",
+        "Roles y permisos",
+        "Decisiones de diseño",
+        "Por qué Next.js y no una API separada",
+        "Por qué no app nativa (React Native)",
+        "Por qué Prisma y PostgreSQL",
+        "Almacenamiento de fotos",
+        "Consideraciones de rendimiento"
+      ]
+    },
+    {
+      "path": "blueprints/importacion-radar-pallets/blueprint.md",
+      "bytes": 129531,
+      "kind": "text",
+      "sha256": "c8836fbe73048ae7ee96123d80aa8f2a60a57224f4385569dbdb3b22e2e9a618",
+      "lines": 1922,
+      "headings": [
+        "1. Project Overview & Non-Goals",
+        "Vision",
+        "Current state",
+        "Target state",
+        "Users",
+        "Goals — v1 scope",
+        "Non-Goals — explícitamente fuera de alcance para v1",
+        "Success metrics",
+        "2. Tech Stack",
+        "Compatibility check",
+        "3. Directory Structure",
+        "4. Data Model",
+        "Delta",
+        "Relationships",
+        "Indexes",
+        "Schema (sólo el delta)",
+        "Migrations",
+        "El CLI de Prisma NO lee .env.local — exportar en el mismo shell (Git Bash):",
+        "Seed data",
+        "Interfaces held constant",
+        "5. API Design",
+        "Conventions (las del repo — no cambian)",
+        "Routes",
+        "Critical endpoints — detalle completo",
+        "Interfaces held constant",
+        "6. Frontend Architecture",
+        "Routes",
+        "Rendering strategy",
+        "Component hierarchy",
+        "State management",
+        "Loading, empty, and error states",
+        "7. Design System",
+        "Tokens que usa el cambio",
+        "Component style",
+        "Motion",
+        "8. Authentication & Authorization",
+        "Provider y rationale",
+        "Route protection",
+        "El fix del matcher (prerrequisito — S1)",
+        "9. BUILD ORDER",
+        "Step map",
+        "Step 1 — Matcher del middleware (prerrequisito)",
+        "rollback si el paso 2 sale mal: git reset --hard step-01-middleware-matcher",
+        "Step 2 — Schema: `INDUSTRIA` + `CallStatus` + `Contact.callStatus` + doc de env",
+        "nota: backups/ está en .gitignore — el commit no lo incluye",
+        "rollback: git reset --hard step-02-schema-radar  (el db push es aditivo; reversa dura = restaurar backups/pre-radar-pallets.sql)",
+        "Step 3 — `lib/outreach/radar.ts` — parseo + normalización",
+        "Step 4 — `lib/outreach/radar.ts` — clasificación + consolidación",
+        "Step 5 — `scripts/import-radar-pallets.ts` + spec + alias",
+        "Step 6 — Plantilla `industria.ts` + registro + tests",
+        "Step 7 — Seed 3ª campaña + `SEGMENT_LABEL`",
+        "Step 8 — `lib/outreach/eligibility.ts` — reparto + selección",
+        "Step 9 — Reescritura del cron",
+        "Step 10 — `app/api/llamadas/route.ts` (GET + PATCH)",
+        "Step 11 — `CallStatusBadge` + `CallStatusSelect`",
+        "Step 12 — Vista de lista de llamadas + nav",
+        "rollback si algo del post-build sale mal: git reset --hard step-12-llamadas-page",
+        "9.1 Parity and cutover",
+        "10. Environment Setup",
+        "Prerequisites",
+        "Accounts to create first",
+        "Environment variables",
+        "Files that must be committed",
+        "Bootstrap",
+        "order matters: el repo ya existe (git master) → sólo copiar workspace/ + npm ci",
+        "La copia de workspace/ es idempotente: cp -Rn no pisa, y el bloque de CLAUDE.md se anexa",
+        "sólo si el marcador RADAR-PALLETS no está presente.",
+        "1. Copiar la config de agente del bundle a la raíz del repo (no pisa lo existente):",
+        "2. Reemplazar .claude/settings.json por el superset del bundle (config, seguro de sobrescribir):",
+        "3. Anexar los bloques de workspace/CLAUDE.md y workspace/AGENTS.md a los del repo, sólo si no están ya",
+        "(mismo marcador RADAR-PALLETS:INICIO; el cp -Rn del paso 1 salta AGENTS.md/CLAUDE.md porque ya existen):",
+        "4. Instalar dependencias (sin cambios de package.json todavía — S5 agrega el alias):",
+        "5. Regenerar el cliente de Prisma con el schema actual:",
+        "11. Dependencies",
+        "Runtime",
+        "Development",
+        "Deliberately not used",
+        "12. Deployment Strategy",
+        "Hosting",
+        "Environments",
+        "CI/CD",
+        "Release and rollback",
+        "Post-build launch checklist (fuera del build order — no son pasos de §9)",
+        "Domain, DNS, TLS",
+        "13. Testing Strategy",
+        "Critical flows",
+        "Test data",
+        "What is deliberately not tested",
+        "14. Security & Secrets",
+        "15. Accessibility",
+        "Baseline",
+        "Verification",
+        "NOT APPLICABLE — el repo no tiene herramienta a11y automatizada.",
+        "16. Observability & Cost",
+        "Instrumentation",
+        "The metrics that matter",
+        "Health check",
+        "Cost model",
+        "17. Model Routing",
+        "18. Skills to Use During Build",
+        "19. Agent Workspace",
+        "19.1 `CLAUDE.md` (bloque que se ANEXA al `CLAUDE.md` del repo)",
+        "19.2 `AGENTS.md`",
+        "19.3 `.claude/settings.json`",
+        "19.4 Project skills",
+        "19.5 `.claude/rules/*.md`",
+        "19.6 Verify-critical config and local infrastructure",
+        "20. Acceptance Gate, Risks & Decision Log",
+        "20.1 Global acceptance gate",
+        "Prettier SÓLO sobre los archivos NUEVOS del cambio (lista explícita — no un glob de directorio:",
+        "algunos archivos viejos del repo no pasan Prettier y este cambio no los toca):",
+        "20.2 Risk register",
+        "20.3 Decision log",
+        "20.4 What to build next"
+      ]
+    },
+    {
+      "path": "blueprints/importacion-radar-pallets/epics/01-ingesta-modelo.md",
+      "bytes": 31239,
+      "kind": "text",
+      "sha256": "e097cb444fed4b03080927fb96d50d02cc3bedd53f4edeb01f113efbb3d197c7",
+      "lines": 526,
+      "headings": [
+        "Epic 01: Ingesta y modelo",
+        "Stack",
+        "Directory subtree",
+        "Data model touched here",
+        "Contracts",
+        "Conventions that bite in this area",
+        "Tasks",
+        "`E1-T1` — Excluir /api/cron y /api/outreach/unsubscribe del matcher de middleware",
+        "`E1-T2` — Schema: INDUSTRIA + enum CallStatus + Contact.callStatus + doc OUTREACH_DAILY_CAP",
+        "`E1-T3` — lib/outreach/radar.ts — parseRadarSheet, splitPhones, normalizeCompanyName + tests",
+        "`E1-T4` — lib/outreach/radar.ts — classifySegment, consolidateRows, toRadarProspect + tests",
+        "`E1-T5` — scripts/import-radar-pallets.ts + spec + alias import:radar",
+        "`E1-T6` — Plantilla industria-v1 + registro en TEMPLATES + tests de render",
+        "Epic acceptance",
+        "Pitfalls",
+        "Before moving on"
+      ]
+    },
+    {
+      "path": "blueprints/importacion-radar-pallets/epics/02-envio-llamadas.md",
+      "bytes": 31707,
+      "kind": "text",
+      "sha256": "3d82fa3adcef816039600c68ce58842318fd9bfe2421b3318afd6331eb673724",
+      "lines": 540,
+      "headings": [
+        "Epic 02: Motor de envío y lista de llamadas",
+        "Stack",
+        "Directory subtree",
+        "Data model touched here",
+        "Contracts",
+        "Conventions that bite in this area",
+        "Tasks",
+        "`E2-T1` — Seed de la campaña Industria + INDUSTRIA en SEGMENT_LABEL del panel",
+        "`E2-T2` — lib/outreach/eligibility.ts — allocateDailyBudget, pickCompanyContact, isCompanyPhoneManaged + tests",
+        "`E2-T3` — Reescritura del cron: tope global, 1 correo por empresa, exclusión por gestión telefónica",
+        "`E2-T4` — app/api/llamadas — GET + PATCH del estado de gestión telefónica",
+        "`E2-T5` — CallStatusBadge + CallStatusSelect (editor in-line del estado telefónico)",
+        "`E2-T6` — Vista /admin/crm/llamadas + ítem de nav en AdminSidebar",
+        "Epic acceptance",
+        "Pitfalls",
+        "Before moving on"
+      ]
+    },
+    {
+      "path": "blueprints/importacion-radar-pallets/tasks.json",
+      "bytes": 17630,
+      "kind": "text",
+      "sha256": "f1429986a8d1e93316ed0f4bedf729f6f16325a85070ee2b72767c61104a1a9b",
+      "lines": 291
+    },
+    {
+      "path": "blueprints/importacion-radar-pallets/workspace/.claude/rules/radar-pallets.md",
+      "bytes": 2420,
+      "kind": "text",
+      "sha256": "0734bb6f8f8812110834150c9dbdc52c2de32883e77b0343fc7025262e53d22e",
+      "lines": 40,
+      "headings": ["Radar de Clientes Pallets — convenciones de área"]
+    },
+    {
+      "path": "blueprints/importacion-radar-pallets/workspace/.claude/settings.json",
+      "bytes": 1550,
+      "kind": "text",
+      "sha256": "7bcabfb42ac19b29762cf0c10dc666f352a9f2f6175777ccb46cf81ea2249a52",
+      "lines": 60
+    },
+    {
+      "path": "blueprints/importacion-radar-pallets/workspace/AGENTS.md",
+      "bytes": 2171,
+      "kind": "text",
+      "sha256": "1f4dcd1a963fcd1a743aa4bb486c0f574802460167075073f81045e5c99dfccc",
+      "lines": 43,
+      "headings": [
+        "Cambio activo: Importación Radar de Clientes Pallets + segmento INDUSTRIA",
+        "Comandos",
+        "Las 5 reglas que más muerden"
+      ]
+    },
+    {
+      "path": "blueprints/importacion-radar-pallets/workspace/CLAUDE.md",
+      "bytes": 8084,
+      "kind": "text",
+      "sha256": "014241cb5761f3ac67861447635fa48bec2fe205617ca75ffc6142441872ef83",
+      "lines": 127,
+      "headings": [
+        "10. Importación Radar de Clientes Pallets + segmento INDUSTRIA",
+        "Comandos (los mismos del repo + un alias nuevo)",
+        "Reglas duras de este cambio",
+        "Dónde vive cada cosa nueva",
+        "Variables de entorno",
+        "Trampas de este cambio",
+        "No negociable"
+      ]
+    },
+    {
+      "path": "blueprints/modulo-finanzas/blueprint.md",
+      "bytes": 229395,
+      "kind": "text",
+      "sha256": "365c012243b6365fdb67ab1ce2a78002f7a14803c3cbf788f6d0f25ce32bd8c8",
+      "lines": 3638,
+      "headings": [
+        "Módulo de Finanzas — Coopera Pro — Blueprint",
+        "1. Project Overview & Non-Goals",
+        "Visión",
+        "Usuarios",
+        "Goals — alcance v1",
+        "Non-Goals — explícitamente fuera de v1",
+        "Current state — los cinco hallazgos que este cambio corrige",
+        "Métricas de éxito",
+        "2. Tech Stack",
+        "Compatibility check",
+        "3. Directory Structure",
+        "4. Data Model",
+        "Delta sobre el schema existente",
+        "Entidades nuevas",
+        "Relaciones",
+        "Índices",
+        "Schema",
+        "Migraciones",
+        "Seed data",
+        "5. API Design",
+        "Convenciones",
+        "Rate limits",
+        "Rutas",
+        "Interfaces held constant",
+        "Endpoints críticos — detalle completo",
+        "6. Frontend Architecture",
+        "Rutas",
+        "El contrato de sólo lectura",
+        "Estrategia de renderizado",
+        "Jerarquía de componentes",
+        "Manejo de estado",
+        "Estados de carga, vacío y error",
+        "7. Design System",
+        "Colores",
+        "Tipografía",
+        "Espaciado, radio, elevación",
+        "Movimiento",
+        "Estilo de componentes",
+        "8. Authentication & Authorization",
+        "Proveedor y justificación",
+        "Flujos",
+        "Protección de rutas — dos capas, ninguna reemplaza a la otra",
+        "Los porteros — `lib/access.ts`",
+        "Roles y permisos",
+        "Sesiones",
+        "Aislamiento por fila / multi-tenancy",
+        "9. BUILD ORDER",
+        "Las reglas de un paso, en este repo",
+        "Una unidad por paso — la regla de conteo",
+        "Step map",
+        "rollback si el paso 2 sale mal: git reset --hard step-01-schema-finanzas",
+        "9.1 Parity and cutover",
+        "10. Environment Setup",
+        "Prerequisitos",
+        "Cuentas a crear primero",
+        "Variables de entorno",
+        "Archivos que deben quedar commiteados",
+        "Bootstrap",
+        "El orden importa: ignore + excepciones → repo → primer commit → install → copia de workspace →",
+        "fusión de CLAUDE.md → claves → prisma generate. Cada línea es idempotente y sale 0 al re-ejecutarse.",
+        "1. El archivo de ignore, ANTES de cualquier commit. Una vez que git rastrea una ruta,",
+        "ninguna regla de ignore posterior la excluye jamás.",
+        "2. Repositorio. El repo ya existe; la línea es idempotente y no hace nada si ya está.",
+        "3. Dependencias existentes. npm ci si el lockfile está sano, npm install si no.",
+        "4. Copiar el workspace del bundle a la raíz del proyecto — NO CLOBBER.",
+        "-n: nunca sobrescribe un archivo que el build ya modificó. En BSD/macOS `cp -Rn` sale 1",
+        "cuando omite un archivo existente, que es justo el resultado deseado, por eso el `|| true`.",
+        "Archivos que NUNCA se sobrescriben: CLAUDE.md (se fusiona abajo), package.json,",
+        "package-lock.json, tsconfig.json, vitest.config.ts, .prettierrc.",
+        "5. Fusionar la sección de Finanzas en el CLAUDE.md existente. NO lo sobrescribe.",
+        "El marcador hace que re-ejecutar el bloque no anexe la sección dos veces.",
+        "6. Clave de cifrado. Sólo se genera si no existe: re-ejecutar NUNCA debe rotar la clave,",
+        "porque eso dejaría ilegible todo lo ya cifrado.",
+        "7. Cliente de Prisma. El CLI de Prisma NO lee .env.local — hay que exportar a mano.",
+        "8. El árbol arranca verde antes del paso 1.",
+        "11. Dependencies",
+        "Runtime — ya instaladas, este cambio las consume",
+        "Runtime — nueva",
+        "Desarrollo — ya instaladas",
+        "Deliberadamente no usadas",
+        "12. Deployment Strategy",
+        "Hosting",
+        "Entornos",
+        "CI/CD",
+        "Pre-commit (.husky/pre-commit, ya existe — este cambio no lo modifica)",
+        "Build de Vercel en cada push",
+        "Release y rollback",
+        "Dominio, DNS, TLS",
+        "13. Testing Strategy",
+        "Por qué no hay linter",
+        "Los siete tests que sostienen el diseño",
+        "Datos de prueba",
+        "Lo que deliberadamente no se prueba",
+        "14. Security & Secrets",
+        "El modelo de amenaza, dicho sin exagerar",
+        "Tratamiento de datos sensibles",
+        "El cifrado, en concreto",
+        "Controles",
+        "Retención y purga",
+        "Reglas duras",
+        "Régimen regulatorio",
+        "15. Accessibility",
+        "Requisitos base",
+        "Lo específico del módulo",
+        "Adiciones de WCAG 2.2 que aquí importan",
+        "Verificación",
+        "16. Observability & Cost",
+        "Instrumentación",
+        "Las métricas que importan",
+        "Health check",
+        "Modelo de costo",
+        "Reglas de rendimiento que evitan el problema antes de que exista",
+        "17. Model Routing",
+        "18. Skills to Use During Build",
+        "19. Agent Workspace",
+        "19.1 `CLAUDE.md`",
+        "19.2 `AGENTS.md`",
+        "19.3 `.claude/settings.json`",
+        "19.4 Skills del proyecto — `.claude/skills/verificar-porteros/SKILL.md`",
+        "19.5 `.claude/rules/finanzas.md`",
+        "19.6 Verify-critical config and local infrastructure",
+        "19.7 `.prettierignore`",
+        "20. Acceptance Gate, Risks & Decision Log",
+        "20.1 Portón global de aceptación",
+        "Formato, acotado a los directorios del módulo. NO se usa `npm run lint`: el repo no tiene",
+        "configuración de ESLint y `next lint` abre un prompt interactivo que cuelga un build desatendido.",
+        "Se acota al módulo a propósito: 28 archivos preexistentes del repo no pasan Prettier, y este",
+        "cambio no los toca. `xargs -r` hace que no correr nada salga 0, así que la línea es segura",
+        "aunque un directorio todavía no exista.",
+        "El guardia, por separado y de forma explícita: es la propiedad que define este módulo",
+        "20.2 Registro de riesgos",
+        "20.3 Registro de decisiones",
+        "20.4 Qué construir después"
+      ]
+    },
+    {
+      "path": "blueprints/modulo-finanzas/epics/01-seguridad.md",
+      "bytes": 39691,
+      "kind": "text",
+      "sha256": "fea68731b0ce1ca2c77c7595680c68e349926907a21fb4df499483fa7f9fd61a",
+      "lines": 738,
+      "headings": [
+        "Epic 01: Seguridad y fundaciones",
+        "Stack",
+        "Subárbol de directorios",
+        "Modelo de datos que se toca aquí",
+        "Contratos",
+        "Convenciones que muerden en esta área",
+        "Tareas",
+        "`E1-T1` — Esquema de Finanzas y db push con respaldo verificado",
+        "`E1-T2` — Porteros de Finanzas sin bypass de ADMIN",
+        "`E1-T3` — Ramas de middleware para Finanzas, en el orden correcto",
+        "`E1-T4` — Auditoría transaccional withAudit()",
+        "`E1-T5` — Cifrado AES-256-GCM con rotación de clave",
+        "`E1-T6` — Validación de RUT chileno y esquemas zod",
+        "`E1-T7` — Serialización con enmascarado por rol",
+        "`E1-T8` — Rate limiting sobre Postgres y bloqueo de login",
+        "`E1-T9` — Recuperación por enlace y bloqueo del reset por ADMIN",
+        "`E1-T10` — Guardia mecánico de porteros en rutas de Finanzas",
+        "Aceptación del epic",
+        "Trampas",
+        "Antes de seguir"
+      ]
+    },
+    {
+      "path": "blueprints/modulo-finanzas/epics/02-datos-maestros.md",
+      "bytes": 16007,
+      "kind": "text",
+      "sha256": "2cd2b877ad5471787c5159380e493637927eba89f7f4e5af769839e113988adf",
+      "lines": 291,
+      "headings": [
+        "Epic 02: Datos maestros",
+        "Stack",
+        "Subárbol de directorios",
+        "Modelo de datos que se toca aquí",
+        "Contratos",
+        "Convenciones que muerden en esta área",
+        "Tareas",
+        "`E2-T1` — CRUD de trabajadores (API y pantallas)",
+        "`E2-T2` — Proveedores y categorías",
+        "Aceptación del epic",
+        "Trampas",
+        "Antes de seguir"
+      ]
+    },
+    {
+      "path": "blueprints/modulo-finanzas/epics/03-movimientos.md",
+      "bytes": 16759,
+      "kind": "text",
+      "sha256": "cb4226a8502f4166d64d2b94bac1d94b2875bd46b9242ca41126d2c9a9dc1760",
+      "lines": 305,
+      "headings": [
+        "Epic 03: Movimientos",
+        "Stack",
+        "Subárbol de directorios",
+        "Modelo de datos que se toca aquí",
+        "Contratos",
+        "Convenciones que muerden en esta área",
+        "Tareas",
+        "`E3-T1` — Movimientos con paginación en servidor",
+        "`E3-T2` — Anticipos a trabajadores",
+        "Aceptación del epic",
+        "Trampas",
+        "Antes de seguir"
+      ]
+    },
+    {
+      "path": "blueprints/modulo-finanzas/epics/04-nominas.md",
+      "bytes": 18952,
+      "kind": "text",
+      "sha256": "53abe2c45f181a3aab482f85bfc0fcd4387b8557110a36c49f151d601b56790d",
+      "lines": 331,
+      "headings": [
+        "Epic 04: Nóminas",
+        "Stack",
+        "Subárbol de directorios",
+        "Modelo de datos que se toca aquí",
+        "Contratos",
+        "Convenciones que muerden en esta área",
+        "Tareas",
+        "`E4-T1` — Nóminas mensuales y cálculo de líquido",
+        "`E4-T2` — Nómina de pago con descifrado auditado",
+        "Aceptación del epic",
+        "Trampas",
+        "Antes de seguir"
+      ]
+    },
+    {
+      "path": "blueprints/modulo-finanzas/epics/05-reportes-cierre.md",
+      "bytes": 25057,
+      "kind": "text",
+      "sha256": "0195f3880c7d5d0f3cfad011c045eebe4b4c670a317c591a95b49f68581012ea",
+      "lines": 457,
+      "headings": [
+        "Epic 05: Reportes y cierre",
+        "Stack",
+        "Subárbol de directorios",
+        "Modelo de datos que se toca aquí",
+        "Contratos",
+        "Convenciones que muerden en esta área",
+        "Tareas",
+        "`E5-T1` — Reportes y resumen del mes",
+        "`E5-T2` — Visor de auditoría",
+        "`E5-T3` — Exportación CSV limitada y auditada",
+        "`E5-T4` — Sidebar, desvinculación con purga, specs y barrido final",
+        "Aceptación del epic",
+        "Trampas",
+        "Antes de seguir"
+      ]
+    },
+    {
+      "path": "blueprints/modulo-finanzas/tasks.json",
+      "bytes": 32137,
+      "kind": "text",
+      "sha256": "5f3c8299a7e6b0fb9d3cb62bd8b90f2f7c4d050a215dc2a5a57f19a1db250a86",
+      "lines": 641
+    },
+    {
+      "path": "blueprints/modulo-finanzas/workspace/.claude/rules/finanzas.md",
+      "bytes": 4008,
+      "kind": "text",
+      "sha256": "e0102e28bf0a9535eee491999b118620f8ec988a8c0c0ae35281283249c9b106",
+      "lines": 74,
+      "headings": [
+        "Reglas del módulo Finanzas",
+        "Autorización",
+        "Auditoría",
+        "Dinero",
+        "Módulos de `lib/finanzas/`",
+        "Rutas y páginas",
+        "Interfaz"
+      ]
+    },
+    {
+      "path": "blueprints/modulo-finanzas/workspace/.claude/settings.json",
+      "bytes": 1427,
+      "kind": "text",
+      "sha256": "bc1445016f2da9fbb8b3314d337d88f7665e5171ff935fccf58a2bfdd262a4a4",
+      "lines": 56
+    },
+    {
+      "path": "blueprints/modulo-finanzas/workspace/.claude/skills/verificar-porteros/SKILL.md",
+      "bytes": 3429,
+      "kind": "text",
+      "sha256": "d9329318ce7c36fdcee5eb5daba8b48112ac16cb49247338fd640cc25bb351a2",
+      "lines": 85,
+      "headings": [
+        "Verificar porteros de Finanzas",
+        "Cuándo usarlo",
+        "Por qué existe",
+        "Pasos",
+        "Verify",
+        "No hagas"
+      ]
+    },
+    {
+      "path": "blueprints/modulo-finanzas/workspace/.prettierignore",
+      "bytes": 994,
+      "kind": "asset",
+      "sha256": "b47bff03de8c74023541e99d223db957a7c16394415bae59491d160f05bb3c01"
+    },
+    {
+      "path": "blueprints/modulo-finanzas/workspace/AGENTS.md",
+      "bytes": 1937,
+      "kind": "text",
+      "sha256": "30a9bd22ea90fa5010d5c67b1110119a34fcf50aabb6b5b234e9f35118efb628",
+      "lines": 45,
+      "headings": [
+        "TrackResiduos — instrucciones para agentes",
+        "Comandos",
+        "No negociable"
+      ]
+    },
+    {
+      "path": "blueprints/modulo-finanzas/workspace/CLAUDE.md",
+      "bytes": 8444,
+      "kind": "text",
+      "sha256": "89da18b9500fcfb6a2c2f0d95c328d507de63be8caf9b1b86038d33002df883d",
+      "lines": 141,
+      "headings": [
+        "9. Módulo Finanzas",
+        "Comandos (los mismos del repo — no hay comandos nuevos)",
+        "Reglas duras de Finanzas",
+        "Dónde vive cada cosa",
+        "Variables de entorno nuevas",
+        "Diseño de Finanzas",
+        "Trampas de este módulo",
+        "No negociable"
+      ]
+    },
+    {
+      "path": "CLAUDE.md",
+      "bytes": 28673,
+      "kind": "text",
+      "sha256": "698959d2c6c370dc45dea077afef03b8274661648d352f609ea5eba2e982f6d7",
+      "lines": 427,
+      "headings": [
+        "CLAUDE.md — Memoria del proyecto TrackResiduos",
+        "Coordinación entre Codex y Claude",
+        "1. Qué es esto",
+        "2. Stack",
+        "3. Comandos",
+        "4. Convenciones del repo",
+        "5. Reglas duras (no negociables)",
+        "6. Iniciativa activa: Prospección y Outreach (taller de pallets)",
+        "7. Estado y decisiones vigentes",
+        "8. Trampas conocidas",
+        "9. Módulo Finanzas",
+        "Comandos (los mismos del repo — no hay comandos nuevos)",
+        "Reglas duras de Finanzas",
+        "Dónde vive cada cosa",
+        "Variables de entorno nuevas",
+        "Diseño de Finanzas",
+        "Trampas de este módulo",
+        "No negociable",
+        "10. Importación Radar de Clientes Pallets + segmento INDUSTRIA",
+        "Comandos (los mismos del repo + un alias nuevo)",
+        "Reglas duras de este cambio",
+        "Dónde vive cada cosa nueva",
+        "Variables de entorno",
+        "Trampas de este cambio",
+        "No negociable"
+      ]
+    },
+    {
+      "path": "components/crm/CallStatusSelect.spec.md",
+      "bytes": 2772,
+      "kind": "text",
+      "sha256": "9120e03a68bd6f1a482f87e5b0c07c073c962602e8d396ad6a65647e00727579",
+      "lines": 55,
+      "headings": [
+        "`components/crm/CallStatusSelect.tsx` — spec",
+        "Qué es",
+        "De qué se clona",
+        "Props",
+        "Comportamiento",
+        "Qué NO hace"
+      ]
+    },
+    {
+      "path": "components/crm/CallStatusSelect.tsx",
+      "bytes": 3186,
+      "kind": "text",
+      "sha256": "610b3a19c985b6fdef8ee3edb0647be8626b68e2204a62ba853d0eeef5175db9",
+      "lines": 95,
+      "exports": ["CallStatusSelect"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/crm/ClassifyAllButton.tsx",
+      "bytes": 1696,
+      "kind": "text",
+      "sha256": "3fdae0603a0b24bf9d604dc46e51ec997c06149418b462f8f195fda5681eaa6e",
+      "lines": 48,
+      "exports": ["ClassifyAllButton"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/crm/ClientesConContactos.tsx",
+      "bytes": 8789,
+      "kind": "text",
+      "sha256": "64c33c7f7b3d2ce1d2004a7a59f43e359ff1c50ff0d4981806191038db370063",
+      "lines": 260,
+      "exports": [
+        "ContactoDeEmpresa",
+        "EmpresaConContactos",
+        "ClientesConContactos"
+      ],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/crm/CompletarActividadButton.tsx",
+      "bytes": 1140,
+      "kind": "text",
+      "sha256": "60e325424f93307e93e9dd82eff52bf5134965972696ea96e785bc9c2a25d650",
+      "lines": 40,
+      "exports": ["CompletarActividadButton"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/crm/ContactQuickActions.tsx",
+      "bytes": 2229,
+      "kind": "text",
+      "sha256": "79f202537de0d248ed62dd2eeef7733df13b9df112e0726ba5137ccd66755570",
+      "lines": 71,
+      "exports": ["EmailQuickActions", "PhoneQuickActions"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/crm/DealsTable.tsx",
+      "bytes": 3407,
+      "kind": "text",
+      "sha256": "f5c93d6dd7d932a2c6b69c1d5dfbd76963e66d7c32458b355768e96f77deb69a",
+      "lines": 84,
+      "exports": ["DealRow", "DealsTable"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/crm/ImportContactsButton.tsx",
+      "bytes": 4683,
+      "kind": "text",
+      "sha256": "8db5f61c9e7df7e23dc39ec45ac20bf23cfb47fd12e865c1c11e84675a044677",
+      "lines": 149,
+      "exports": ["ImportContactsButton"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/crm/KPICards.tsx",
+      "bytes": 1637,
+      "kind": "text",
+      "sha256": "8bd6d89bcde1b7a0201792b3566502895ffcfb5af7ee6940d5487523cf4474a6",
+      "lines": 59,
+      "exports": ["CrmStats", "KPICards"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/crm/ListaLlamadas.spec.md",
+      "bytes": 1518,
+      "kind": "text",
+      "sha256": "ef2b7e7872b1a1960014e9e5bd79904e04595d653a041bde69cefef48199ce6c",
+      "lines": 35,
+      "headings": [
+        "`components/crm/ListaLlamadas.tsx` — spec",
+        "Qué es",
+        "Props",
+        "Comportamiento",
+        "Qué NO hace"
+      ]
+    },
+    {
+      "path": "components/crm/ListaLlamadas.tsx",
+      "bytes": 5608,
+      "kind": "text",
+      "sha256": "9381bc8371e8a064617a048dafbdc57868629b289bdbf3ce4dca9d86944c654e",
+      "lines": 168,
+      "exports": ["LlamadaContacto", "ListaLlamadas"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/crm/NotificationBanner.tsx",
+      "bytes": 2043,
+      "kind": "text",
+      "sha256": "87ec2aeec786112755ec2711f66c65c1ef6c8d8caa538d1d32deff1baacf2b51",
+      "lines": 61,
+      "exports": ["NotificationBanner"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/crm/NotificationsToggle.tsx",
+      "bytes": 3089,
+      "kind": "text",
+      "sha256": "4056fb1782aaf52bb609718c41e7c36a85469201a54759bbf887e27790716bb5",
+      "lines": 83,
+      "exports": ["NotificationsToggle"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/crm/NotificationsWatcher.tsx",
+      "bytes": 1960,
+      "kind": "text",
+      "sha256": "695d279e21dfbd9d1442ab41e7fcb74f2b82527d17300551050d6a5fd8995b54",
+      "lines": 64,
+      "exports": ["NotificationsWatcher"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/crm/PipelineChart.tsx",
+      "bytes": 1501,
+      "kind": "text",
+      "sha256": "f7b1e0c4c5c02048f6f4ba040f019c46d9ac64ec4bac2b7db444854d15a52bfd",
+      "lines": 42,
+      "exports": ["PipelineChartDatum", "PipelineChart"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/crm/PipelineStagesList.tsx",
+      "bytes": 860,
+      "kind": "text",
+      "sha256": "7131a8434fe6647b1d5defa9c0393d6841247a2de5456f16f8bdf692fc9f17f8",
+      "lines": 26,
+      "exports": ["StageRow", "PipelineStagesList"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/crm/RecalculateScoreButton.tsx",
+      "bytes": 1630,
+      "kind": "text",
+      "sha256": "baa8eff83cba84b8a6ec53c62ae99a9c677e4b8a011278f593de4cd68b7e5962",
+      "lines": 47,
+      "exports": ["RecalculateScoreButton"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/crm/RecentActivity.tsx",
+      "bytes": 1605,
+      "kind": "text",
+      "sha256": "eb40230c92b8b1dee38f99dc949144993377747426b6da133d1bedf6feb93609",
+      "lines": 50,
+      "exports": ["RecentActivityItem", "RecentActivity"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/crm/ui/badge.tsx",
+      "bytes": 1966,
+      "kind": "text",
+      "sha256": "43040c1e73bb62026337b6d98e124ef62601d918d1d09eebb896567813c0c80b",
+      "lines": 54,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/crm/ui/button.tsx",
+      "bytes": 1822,
+      "kind": "text",
+      "sha256": "7664a1a8bde0f22c7b280d3fff6d3e1ccd155044339865127c3722984e51c49f",
+      "lines": 54,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/crm/ui/card.tsx",
+      "bytes": 1969,
+      "kind": "text",
+      "sha256": "1c20ba0d3508c684b2dff0edf14251f63c01c85195a4863e83ce0be6176bebad",
+      "lines": 92,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/crm/ui/dialog.spec.md",
+      "bytes": 543,
+      "kind": "text",
+      "sha256": "32d93410ce2a63145c31a9911025e1e4d388117f31430d63321aaacbe7e27ee3",
+      "lines": 9,
+      "headings": ["Diálogo CRM"]
+    },
+    {
+      "path": "components/crm/ui/dialog.tsx",
+      "bytes": 4326,
+      "kind": "text",
+      "sha256": "9f9832e2743d015b9e1a718cdd32aba20993402ed338318a7a52cdd723f542f5",
+      "lines": 160,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/crm/ui/dropdown-menu.tsx",
+      "bytes": 8998,
+      "kind": "text",
+      "sha256": "1f6a429cc52f9414715e3d360f195f8c8e23078e58174bd421c6b0bff97a1f20",
+      "lines": 279,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/crm/ui/input.tsx",
+      "bytes": 1097,
+      "kind": "text",
+      "sha256": "8efd89a594d55d21dc2ae23dc5a2633df34124ebb0399b9742d6491d415ac074",
+      "lines": 21,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/crm/ui/label.tsx",
+      "bytes": 523,
+      "kind": "text",
+      "sha256": "005ae7482fbcab16477f9aaca6593acf173c14880fee9a2ed9a9852d7bef4de4",
+      "lines": 21,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/crm/ui/popover.tsx",
+      "bytes": 2755,
+      "kind": "text",
+      "sha256": "96ce8232d84385a4d20e75263eda9dd5ac75519b92448a3e6ad4660bd36be01b",
+      "lines": 97,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/crm/ui/scroll-area.tsx",
+      "bytes": 1699,
+      "kind": "text",
+      "sha256": "a853226e27995775cdfbd567cded8db8889ae27425b696962ef032fc4be8764c",
+      "lines": 56,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/crm/ui/select.tsx",
+      "bytes": 6828,
+      "kind": "text",
+      "sha256": "0689872594465084fede1621287fe02cd9ce9a47a36a405aa227429d80ffa8c1",
+      "lines": 209,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/crm/ui/separator.tsx",
+      "bytes": 606,
+      "kind": "text",
+      "sha256": "2c0bb7d78e99867eeda8aef9c02f0022db7ff03fddba4070ba45e8ca0b1acd54",
+      "lines": 26,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/crm/ui/skeleton.tsx",
+      "bytes": 319,
+      "kind": "text",
+      "sha256": "3c469fbf038ecca72d8f8c77b9ba76d3ae35558da11d1c9dceacc277c2f88127",
+      "lines": 16,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/crm/ui/table.tsx",
+      "bytes": 2508,
+      "kind": "text",
+      "sha256": "57685c0c62b41a3e4e8b94273e825314198a30a53f264997ccae9b051bd20cb0",
+      "lines": 117,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/crm/ui/tabs.tsx",
+      "bytes": 3662,
+      "kind": "text",
+      "sha256": "5382430fd5123c2d2b7e1879ccf826aa7a102bb513128f70f923d9081653c4e0",
+      "lines": 89,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/crm/ui/tooltip.tsx",
+      "bytes": 2788,
+      "kind": "text",
+      "sha256": "056c35731edeb3648786626fba605eef365e6c2b52e26fe2c4573db529d57290",
+      "lines": 68,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/crm/WebhookSettings.spec.md",
+      "bytes": 613,
+      "kind": "text",
+      "sha256": "f7d2b358b23b7b962612488b6b6c1b13acbf04219948406976929f593a137a94",
+      "lines": 11,
+      "headings": ["Configuración del webhook de leads"]
+    },
+    {
+      "path": "components/crm/WebhookSettings.tsx",
+      "bytes": 6525,
+      "kind": "text",
+      "sha256": "332b59e0ed7f9d251bb7d514c1d10f9652dbd1a171b956049597664701ecef84",
+      "lines": 194,
+      "exports": ["WebhookSettings"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/evidencia/evidencia.spec.md",
+      "bytes": 1646,
+      "kind": "text",
+      "sha256": "0357bb18c8fa3d9e90027ba570d05715fb5a3a490c1ba570567151bb3ee358db",
+      "lines": 38,
+      "headings": [
+        "Componente: EvidenciaUploader",
+        "Propósito",
+        "Props",
+        "Interfaz",
+        "Proceso de subida",
+        "Eliminar foto",
+        "Compresión en cliente"
+      ]
+    },
+    {
+      "path": "components/evidencia/EvidenciaUploader.tsx",
+      "bytes": 5181,
+      "kind": "text",
+      "sha256": "5795a1638fe47cdfe9d02ed80481888e6c4430dc0bf2ce8e1570515c438c00ea",
+      "lines": 164,
+      "exports": ["EvidenciaPhoto", "EvidenciaUploader"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/firma/firma.spec.md",
+      "bytes": 1263,
+      "kind": "text",
+      "sha256": "8771413ec7c29cc214dde2e99ec9e712e972c248990a71f3c73378d0e7a4cd24",
+      "lines": 30,
+      "headings": [
+        "Componente: FirmaCanvas",
+        "Propósito",
+        "Props",
+        "Comportamiento",
+        "Librería",
+        "Accesibilidad"
+      ]
+    },
+    {
+      "path": "components/firma/FirmaCanvas.tsx",
+      "bytes": 3598,
+      "kind": "text",
+      "sha256": "7217d5cb7c92fb8bf334b5dd2f15995fc13b9c741b0b789647b366c75318e827",
+      "lines": 108,
+      "exports": ["FirmaCanvas"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/forms/forms.spec.md",
+      "bytes": 1314,
+      "kind": "text",
+      "sha256": "95639323e159bc7f9c2cc94fa6fd821dc1791f499469b917dd3bcfb231c5a1b9",
+      "lines": 48,
+      "headings": [
+        "Componentes de Formularios",
+        "OrdenItemForm",
+        "RecepcionItemRow",
+        "DiscrepancyResolveForm"
+      ]
+    },
+    {
+      "path": "components/forms/RecepcionForm.tsx",
+      "bytes": 5884,
+      "kind": "text",
+      "sha256": "3a99e19ef83bfbe6e7084c13c2e4d0b6f50b00396512936d135130941c3a9ff4",
+      "lines": 194,
+      "exports": ["RecepcionForm"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/inventario/ArchivarEliminarBotones.tsx",
+      "bytes": 3102,
+      "kind": "text",
+      "sha256": "11cbddf75b589d68905dc1c2064945692388536c38feebd16e2f64c32b9be697",
+      "lines": 102,
+      "exports": ["ArchivarEliminarBotones"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/inventario/EditableCell.tsx",
+      "bytes": 2375,
+      "kind": "text",
+      "sha256": "d0d77901cfd1098b549930d87d1f44deb79682ee6a1389cbd7633e6214dfe73d",
+      "lines": 88,
+      "exports": ["EditableCell"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/inventario/FilaInventario.spec.md",
+      "bytes": 579,
+      "kind": "text",
+      "sha256": "a71707f84e13e4ef6f09409e38591f327b3f29ce56535e899f5774012aa6bfde",
+      "lines": 11,
+      "headings": ["Fila de inventario"]
+    },
+    {
+      "path": "components/inventario/FilaInventario.tsx",
+      "bytes": 4951,
+      "kind": "text",
+      "sha256": "d9f31cf12d37984370f74c43e8853252382bb39f6dc6063278c8a54538d44893",
+      "lines": 161,
+      "exports": ["FilaInventario"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/inventario/ImportarInventarioModal.spec.md",
+      "bytes": 515,
+      "kind": "text",
+      "sha256": "7836bad6c1718e31478097e4b6bcc7b3f1e8a1c65eeeb987790892525308ae74",
+      "lines": 10,
+      "headings": ["Importar inventario"]
+    },
+    {
+      "path": "components/inventario/ImportarInventarioModal.tsx",
+      "bytes": 13077,
+      "kind": "text",
+      "sha256": "a3b13f48567a586fceaa0ea6bb702844634f234d1e6f020cca9fe676b0126a9e",
+      "lines": 368,
+      "exports": ["ImportarInventarioModal"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/inventario/ItemFormFields.spec.md",
+      "bytes": 723,
+      "kind": "text",
+      "sha256": "8fadc1549738f914f106e3d9a032ed91b6e9f8ec27b5d6505b2bdb505ca5efc2",
+      "lines": 13,
+      "headings": ["Campos del formulario de inventario"]
+    },
+    {
+      "path": "components/inventario/ItemFormFields.tsx",
+      "bytes": 9482,
+      "kind": "text",
+      "sha256": "f6328d9bdcd8df291e677d9bb1fdb4e79c0fb655c59cf19cc2bcaf24b42d881a",
+      "lines": 311,
+      "exports": ["FormState", "ItemFormFields"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/inventario/ItemFormModal.spec.md",
+      "bytes": 1126,
+      "kind": "text",
+      "sha256": "4cf42ae893559a79ff2b6610cd700d4207cbbd53ff072bd372ebac6561710ac0",
+      "lines": 17,
+      "headings": ["Crear y editar un ítem de inventario"]
+    },
+    {
+      "path": "components/inventario/ItemFormModal.tsx",
+      "bytes": 5498,
+      "kind": "text",
+      "sha256": "10101d43e4fe24c33eb06a8f6e0e1e1cb0738586866978be210ed9b4cc4e5a15",
+      "lines": 194,
+      "exports": ["ItemFormModal"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/inventario/TablaInventario.spec.md",
+      "bytes": 772,
+      "kind": "text",
+      "sha256": "9b65d59ec68f294b2c47177147cfac22c338cbe2a545896a1f8d4204c057c5ba",
+      "lines": 14,
+      "headings": ["Tabla de inventario"]
+    },
+    {
+      "path": "components/inventario/TablaInventario.tsx",
+      "bytes": 10160,
+      "kind": "text",
+      "sha256": "96852386706557ceac81131420658296b858a7bea234c039b9d6b9e8dabd7c2c",
+      "lines": 298,
+      "exports": ["TablaInventario"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/inventario/types.ts",
+      "bytes": 1563,
+      "kind": "text",
+      "sha256": "5d7ccbed43e9859478365e4ae0c3a9e809d619b90ddc2330d5b5b380ee13fd1b",
+      "lines": 52,
+      "exports": [
+        "InventoryMeasureUnit",
+        "InventoryCondition",
+        "InventoryItemRow",
+        "CATEGORIA_LABEL",
+        "CATEGORIAS",
+        "MEDIDA_LABEL",
+        "formatearCantidad"
+      ],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/ordenes/MaterialesOrdenStep.spec.md",
+      "bytes": 512,
+      "kind": "text",
+      "sha256": "f0b1fccf94ac9283f67ef42df63df2e5bc8c68e6bde5b24c1058b8c656883ef3",
+      "lines": 10,
+      "headings": ["Paso de materiales de una orden"]
+    },
+    {
+      "path": "components/ordenes/MaterialesOrdenStep.tsx",
+      "bytes": 4610,
+      "kind": "text",
+      "sha256": "e0e0e278032e15754c5cb6632f0722647185cc0e1fcd927b1abb4256725d73af",
+      "lines": 139,
+      "exports": ["MaterialesOrdenStep"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/ordenes/nueva-orden-types.ts",
+      "bytes": 271,
+      "kind": "text",
+      "sha256": "a7eeb544ddbc944e44140c491e10a602f759ee42a16a3277877e9124eba2bfdb",
+      "lines": 19,
+      "exports": ["Empresa", "MaterialItem", "MaterialType"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/ordenes/SeleccionEmpresaStep.spec.md",
+      "bytes": 415,
+      "kind": "text",
+      "sha256": "489057576b068bf11383d69a24f0bf9372c9b8566f81fd61dbb892f23211bfb2",
+      "lines": 9,
+      "headings": ["Paso de selección de empresa"]
+    },
+    {
+      "path": "components/ordenes/SeleccionEmpresaStep.tsx",
+      "bytes": 3036,
+      "kind": "text",
+      "sha256": "9d3c08a05a50ca172f22059007ff2ac45097880a0423e2c3c6eaf066c1dcac4d",
+      "lines": 109,
+      "exports": ["SeleccionEmpresaStep"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/tracking/TurnoControl.spec.md",
+      "bytes": 3338,
+      "kind": "text",
+      "sha256": "bf814f216cb0f52c44793840b4a3b1006db8bc24fd71e8cca36d6c307a0278e3",
+      "lines": 63,
+      "headings": [
+        "`TurnoControl` — interruptor de turno del chofer",
+        "Qué cambió respecto de `PositionPinger`",
+        "Estados",
+        "El aviso de ubicación",
+        "Por qué no es `sticky` ni `fixed`",
+        "Polling",
+        "Degradación"
+      ]
+    },
+    {
+      "path": "components/tracking/TurnoControl.tsx",
+      "bytes": 9456,
+      "kind": "text",
+      "sha256": "6c920d7651cf96c4e58a549d72385659f58cb8175fc90c3acc232797e3f8ca2f",
+      "lines": 278,
+      "exports": ["TurnoControl"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/ui/ActividadModal.tsx",
+      "bytes": 5912,
+      "kind": "text",
+      "sha256": "0fdcbd26a111965f31c46091a722db2b6f6f9c46366e73c8e190f8f355bb6b88",
+      "lines": 206,
+      "exports": ["ActividadModal"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/ui/AdminSidebar.spec.md",
+      "bytes": 1373,
+      "kind": "text",
+      "sha256": "a984842a66d30021209e398d8c2a8fbc27cbea39b8547f379c82a584d260edd6",
+      "lines": 21,
+      "headings": ["Navegación administrativa", "Marca AUD-002"]
+    },
+    {
+      "path": "components/ui/AdminSidebar.tsx",
+      "bytes": 13183,
+      "kind": "text",
+      "sha256": "0ff411a36764ae6b9b7ce5fed26c7ecad9a5e683f057d1dea5188e7e1d7db380",
+      "lines": 399,
+      "exports": ["AdminSidebar"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/ui/AjustarStockModal.tsx",
+      "bytes": 6333,
+      "kind": "text",
+      "sha256": "83cb1052e6290bb7d28ded8b4960c9dd4093e31454a8a6868fe531f4a6dcf955",
+      "lines": 184,
+      "exports": ["AjustarStockModal"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/ui/BrandLogo.spec.md",
+      "bytes": 332,
+      "kind": "text",
+      "sha256": "5b109426d44ad721820f4caba8138d17939d378408df12877e84b697f584ed83",
+      "lines": 7,
+      "headings": ["Logo de Coopera Pro"]
+    },
+    {
+      "path": "components/ui/BrandLogo.tsx",
+      "bytes": 453,
+      "kind": "text",
+      "sha256": "613dea339241ee27b664a78f38cc226d297e0a276bb718c4ebd42ef67b572c72",
+      "lines": 24,
+      "exports": ["BrandLogo"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/ui/CallStatusBadge.spec.md",
+      "bytes": 2530,
+      "kind": "text",
+      "sha256": "e4c0fa229330ca0476abaaeedf66b0ef2756fbec795ba04762863d4d630ad378",
+      "lines": 43,
+      "headings": [
+        "`components/ui/CallStatusBadge.tsx` — spec",
+        "Qué es",
+        "De qué se clona",
+        "Props",
+        "Mapeo de tokens (blueprint §7)",
+        "Qué NO hace"
+      ]
+    },
+    {
+      "path": "components/ui/CallStatusBadge.tsx",
+      "bytes": 1986,
+      "kind": "text",
+      "sha256": "cacc33ecb042a143b3362c42c659de5bc84837de9e94a9d3f1bfe44215bb86e7",
+      "lines": 62,
+      "exports": ["CallStatusBadge"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/ui/ChoferHeader.spec.md",
+      "bytes": 199,
+      "kind": "text",
+      "sha256": "80f7d73f3cf441b71c91a6baa17fba70983e5cdc60a187dba8252f55b4838bd8",
+      "lines": 5,
+      "headings": ["Cabecera del chofer"]
+    },
+    {
+      "path": "components/ui/ChoferHeader.tsx",
+      "bytes": 3114,
+      "kind": "text",
+      "sha256": "d5a2f0546d0f428da3e682d485a6184e457e28f3a2259f6df28339b99ae97c13",
+      "lines": 85,
+      "exports": ["ChoferHeader"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/ui/components.spec.md",
+      "bytes": 1360,
+      "kind": "text",
+      "sha256": "b7f231e4204d41cc8895ca5501cee665b3cee1598956f7dbc09ce9c41849f34f",
+      "lines": 67,
+      "headings": [
+        "Componentes UI Base",
+        "Componentes requeridos",
+        "StatusBadge",
+        "DiscrepancyBadge",
+        "LoadingSkeleton",
+        "ConfirmDialog",
+        "PageHeader",
+        "EmptyState"
+      ]
+    },
+    {
+      "path": "components/ui/ContactoActions.tsx",
+      "bytes": 4099,
+      "kind": "text",
+      "sha256": "dd5924ddcfdf919ef235cec8390cf02c062c0fdb1ad3f1134667b0538e5c23c1",
+      "lines": 138,
+      "exports": ["ContactoActions"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/ui/ContactoModal.tsx",
+      "bytes": 8629,
+      "kind": "text",
+      "sha256": "5c75bc615f5e8272d282f0e75f5f8c96f4af3f3b55be86ad4d2abd3fcfcfbe1f",
+      "lines": 277,
+      "exports": ["ContactoModal"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/ui/DealCard.tsx",
+      "bytes": 1991,
+      "kind": "text",
+      "sha256": "e106bc0753d8eec2e76c665f1491c014b8aed0066cc5de53b8dc48b059fd5203",
+      "lines": 56,
+      "exports": ["DealCardData", "DealCard"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/ui/DealModal.tsx",
+      "bytes": 8227,
+      "kind": "text",
+      "sha256": "09cbf99535834246434ca0f2a5963a3fcc0aa42c1ac9d6db8d650c34ca0e0dbe",
+      "lines": 273,
+      "exports": ["DealModal"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/ui/DiscrepanciaActions.tsx",
+      "bytes": 3096,
+      "kind": "text",
+      "sha256": "1d0cad1ee775fcafdad1e60ce542a67e2a9299c3a95be20b486223f510d55bb0",
+      "lines": 95,
+      "exports": ["DiscrepanciaActions"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/ui/EditarUsuarioModal.tsx",
+      "bytes": 7847,
+      "kind": "text",
+      "sha256": "e860857c9076c57d4ef17ccc81827f4eb63412f89cd5de3be0489d61da6be3c5",
+      "lines": 251,
+      "exports": ["EditableUser", "EditarUsuarioModal"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/ui/EmpresaActions.tsx",
+      "bytes": 3271,
+      "kind": "text",
+      "sha256": "05c19f6181a9700f1cf20e0fad6080bfd44198dcb92694a724983231b1eebab9",
+      "lines": 111,
+      "exports": ["EmpresaActions"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/ui/KanbanBoard.tsx",
+      "bytes": 5428,
+      "kind": "text",
+      "sha256": "e145da64e8e7e92c01fa9c787149efd294fd900bb444bca8e5e0aae71fac442a",
+      "lines": 179,
+      "exports": ["PipelineColumn", "KanbanBoard"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/ui/KanbanColumn.tsx",
+      "bytes": 1794,
+      "kind": "text",
+      "sha256": "47d10bd32f1d9ec2192b1ddbfdfc8788b8e124312b8a7690843b6b54c57fe0a8",
+      "lines": 64,
+      "exports": ["KanbanColumn"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/ui/Modal.spec.md",
+      "bytes": 902,
+      "kind": "text",
+      "sha256": "8083ccf3a0f5def55a9cc136b1692fdd57de4a915a40aa3f2af6736b5f86c67c",
+      "lines": 14,
+      "headings": ["Modal compartido"]
+    },
+    {
+      "path": "components/ui/Modal.tsx",
+      "bytes": 2581,
+      "kind": "text",
+      "sha256": "34da59e57cb4fe59dd8ee5c2cc423fb988b238e8af8300a46ec87bd6d9278428",
+      "lines": 67,
+      "exports": ["Modal"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/ui/NuevaEmpresaModal.tsx",
+      "bytes": 4391,
+      "kind": "text",
+      "sha256": "f6f582d2e271c120e06d71d773369948e36ab60b44f5486c7f55fa9615fe9eec",
+      "lines": 142,
+      "exports": ["NuevaEmpresaModal"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/ui/NuevoUsuarioModal.spec.md",
+      "bytes": 776,
+      "kind": "text",
+      "sha256": "618e73fc327ef7443ad820cc8f5c3a89f70e660404e5cfa6e3f132a12b9b213c",
+      "lines": 12,
+      "headings": ["Nuevo usuario"]
+    },
+    {
+      "path": "components/ui/NuevoUsuarioModal.tsx",
+      "bytes": 7701,
+      "kind": "text",
+      "sha256": "b6001b1f8b8df427f364f2f50e21d4894316f0f0910235c7dc1824de79fe3a5d",
+      "lines": 258,
+      "exports": ["NuevoUsuarioModal"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/ui/OrdenesFilter.tsx",
+      "bytes": 3955,
+      "kind": "text",
+      "sha256": "cc1f6f7f51d34b8fdbaaa350909139ce3c16ba482753d759ef2329d19ac89280",
+      "lines": 119,
+      "exports": ["OrdenesFilter"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/ui/RecepcionNav.spec.md",
+      "bytes": 193,
+      "kind": "text",
+      "sha256": "adfdc49137fbbfed6b2bb340d248642efbd41b939dd5226d90d509072760e887",
+      "lines": 5,
+      "headings": ["Navegación de recepción"]
+    },
+    {
+      "path": "components/ui/RecepcionNav.tsx",
+      "bytes": 2450,
+      "kind": "text",
+      "sha256": "d32daf85f66ee482b61d44e8fb8b9775325a4354b1aa051ff3be148e9b58c199",
+      "lines": 70,
+      "exports": ["RecepcionNav"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/ui/RecepcionSearch.tsx",
+      "bytes": 1404,
+      "kind": "text",
+      "sha256": "28771637fc7775e97123a730d10f3528a671aee1f2600d08a8009f6e3d880071",
+      "lines": 49,
+      "exports": ["RecepcionSearch"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/ui/ReportesForm.tsx",
+      "bytes": 5856,
+      "kind": "text",
+      "sha256": "01c31ddf0d80cd95b04c6829c9e27856c05b448f1400f1872f631002c5d6188b",
+      "lines": 186,
+      "exports": ["ReportesForm"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/ui/SkeletonCard.tsx",
+      "bytes": 750,
+      "kind": "text",
+      "sha256": "73b999b5dab7cebe72eb035bd92997ffbaeb870d39f6016a695c15a820136d5b",
+      "lines": 23,
+      "exports": ["SkeletonCard", "SkeletonMetric"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/ui/StatusBadge.tsx",
+      "bytes": 1499,
+      "kind": "text",
+      "sha256": "532db5d5b6f231c9685ab1c1691cf66f0e5304566e6d02d5f5550dc806abca49",
+      "lines": 31,
+      "exports": ["StatusBadge"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/ui/TemperatureBadge.tsx",
+      "bytes": 1124,
+      "kind": "text",
+      "sha256": "497ba5fcb771b82c88000db3145825f2953192ae4496f1f084d10a90d2dd4043",
+      "lines": 29,
+      "exports": ["TemperatureBadge"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/ui/useDropdownPosition.ts",
+      "bytes": 4947,
+      "kind": "text",
+      "sha256": "1f4f67abc54694ba709d1a42562c9cf78d30f804d9d0d30e26ebcc8fb2bf7b26",
+      "lines": 119,
+      "exports": ["useDropdownPosition"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "components/ui/UsuarioActions.tsx",
+      "bytes": 4229,
+      "kind": "text",
+      "sha256": "2542bce38d3b0a0d97eb8aa4bd79070bb07c1fc3f0550486760f576641fdfbf3",
+      "lines": 142,
+      "exports": ["UsuarioActions"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "data/prospects/.gitkeep",
+      "bytes": 0,
+      "kind": "asset",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "data/prospects/candidatas_enriquecidas.csv",
+      "bytes": 8912,
+      "kind": "csv-metadata",
+      "sha256": "6b3ffb1203c3d857c69979100a7b8e78eddce16596dee7d685ccf8b02acbfcc5",
+      "lines": 56,
+      "header": "empresa,segmento,comuna,url,dominio,emails_encontrados,cantidad_emails"
+    },
+    {
+      "path": "data/prospects/candidatas_enriquecimiento.csv",
+      "bytes": 4822,
+      "kind": "csv-metadata",
+      "sha256": "81f20597f694a5686b2c8efa581a569279e5afe0f4b875c2be5a9ebd56296b82",
+      "lines": 56,
+      "header": "empresa,segmento,comuna,url,dominio"
+    },
+    {
+      "path": "data/prospects/raw/farmaceutica_norte_santiago.csv",
+      "bytes": 14760,
+      "kind": "csv-metadata",
+      "sha256": "04991a02ab8a48f9cd21fee53540fca4b52c1e2c91344156a13d77f6cfa5655d",
+      "lines": 50,
+      "header": "Empresa,comuna_busqueda,categoryName,address,phone,website,totalScore,reviewsCount,lat,lng,url"
+    },
+    {
+      "path": "data/prospects/raw/logistica_2026-07-28.csv",
+      "bytes": 26420,
+      "kind": "csv-metadata",
+      "sha256": "2d13fe898998e4e9ef8b89ec9bbf8e25380a1728d5ce20d16e43401320a844be",
+      "lines": 72,
+      "header": "negocio,contacto,puesto,telefono,correo,sitio_web,instagram,linkedin,ciudad,rating,resenas,senal_de_calificacion,fuente,fecha"
+    },
+    {
+      "path": "docs/auditorias/AUD-001-anexo-claude-2026-10-05.md",
+      "bytes": 22156,
+      "kind": "text",
+      "sha256": "46b522d3f4848b42c38be59fed921b776e861f07284f57cba36d584bfadc4228",
+      "lines": 378,
+      "headings": [
+        "AUD-001 — Anexo de Claude (2026-10-05)",
+        "1. Hallazgos nuevos confirmados",
+        "Descartados al reconfirmar (no tocar)",
+        "Corrección al informe de 2026-10-04",
+        "2. Tareas de seguridad",
+        "SEC-006 — No devolver la fila completa de `Supplier` en transacciones (Alta, S)",
+        "SEC-007 — Serializar el visor de auditoría (Media, M)",
+        "SEC-008 — Movimientos de stock atómicos (Media, M)",
+        "SEC-009 — Canje único del token de recuperación (Baja, S)",
+        "SEC-010 — Revocar sesiones al cambiar la contraseña (Baja; Media si se hace LOGIN-001, M)",
+        "SEC-011 / SEC-012 / SEC-013 — Endurecimientos menores (Baja/Info, S; un solo PR)",
+        "PWA-001 — Manifest inexistente (Baja, S; puede ir con BRAND-001)",
+        "3. LOGIN-001 — Casilla «Recordar sesión» en el login (pedido del usuario)",
+        "4. BRAND-001 — Logo de Coopera Pro en lugar del ícono de reciclaje (pedido del usuario)",
+        "5. Resumen para el registro",
+        "6. Decisiones aprobadas por el usuario (2026-10-05)",
+        "Seguimiento de implementación Codex — 2026-10-05"
+      ]
+    },
+    {
+      "path": "docs/auditorias/AUD-001-seguridad-y-calidad-2026-10-04.md",
+      "bytes": 28286,
+      "kind": "text",
+      "sha256": "a9f72886a43f44b7c2466c84e2919a68a7359b63e80dcee48524042411fd590d",
+      "lines": 210,
+      "headings": [
+        "AUD-001 — Auditoría de seguridad, POO y código limpio",
+        "Resultado ejecutivo",
+        "Alcance y método",
+        "Hallazgos de seguridad",
+        "CN-001 — Next.js con avisos críticos de RCE y fuera de soporte",
+        "CN-002 — APIs de órdenes omiten autorización por módulo/rol",
+        "CN-003 — Las APIs de evidencias no validan permisos por etapa",
+        "CN-004 — Datos de contacto de empresas visibles a roles sin permiso CRM",
+        "CN-005 — El rate limit de login permite incrementos perdidos bajo concurrencia",
+        "CN-006 — Nodemailer y su árbol de producción tienen avisos de severidad alta",
+        "CN-007 — Sharp y decodificadores nativos vulnerables",
+        "CN-008 — Otros paquetes de producción y desarrollo pendientes de parche",
+        "CN-009 — STARTTLS no se exige para puertos distintos de 465",
+        "CN-010 — Credencial de webhook incluida en una URL",
+        "CN-011 — CSP reduce defensa ante XSS",
+        "CN-012 — Errores y logs revelan más contexto del necesario",
+        "CN-013 — Reglas de exclusión preventiva incompletas",
+        "Controles que sí se observaron",
+        "Evaluación de POO y código limpio",
+        "Plan compartido para continuar",
+        "Fuentes consultadas",
+        "Implementación de SEC-001..SEC-005 y CAL-001 — 2026-10-04",
+        "Verificación de la implementación"
+      ]
+    },
+    {
+      "path": "docs/qa/AUD-002.md",
+      "bytes": 7043,
+      "kind": "text",
+      "sha256": "9adc586a9dc20f1cb5f83ac9e735d412caa2c4817e5d2d9e7c25b748424ab93a",
+      "lines": 99,
+      "headings": [
+        "AUD-002 — implementación y QA (2026-10-05)",
+        "Resultados",
+        "Verificación real de concurrencia",
+        "QA HTTP local",
+        "Revisión visual — emil-design-eng y agent-browser",
+        "Base configurada y entrega"
+      ]
+    },
+    {
+      "path": "docs/qa/AUD-002/admin-1440.png",
+      "bytes": 48189,
+      "kind": "asset",
+      "sha256": "37229e85697887cbd073498e7bcf1e6c3e9e90f09abf1fe5c8a51a5eabf143c1"
+    },
+    {
+      "path": "docs/qa/AUD-002/admin-390.png",
+      "bytes": 28628,
+      "kind": "asset",
+      "sha256": "3c7b90c8ed2bf032fa055fcee7f9e5dbd9be4cd3fcde7e06b1e1ff1ca0e1a391"
+    },
+    {
+      "path": "docs/qa/AUD-002/driver-390.png",
+      "bytes": 28485,
+      "kind": "asset",
+      "sha256": "3942ccc0313de9313f71ff4ca47d1bbebab3a74e78eb59943488f28dbecd0431"
+    },
+    {
+      "path": "docs/qa/AUD-002/finance-390.png",
+      "bytes": 24135,
+      "kind": "asset",
+      "sha256": "e7b47f2d53521f27851ca1cb4f4241fc79772ae3c4b3a96cd97a1807fef029a6"
+    },
+    {
+      "path": "docs/qa/AUD-002/login-1440.png",
+      "bytes": 69787,
+      "kind": "asset",
+      "sha256": "fe21f009a7a17f20285e683d1abebdb2a6ed645b4cea06cab0ceb22cdf7e7c8a"
+    },
+    {
+      "path": "docs/qa/AUD-002/login-320.png",
+      "bytes": 24670,
+      "kind": "asset",
+      "sha256": "9b4b28e540bee0a062127c2575bd4959a62f3c7d5e9d0a1d3b082e3c4b62fd02"
+    },
+    {
+      "path": "docs/qa/AUD-002/login-390.png",
+      "bytes": 25780,
+      "kind": "asset",
+      "sha256": "96bf85038a62697717d5325cb92c6f01b4797986f85a5db378ed7c85d9520073"
+    },
+    {
+      "path": "docs/qa/AUD-002/reception-390.png",
+      "bytes": 26056,
+      "kind": "asset",
+      "sha256": "18aade60636ca128bae5dcb02702a7dd365796f8a341ba9096f28ec11a369c7b"
+    },
+    {
+      "path": "docs/qa/DEP-001.md",
+      "bytes": 3216,
+      "kind": "text",
+      "sha256": "5c17f598116e9e11870eff5821df4f3baeaaa75805dd1a6f5a1dc24f51ff30fc",
+      "lines": 48,
+      "headings": [
+        "DEP-001 — producción verificada (2026-10-05)",
+        "Causa y solución",
+        "Dominio público",
+        "Revisión visual en producción",
+        "Comprobaciones y cierre"
+      ]
+    },
+    {
+      "path": "docs/qa/DEP-001/login-after-1440.png",
+      "bytes": 68364,
+      "kind": "asset",
+      "sha256": "58a8d409e5c96f622d43a07c9281e4553a6d5f8d0db9f1aacd7328acf6f0142b"
+    },
+    {
+      "path": "docs/qa/DEP-001/login-after-390.png",
+      "bytes": 23803,
+      "kind": "asset",
+      "sha256": "8fbba2cd3f19a02208b3e8bb3967d689e0f9b38cb966d84640d539400f9d9c00"
+    },
+    {
+      "path": "docs/qa/DEP-001/login-before-390.png",
+      "bytes": 18338,
+      "kind": "asset",
+      "sha256": "55d2c53d91e406d3bf190a2f490c05a0d1253f9a49528d72a96adfb4173ad615"
+    },
+    {
+      "path": "docs/superpowers/plans/2026-06-28-integracion-intranet-cooperapro.md",
+      "bytes": 7529,
+      "kind": "text",
+      "sha256": "075727cc56f3aa0542d1a8bf400993abea6a0761031020e1fd10ecf48a3d9721",
+      "lines": 169,
+      "headings": [
+        "Integración Intranet cooperapro.cl — Implementation Plan",
+        "Task 1: Agregar el dominio en Vercel (MANUAL — usuario)",
+        "Task 2: Crear el CNAME en SiteGround (MANUAL — usuario)",
+        "Task 3: Configurar NEXTAUTH_URL + redeploy (MANUAL — usuario)",
+        "Task 4: Verificar el subdominio antes de tocar el sitio (GATE)",
+        "Task 5: Actualizar el sitio web (AGENTE — repo cooperapro-web)",
+        "Notas"
+      ]
+    },
+    {
+      "path": "docs/superpowers/plans/2026-06-28-mapa-trackers.md",
+      "bytes": 26308,
+      "kind": "text",
+      "sha256": "95bd1cbab5d8f6537fff07b048d38ecf1c9dea1bb170679414a9abdf3d9eeeda",
+      "lines": 894,
+      "headings": [
+        "Mapa de posiciones (choferes + recicladores) — Implementation Plan",
+        "Estructura de archivos",
+        "Task 1: Infraestructura de tests (Vitest)",
+        "Task 2: Helpers de tracking (validación + frescura) — TDD",
+        "Task 3: Modelos Prisma (Tracker + Position)",
+        "Task 4: Endpoint de ingesta `POST /api/posiciones` (doble auth)",
+        "Task 5: Endpoint `GET /api/posiciones/activas` (ADMIN)",
+        "Task 6: Endpoint `GET /api/trackers` (ADMIN, solo lectura)",
+        "Task 7: Hook de ping + montaje en el layout del chofer",
+        "Task 8: Página del mapa + enlace en el sidebar",
+        "Task 9: Seed de trackers de demo + verificación end-to-end",
+        "Notas de implementación"
+      ]
+    },
+    {
+      "path": "docs/superpowers/specs/2026-06-28-integracion-intranet-cooperapro-design.md",
+      "bytes": 6087,
+      "kind": "text",
+      "sha256": "ee06918889a94e4ca206e3d5078e1f9703ff07cb754d030f1e0acb6a8691f053",
+      "lines": 128,
+      "headings": [
+        "Diseño — Integrar TrackResiduos como Intranet de cooperapro.cl",
+        "Objetivo",
+        "Contexto descubierto (infraestructura real, verificada por DNS)",
+        "Decisiones tomadas (brainstorming)",
+        "Sección 1 — DNS y dominio en Vercel",
+        "Sección 2 — Autenticación con el dominio nuevo (crítico)",
+        "Sección 3 — Edición del sitio web (repo `cooperapro-web`)",
+        "Sección 4 — Verificación",
+        "Fuera de alcance (YAGNI)",
+        "Notas"
+      ]
+    },
+    {
+      "path": "docs/superpowers/specs/2026-06-28-mapa-trackers-design.md",
+      "bytes": 8387,
+      "kind": "text",
+      "sha256": "c71283452911828523350b7a782a8ffbc52012fa6f270274d4e7e2c659fd9bab",
+      "lines": 205,
+      "headings": [
+        "Diseño — Mapa de posiciones (choferes + recicladores)",
+        "Objetivo",
+        "Decisiones tomadas (brainstorming)",
+        "Sección 1 — Modelo de datos",
+        "Sección 2 — Endpoints de API",
+        "`POST /api/posiciones` — tubería de ingesta (corazón del híbrido)",
+        "`GET /api/posiciones/activas` (solo ADMIN)",
+        "`GET /api/trackers` (solo ADMIN)",
+        "Sección 3 — Frontend",
+        "3a — Página del mapa: `/admin/mapa`",
+        "3b — Ping del teléfono (chofer/reciclador)",
+        "Sección 4 — Manejo de errores, privacidad y testing",
+        "Errores y resiliencia",
+        "Privacidad",
+        "Testing",
+        "Ruta futura (GPS dedicados)",
+        "Fuera de alcance (YAGNI en esta etapa)"
+      ]
+    },
+    {
+      "path": "ESPECIFICACION_API.md",
+      "bytes": 4841,
+      "kind": "text",
+      "sha256": "e0c0488aa7c2c4a58a1825efe88a36298f3c1cf4385a0ebbebbdf0962727555e",
+      "lines": 187,
+      "headings": [
+        "Especificación de API",
+        "Autenticación",
+        "POST /api/auth/login",
+        "Órdenes de Retiro",
+        "GET /api/ordenes",
+        "POST /api/ordenes",
+        "GET /api/ordenes/[id]",
+        "PATCH /api/ordenes/[id]",
+        "Evidencias (Fotos)",
+        "POST /api/evidencias",
+        "DELETE /api/evidencias/[id]",
+        "Discrepancias",
+        "GET /api/discrepancias",
+        "PATCH /api/discrepancias/[id]",
+        "Usuarios",
+        "GET /api/usuarios",
+        "POST /api/usuarios",
+        "PATCH /api/usuarios/[id]",
+        "Empresas",
+        "GET /api/empresas",
+        "POST /api/empresas",
+        "PATCH /api/empresas/[id]",
+        "Reportes",
+        "GET /api/reportes/ordenes",
+        "GET /api/reportes/chofer/[id]",
+        "GET /api/reportes/discrepancias/export",
+        "Generación de códigos de orden"
+      ]
+    },
+    {
+      "path": "ESQUEMA_BASE_DATOS.md",
+      "bytes": 5730,
+      "kind": "text",
+      "sha256": "f438aeb400216379b1bc9c5c99ebdd63125ba8d34c8507fd2d36ed60daf334fe",
+      "lines": 171,
+      "headings": [
+        "Esquema de Base de Datos",
+        "Modelos (Prisma)",
+        "User",
+        "Company",
+        "MaterialType",
+        "PickupOrder",
+        "OrderItem",
+        "Evidence",
+        "Discrepancy",
+        "Relaciones",
+        "Índices recomendados",
+        "Enums a definir en Prisma",
+        "Configuración de Prisma"
+      ]
+    },
+    {
+      "path": "FLUJOS_DE_USUARIO.md",
+      "bytes": 5415,
+      "kind": "text",
+      "sha256": "aca5b2fadc669c6cb2a7d5ac235f59988c8cbbdc6a55fccf7bb5a5ef16645b19",
+      "lines": 171,
+      "headings": [
+        "Flujos de Usuario",
+        "FLUJO 1 — Chofer: Registrar un retiro",
+        "Pasos",
+        "Casos de error",
+        "FLUJO 2 — Recepción: Registrar ingreso de materiales a bodega",
+        "Pasos",
+        "Cálculo de discrepancia",
+        "FLUJO 3 — Administrador: Gestionar discrepancias",
+        "Pasos",
+        "FLUJO 4 — Administrador: Ver reportes",
+        "Tipos de reportes",
+        "FLUJO 5 — Administrador: Gestionar usuarios",
+        "Acciones",
+        "FLUJO 6 — Administrador: Gestionar empresas cliente",
+        "Acciones",
+        "Estados de una orden y transiciones"
+      ]
+    },
+    {
+      "path": "IMPORTACION_RADAR_PALLETS.md",
+      "bytes": 10938,
+      "kind": "text",
+      "sha256": "4a9ef87bc77569d13ad0449195e04650d6ca114d6311891080e37acce1491c7b",
+      "lines": 232,
+      "headings": [
+        "Importación Radar de Clientes Pallets + Segmento INDUSTRIA",
+        "1. Objetivo del proceso",
+        "2. Usuario o destinatario",
+        "3. Diagnóstico del archivo",
+        "Problemas de calidad detectados",
+        "4. Flujo paso a paso",
+        "5. Inputs",
+        "6. Outputs esperados",
+        "6.1 Registros en el CRM",
+        "6.2 Reglas de clasificación (por palabras clave)",
+        "6.3 Campaña nueva",
+        "6.4 Estado de gestión telefónica",
+        "7. Reglas principales",
+        "8. Excepciones y casos límite",
+        "9. Criterios de calidad",
+        "10. Riesgos y pendientes",
+        "Bloqueantes para activar el envío (heredados, siguen vigentes)",
+        "Riesgos técnicos de esta importación",
+        "Decisiones sin tomar",
+        "11. Siguiente acción recomendada"
+      ]
+    },
+    {
+      "path": "INVENTARIO_EPP.md",
+      "bytes": 1898,
+      "kind": "text",
+      "sha256": "4d7a50b507fd3b57b75c28c8f85682eb12ab9a2411436806e1d58e84285feea6",
+      "lines": 41,
+      "headings": [
+        "Inventario EPP — Elementos de Protección Personal",
+        "Artículos frecuentes",
+        "Clasificación"
+      ]
+    },
+    {
+      "path": "lib/access.test.ts",
+      "bytes": 2755,
+      "kind": "text",
+      "sha256": "1bac7a58d14766722c51403e1e4188dcdb98e9f7507bad3021085d1817352a5d",
+      "lines": 77,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/access.ts",
+      "bytes": 1032,
+      "kind": "text",
+      "sha256": "194e5ebb75d9b37d9486e55e378e0ee3e870a0f3bd80564056359c01cd8006d2",
+      "lines": 32,
+      "exports": [
+        "ModuleKey",
+        "hasModuleAccess",
+        "FinanceModuleKey",
+        "hasFinanceAccess",
+        "canWriteFinance"
+      ],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/auth-jwt.ts",
+      "bytes": 630,
+      "kind": "text",
+      "sha256": "ab2e56c3e5579b0915b9422a626bfc8bd25320920a8824328e69330af0eaa88b",
+      "lines": 15,
+      "exports": ["encodeSessionToken"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/auth-session.test.ts",
+      "bytes": 3249,
+      "kind": "text",
+      "sha256": "a6575319794a59cfb53b7200ec3da98ef0f522d5b627806014b31915059e1e85",
+      "lines": 111,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/auth-session.ts",
+      "bytes": 1459,
+      "kind": "text",
+      "sha256": "ab311cd54baa2d3f76df42d565845982efbcd420cac330d4993067befdb9304f",
+      "lines": 54,
+      "exports": [
+        "SESSION_SHORT_MS",
+        "SESSION_LONG_MS",
+        "calcularVencimiento",
+        "sesionVencida"
+      ],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/auth.spec.md",
+      "bytes": 2044,
+      "kind": "text",
+      "sha256": "630fb6419cdfcda9d5657d018741f4680031608506095475382962f9f1346a02",
+      "lines": 30,
+      "headings": ["Autenticación y sesiones"]
+    },
+    {
+      "path": "lib/auth.ts",
+      "bytes": 6259,
+      "kind": "text",
+      "sha256": "ea0c26e59f40db7fad99fd37a4956c4187768cedb5ab052840c984cb26c3a887",
+      "lines": 199,
+      "exports": ["authOptions"],
+      "httpMethods": [],
+      "prismaModels": ["shift", "user"],
+      "environmentNames": ["NEXTAUTH_SECRET", "NODE_ENV"]
+    },
+    {
+      "path": "lib/csv.test.ts",
+      "bytes": 1885,
+      "kind": "text",
+      "sha256": "acccdabd652ead29a2fa7e65db483f427fa00966ad877219137ec77bef2d73a2",
+      "lines": 64,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/csv.ts",
+      "bytes": 2618,
+      "kind": "text",
+      "sha256": "3b33ef8624e26dae4237f994e8dcfecad86d963556e94698f8f5b99edab9e5ab",
+      "lines": 82,
+      "exports": ["CsvColumn", "toCsv", "parseCsv", "detectarDelimitador"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/db.spec.md",
+      "bytes": 1002,
+      "kind": "text",
+      "sha256": "a743f419b93d9fd79f9f9af3fc79633acb94d8d3899f8cd94df5acdad271e624",
+      "lines": 28,
+      "headings": [
+        "Librería: Base de Datos",
+        "Propósito",
+        "Patrón",
+        "Uso en API Routes",
+        "Generación de orderCode"
+      ]
+    },
+    {
+      "path": "lib/db.ts",
+      "bytes": 376,
+      "kind": "text",
+      "sha256": "ec23b621045f93f7be078ae2a77fb8f0e6a9b840d8b319a2e25146aad2c9268d",
+      "lines": 12,
+      "exports": ["prisma"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": ["NODE_ENV"]
+    },
+    {
+      "path": "lib/finanzas/audit-view.test.ts",
+      "bytes": 649,
+      "kind": "text",
+      "sha256": "4a3403b77817354e13d92eec3f7e81f2e6425396e96c1d2cefc3947d8fa8486e",
+      "lines": 25,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/finanzas/audit-view.ts",
+      "bytes": 1288,
+      "kind": "text",
+      "sha256": "8082040d5518a985fd4f62467ae37b728b29fda900cba324efa2fa6bbd01d2f4",
+      "lines": 51,
+      "exports": ["serializarAuditorias"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/finanzas/audit.test.ts",
+      "bytes": 4550,
+      "kind": "text",
+      "sha256": "1f327e0d2b0153aa9b7e1e04c3421f38bc9c9cc0b134e7fc6bfa75eec8cdde08",
+      "lines": 143,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/finanzas/audit.ts",
+      "bytes": 2086,
+      "kind": "text",
+      "sha256": "047d80485788dac70afd08617ae8dc19756905a16466b7dca035ac06f5391c90",
+      "lines": 75,
+      "exports": [
+        "EntradaAuditoria",
+        "ClienteAuditoria",
+        "withAudit",
+        "mutarConAuditoria"
+      ],
+      "httpMethods": [],
+      "prismaModels": ["financeAuditLog"],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/finanzas/crypto.test.ts",
+      "bytes": 3451,
+      "kind": "text",
+      "sha256": "aae080cc0226ddce013b63e89aa975a52ba7d43d08078288aadc2af6ba09476f",
+      "lines": 100,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": [
+        "FINANZAS_ENCRYPTION_KEY",
+        "FINANZAS_ENCRYPTION_KEY_PREVIOUS"
+      ]
+    },
+    {
+      "path": "lib/finanzas/crypto.ts",
+      "bytes": 2805,
+      "kind": "text",
+      "sha256": "631b802089ac67e3f766ec696fc801b5865207f3225689f8f030a45caf09cd36",
+      "lines": 87,
+      "exports": ["cifrar", "descifrar", "ultimos4"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": ["FINANZAS_ENCRYPTION_KEY_PREVIOUS"]
+    },
+    {
+      "path": "lib/finanzas/csv.test.ts",
+      "bytes": 1828,
+      "kind": "text",
+      "sha256": "5ae2f3254330c13b3f58e132f1f87c916ec25c0047a1e21898a8dbf5e364fad6",
+      "lines": 55,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/finanzas/csv.ts",
+      "bytes": 1098,
+      "kind": "text",
+      "sha256": "d27a09ee2370e6caf838fe252848b2fdf6e9496edbb67c149493ab80ca835e42",
+      "lines": 31,
+      "exports": ["escaparCampoCsv", "filasACsv"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/finanzas/fechas.test.ts",
+      "bytes": 536,
+      "kind": "text",
+      "sha256": "707f9d65b5edcd1faba83d12b1490039363ff765130308466e47806008a02c0f",
+      "lines": 16,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/finanzas/fechas.ts",
+      "bytes": 835,
+      "kind": "text",
+      "sha256": "a150792f4e1637adaca661f3f1b3368a4154548450f2efaf7a5b98043554fb1a",
+      "lines": 20,
+      "exports": ["rangoFechas"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/finanzas/paginacion.test.ts",
+      "bytes": 1569,
+      "kind": "text",
+      "sha256": "e4d943cbe8660d6e0607b85257c9ff5effe3cd6fac5d553266b359403575fdd5",
+      "lines": 54,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/finanzas/paginacion.ts",
+      "bytes": 1352,
+      "kind": "text",
+      "sha256": "fe9771c8e1ed9aedd4efc848d1d2d07a132cd4692c0c16515fbaa6fe66fe9ab3",
+      "lines": 63,
+      "exports": [
+        "ParametrosPaginacion",
+        "Paginacion",
+        "resolverPaginacion",
+        "MetaPaginacion",
+        "construirMeta"
+      ],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/finanzas/payroll.test.ts",
+      "bytes": 2051,
+      "kind": "text",
+      "sha256": "265a80b141fadbc344042a7b1f35a38c7dbb1c20eb72f7b1d4dcfc9722612781",
+      "lines": 77,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/finanzas/payroll.ts",
+      "bytes": 1034,
+      "kind": "text",
+      "sha256": "84a2bad6fb3b4d85469eda78ff8ab1d666ad1bab8c29069690c1722fb7f61e98",
+      "lines": 37,
+      "exports": ["EntradaLiquido", "calcularLiquido", "totalizarNomina"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/finanzas/rate-limit.test.ts",
+      "bytes": 4603,
+      "kind": "text",
+      "sha256": "414d0cbcdd1729920bae054b1938ff5b45a793cc04c2db8235f3e4f7189d1385",
+      "lines": 153,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/finanzas/rate-limit.ts",
+      "bytes": 2698,
+      "kind": "text",
+      "sha256": "8883e03884b26ba9b19c25853b6d6a2d073659d6c47916b2bb71b6e9a4e84a39",
+      "lines": 92,
+      "exports": [
+        "ContadorRegistro",
+        "ClienteContador",
+        "ResultadoRateLimit",
+        "checkRateLimit",
+        "reiniciarRateLimit"
+      ],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/finanzas/reportes.test.ts",
+      "bytes": 2424,
+      "kind": "text",
+      "sha256": "268e87fa23e3755541ccd17b29112f683aa2e52028909d7fb1e02d087a1f2bd7",
+      "lines": 76,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/finanzas/reportes.ts",
+      "bytes": 1806,
+      "kind": "text",
+      "sha256": "cedf92c30fd44f7742861bfb72e4c30ef02ef24b28996950679442598e1e78e0",
+      "lines": 71,
+      "exports": [
+        "TransaccionParaResumen",
+        "ResumenPeriodo",
+        "resumirPeriodo",
+        "CategoriaAgrupada",
+        "agruparPorCategoria"
+      ],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/finanzas/reset.test.ts",
+      "bytes": 2805,
+      "kind": "text",
+      "sha256": "29591b338989d4e9ba3041191ff8ea9d0c4f13a885fac265a14a88ce433313f4",
+      "lines": 96,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/finanzas/reset.ts",
+      "bytes": 1924,
+      "kind": "text",
+      "sha256": "dffd32226791b5ae1e820a3cbbf1b5fe972767b29f74907a41e5d50560824ad9",
+      "lines": 67,
+      "exports": [
+        "FilaTokenReset",
+        "TokenResetError",
+        "consumirTokenReset",
+        "generarToken",
+        "hashToken",
+        "esTokenUtilizable",
+        "armarEnlace"
+      ],
+      "httpMethods": [],
+      "prismaModels": ["passwordResetToken"],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/finanzas/routes.test.ts",
+      "bytes": 4493,
+      "kind": "text",
+      "sha256": "1188f5a8064763338580fd2142a8e1e55be15e08893b2f476dfbcfe4dfa33fd8",
+      "lines": 132,
+      "exports": [],
+      "httpMethods": [
+        "GET",
+        "GET",
+        "POST",
+        "GET",
+        "GET",
+        "DELETE",
+        "GET",
+        "POST"
+      ],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/finanzas/routes.ts",
+      "bytes": 3771,
+      "kind": "text",
+      "sha256": "37cf68bc58c5d77b0ecf408277c21725b4b6ab50d330f05743813870d3ac0577",
+      "lines": 131,
+      "exports": ["metodosSinPortero", "rutasSinPortero", "inclusionesCrudas"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/finanzas/rut.test.ts",
+      "bytes": 1581,
+      "kind": "text",
+      "sha256": "955ed5c540c14aec354e076eccd902e49959b61b1fc0d5720f8f95660be199c4",
+      "lines": 63,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/finanzas/rut.ts",
+      "bytes": 1711,
+      "kind": "text",
+      "sha256": "51e047cab1056f58f82ade631742153d4afd0727d7345d9bbae55396a6ef4cb5",
+      "lines": 47,
+      "exports": [
+        "normalizarRut",
+        "digitoVerificador",
+        "esRutValido",
+        "formatearRut",
+        "enmascararRut"
+      ],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/finanzas/schemas.test.ts",
+      "bytes": 3633,
+      "kind": "text",
+      "sha256": "46ae182f069b4408011ad8a449e19c50eb2b24e4356a2c4dc9f145eaf842f113",
+      "lines": 134,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/finanzas/schemas.ts",
+      "bytes": 5259,
+      "kind": "text",
+      "sha256": "b926d818785ab7ae871c598827b26e7b04bace0d520ffc8c60780f68c6f0b3de",
+      "lines": 155,
+      "exports": [
+        "montoSchema",
+        "bankAccountTypeSchema",
+        "employeeStatusSchema",
+        "transactionKindSchema",
+        "transactionStatusSchema",
+        "paymentMethodSchema",
+        "advanceStatusSchema",
+        "payrollStatusSchema",
+        "crearEmpleadoSchema",
+        "editarEmpleadoSchema",
+        "crearProveedorSchema",
+        "editarProveedorSchema",
+        "crearCategoriaSchema",
+        "crearTransaccionSchema",
+        "editarTransaccionSchema",
+        "crearAnticipoSchema",
+        "editarAnticipoSchema",
+        "lineaNominaSchema",
+        "crearNominaSchema",
+        "editarNominaSchema",
+        "filtrosListadoSchema"
+      ],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/finanzas/serialize.test.ts",
+      "bytes": 5288,
+      "kind": "text",
+      "sha256": "f1c075cf1439b05dfbcd9e5a4750ac4d4dd57eda7e76bde4ffd7a4adb38e5fcc",
+      "lines": 158,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/finanzas/serialize.ts",
+      "bytes": 5484,
+      "kind": "text",
+      "sha256": "0d960d9b11bb5c205d659315689111e248ef2cae32889030bc9e2682ad47b4a1",
+      "lines": 209,
+      "exports": [
+        "serializeTransaction",
+        "serializeAuditLog",
+        "EmployeeParaSerializar",
+        "EmployeeSerializado",
+        "SupplierParaSerializar",
+        "serializeEmployee",
+        "SupplierSerializado",
+        "serializeSupplier"
+      ],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/inventario/category.test.ts",
+      "bytes": 2140,
+      "kind": "text",
+      "sha256": "642a1f2f6408b660bcceb04147b1a659cb7fb8f738475f6e4838ce10d45f9187",
+      "lines": 67,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/inventario/category.ts",
+      "bytes": 5013,
+      "kind": "text",
+      "sha256": "0a09c1b426fc7f02a8fe89bf8ff289af64be75fa2bd4d2a4680fce610c70f62f",
+      "lines": 222,
+      "exports": [
+        "INVENTORY_CATEGORIES",
+        "InventoryCategory",
+        "INVENTORY_CATEGORY_LABEL",
+        "EPP_ITEM_SUGGESTIONS",
+        "parsearCategoriaInventario",
+        "esArticuloEpp",
+        "isInventoryCategory",
+        "resolverCategoriaInventario"
+      ],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/inventario/movimiento.test.ts",
+      "bytes": 1123,
+      "kind": "text",
+      "sha256": "dcdf6cf1d0157581484fd93a9b8904a6f06bb6b571379d3fdf6ef7cfe6b679a4",
+      "lines": 34,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/inventario/movimiento.ts",
+      "bytes": 4192,
+      "kind": "text",
+      "sha256": "66b8d83812a42d9a13fef16a5de06fde58ea584858dd11327200b87a9b2dac3f",
+      "lines": 145,
+      "exports": [
+        "TipoMovimiento",
+        "MovimientoError",
+        "calcularMovimiento",
+        "registrarMovimiento"
+      ],
+      "httpMethods": [],
+      "prismaModels": ["inventoryItem", "inventoryMovement"],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/inventario/parse.test.ts",
+      "bytes": 4727,
+      "kind": "text",
+      "sha256": "83797a94bd7cef7444440971d8a28a18eeb02dc379f5cdcb27cb564f169fc5c4",
+      "lines": 166,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/inventario/parse.ts",
+      "bytes": 4860,
+      "kind": "text",
+      "sha256": "db7e58571506a830c634836ece9c2f729f040bb5cd102dbf9d0f288baa96fbea",
+      "lines": 138,
+      "exports": [
+        "MeasureUnit",
+        "Condition",
+        "CantidadParseada",
+        "MedidaParseada",
+        "normalizarCelda",
+        "parseCantidad",
+        "parseMedida",
+        "parseCondicion",
+        "mapearCabeceras"
+      ],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/navigation.test.ts",
+      "bytes": 1059,
+      "kind": "text",
+      "sha256": "5956845b676023a7563fa7569318c32528d3840b4b711ea32a972f6116c164c0",
+      "lines": 33,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/navigation.ts",
+      "bytes": 290,
+      "kind": "text",
+      "sha256": "fd19837b6804449a946e65d6b9815df7ea7b4695205076e6daa38575fd2fcd14",
+      "lines": 6,
+      "exports": ["isActiveNavHref"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/notifications.ts",
+      "bytes": 274,
+      "kind": "text",
+      "sha256": "3d3f89c50a4dc005ea5fdf9b32003cc076d06c5f28b0b83f21cad431f74e31a4",
+      "lines": 5,
+      "exports": ["NOTIFICATIONS_ENABLED_KEY", "NOTIFIED_IDS_KEY"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/operations/authorization.spec.md",
+      "bytes": 774,
+      "kind": "text",
+      "sha256": "c1650b444ddee33bf84e59a425a129865422ca5d5764cef5a62e3c3c85b84d01",
+      "lines": 13,
+      "headings": ["Política de autorización de Operaciones"]
+    },
+    {
+      "path": "lib/operations/authorization.test.ts",
+      "bytes": 4683,
+      "kind": "text",
+      "sha256": "10021a951c089d50b3e2b453cf309d649de682e4232fe99dc09f76e8c22e4389",
+      "lines": 129,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/operations/authorization.ts",
+      "bytes": 2786,
+      "kind": "text",
+      "sha256": "f43da2d56fe825d36bfb22928382d9fe00ff070b66d9a4acd6c59b0a2b609091",
+      "lines": 116,
+      "exports": [
+        "OperationsActor",
+        "hasOperationsAccess",
+        "canAccessOrder",
+        "canCreatePickupOrder",
+        "canReceivePickupOrder",
+        "canEditPickupItems",
+        "canUpdatePickupStatus",
+        "canUploadEvidence",
+        "canDeleteEvidence",
+        "canListCompanies"
+      ],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/outreach/eligibility.test.ts",
+      "bytes": 5760,
+      "kind": "text",
+      "sha256": "f1f43c38daa615dd372d4eb0797fce68c76a087a04cad9100b21c3d10f06bb1a",
+      "lines": 183,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/outreach/eligibility.ts",
+      "bytes": 6426,
+      "kind": "text",
+      "sha256": "d1d1fa1739523fbd83b43cb630b901074e8ccefcf7a594593f7b51c37a94b435",
+      "lines": 149,
+      "exports": [
+        "allocateDailyBudget",
+        "pickCompanyContact",
+        "isCompanyPhoneManaged"
+      ],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/outreach/prospects.test.ts",
+      "bytes": 9208,
+      "kind": "text",
+      "sha256": "7e0c21b06b83c2ce83937bf2ca08f189270456ca1faea016aa5f88ebae7ba1d0",
+      "lines": 320,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/outreach/prospects.ts",
+      "bytes": 7791,
+      "kind": "text",
+      "sha256": "125627776ac4278af23b98b98944fd2588bcb0360e154be651e16327ea7994a8",
+      "lines": 245,
+      "exports": [
+        "clean",
+        "parseCsv",
+        "domainOf",
+        "extractPlaceId",
+        "ProspectSegment",
+        "NormalizedProspect",
+        "normalizeLogisticaRow",
+        "normalizeFarmaceuticaRow",
+        "pickBestEmail",
+        "mergeEnrichedEmail",
+        "dedupeKey",
+        "isPhoneOnly"
+      ],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/outreach/radar.test.ts",
+      "bytes": 16402,
+      "kind": "text",
+      "sha256": "e18b29cb6e145e417acb10729e68df28645890494925c17e88da11af7f4f81e8",
+      "lines": 465,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/outreach/radar.ts",
+      "bytes": 15971,
+      "kind": "text",
+      "sha256": "d3b0e7ff0da5010c6571a3a61e7664ad45783d0a1323f08a1c354632669bca7c",
+      "lines": 390,
+      "exports": [
+        "RADAR_SHEETS",
+        "RadarRow",
+        "HEADER_MAP",
+        "splitPhones",
+        "normalizeCompanyName",
+        "parseRadarSheet",
+        "classifySegment",
+        "consolidateRows",
+        "RadarProspect",
+        "toRadarProspect"
+      ],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/outreach/smtp.test.ts",
+      "bytes": 1240,
+      "kind": "text",
+      "sha256": "cacd0eda42db3d44f2923ad8e9cd87005a57d7ecde474d1af0fa39ec615b754f",
+      "lines": 40,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/outreach/smtp.ts",
+      "bytes": 4778,
+      "kind": "text",
+      "sha256": "5d76a433001a47697ebf95d0ce35597c576d6e8a4ac3d00f2cf0bd6ce62463e0",
+      "lines": 148,
+      "exports": [
+        "EmailAttachment",
+        "SendMailInput",
+        "SmtpTransportInput",
+        "parseSmtpPort",
+        "buildSmtpTransportOptions",
+        "assertAttachmentWithinLimit",
+        "buildMailOptions",
+        "sendMail"
+      ],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": ["SMTP_FROM_NAME", "SMTP_PORT", "SMTP_REPLY_TO"]
+    },
+    {
+      "path": "lib/outreach/system-user.ts",
+      "bytes": 1117,
+      "kind": "text",
+      "sha256": "2c9f275b786b880b3ff4f7040fbecb528dcd89a113419c9f1e305fbffc8d8fd7",
+      "lines": 31,
+      "exports": ["ensureSystemUser"],
+      "httpMethods": [],
+      "prismaModels": ["user"],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/outreach/templates/farmaceutica.ts",
+      "bytes": 2163,
+      "kind": "text",
+      "sha256": "1578d0125ac47d1fb8dbc3c2e24bb6495a482b9842bf7da751a811c8a1077224",
+      "lines": 55,
+      "exports": ["renderFarmaceuticaEmail"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/outreach/templates/index.ts",
+      "bytes": 987,
+      "kind": "text",
+      "sha256": "a512f6ae7e5feda6486e262faf910d72da8ffe3f92f8de77fb8aad26242c408f",
+      "lines": 31,
+      "exports": ["TEMPLATES", "getTemplate"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/outreach/templates/industria.ts",
+      "bytes": 2497,
+      "kind": "text",
+      "sha256": "1e017a79db137f265f637432ba7b3722c510ffa4e4744d1e8fde648427d95981",
+      "lines": 59,
+      "exports": ["renderIndustriaEmail"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/outreach/templates/logistica.ts",
+      "bytes": 2023,
+      "kind": "text",
+      "sha256": "b1cf77a54eccf64d5650afc9d9f4449b3d724625bb621d06785b675c61be7033",
+      "lines": 53,
+      "exports": ["renderLogisticaEmail"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/outreach/templates/render.test.ts",
+      "bytes": 7127,
+      "kind": "text",
+      "sha256": "9e465d99dc158e64c860d9c4b426ed25dcc9c6a03323f9411a79de652fee202a",
+      "lines": 194,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/outreach/templates/render.ts",
+      "bytes": 2492,
+      "kind": "text",
+      "sha256": "aa99e9306d3fa6f9414c50fd8b7a6be7d60bf60f9e6b9ccee9de139e005455e7",
+      "lines": 82,
+      "exports": [
+        "ProspectEmailInput",
+        "SenderFooterInfo",
+        "RenderedEmail",
+        "renderGreeting",
+        "renderFooterHtml",
+        "renderFooterText",
+        "escapeHtml",
+        "assembleEmail"
+      ],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/outreach/unsubscribe.ts",
+      "bytes": 537,
+      "kind": "text",
+      "sha256": "81d56d9bdc5de99e0696d952f85cddffdb3b13c9805a793febf098d2ba3f2536",
+      "lines": 14,
+      "exports": ["generateOptOutToken", "buildUnsubscribeUrl"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/pipeline.ts",
+      "bytes": 917,
+      "kind": "text",
+      "sha256": "53513f2180a723213161aec8138b7caba3c7fd1e34378b8e7ece86486574ebf4",
+      "lines": 20,
+      "exports": ["DEFAULT_STAGES", "ensurePipelineStages"],
+      "httpMethods": [],
+      "prismaModels": ["pipelineStage"],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/scoring.ts",
+      "bytes": 1581,
+      "kind": "text",
+      "sha256": "04b5692ab301e06560e5c88ad019fcf4cc9abcf8f6461006c94ff499350d2584",
+      "lines": 55,
+      "exports": ["ScoringInput", "calculateLeadScore", "suggestTemperature"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/storage.spec.md",
+      "bytes": 1454,
+      "kind": "text",
+      "sha256": "33ee38178a87a57949ff2ef4e1053ffa69e3f921a6e5e26736f67bcc7e5271c5",
+      "lines": 40,
+      "headings": [
+        "Librería: Almacenamiento de Archivos",
+        "Propósito",
+        "Función: `saveImage(file: File | Buffer, orderId: string): Promise<string>`",
+        "Función: `deleteImage(imagePath: string): Promise<void>`",
+        "Función: `saveSignature(dataUrl: string, orderId: string): Promise<string>`",
+        "Notas de implementación"
+      ]
+    },
+    {
+      "path": "lib/tracking.test.ts",
+      "bytes": 1592,
+      "kind": "text",
+      "sha256": "d93c10cb75ca43cad1a0c73042ebd4f9bcc6930957c6a01d8947352c12b2696c",
+      "lines": 46,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/tracking.ts",
+      "bytes": 810,
+      "kind": "text",
+      "sha256": "a34f8729e4f56cd5a27df6e5c25802fb5ba42986a34901e0b030e53674552f12",
+      "lines": 22,
+      "exports": ["validateCoordinates", "minutesSince", "signalFreshness"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/turnos-server.ts",
+      "bytes": 2876,
+      "kind": "text",
+      "sha256": "49ecb9fdb262b49b2f0815a34831acd64c01efba575322ef5c5f7c5024a20791",
+      "lines": 81,
+      "exports": ["cerrarTurnosInactivos", "turnoAbiertoDe"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/turnos.test.ts",
+      "bytes": 3669,
+      "kind": "text",
+      "sha256": "13a861637ae469ac71e169e6fb3653e7db89ac65b250642388894a1864da4f71",
+      "lines": 106,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/turnos.ts",
+      "bytes": 2386,
+      "kind": "text",
+      "sha256": "795812daf5b8fef417cf5e76ae95818cf6eb58b4f943efa2ae04db97a2393dfb",
+      "lines": 73,
+      "exports": [
+        "INACTIVIDAD_MS",
+        "TurnoAbierto",
+        "CierrePendiente",
+        "turnosACerrar",
+        "minutosEnTurno"
+      ],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/usePositionPing.ts",
+      "bytes": 1661,
+      "kind": "text",
+      "sha256": "045ad5c965c51bd531c383f4b62c759952eefb57422ddbee7605ca2452331443",
+      "lines": 53,
+      "exports": ["usePositionPing"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/utils.spec.md",
+      "bytes": 1374,
+      "kind": "text",
+      "sha256": "7105cdda3d2360798e1835f00163775bee2fefbb0d2091214166e9e8b5278b37",
+      "lines": 46,
+      "headings": [
+        "Librería: Utilidades",
+        "Funciones requeridas",
+        "`calculateDiscrepancy(declared: number, received: number): number`",
+        "`getDiscrepancySeverity(percentDiff: number): DiscrepancySeverity | null`",
+        "`formatOrderCode(year: number, seq: number): string`",
+        "`formatDate(date: Date | string): string`",
+        "`formatQuantity(value: number, unit: MaterialUnit): string`",
+        "`apiError(message: string, status: number, code?: string): NextResponse`"
+      ]
+    },
+    {
+      "path": "lib/utils.ts",
+      "bytes": 2588,
+      "kind": "text",
+      "sha256": "5880cb2ddd1a642f4631c4f45bff3f08d1fd99a3fe3485f8bc6add9c39b89c8f",
+      "lines": 85,
+      "exports": [
+        "CONTACT_SOURCE_LABELS",
+        "apiError",
+        "calculateDiscrepancy",
+        "getGreeting",
+        "formatTime",
+        "formatDate",
+        "generateOrderCode",
+        "clamp",
+        "formatCurrency",
+        "cn",
+        "formatRelativeDate"
+      ],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "lib/webhook.ts",
+      "bytes": 454,
+      "kind": "text",
+      "sha256": "d8da491febc06db6c3a32738d75bd08f211df5a10ab8730562899cb92bd4e9bf",
+      "lines": 15,
+      "exports": ["ensureWebhookConfig", "generateWebhookSecret"],
+      "httpMethods": [],
+      "prismaModels": ["crmWebhookConfig"],
+      "environmentNames": []
+    },
+    {
+      "path": "middleware.ts",
+      "bytes": 3850,
+      "kind": "text",
+      "sha256": "9cc804c40408b8c417ef0f28a541d4c2a110327bf2cee6c3a4c61953e322f926",
+      "lines": 103,
+      "exports": ["config"],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "next.config.mjs",
+      "bytes": 1527,
+      "kind": "text",
+      "sha256": "319b5a347fd7916fdc44d3f1b03ede89af79fe62c67df5823b7b420eac36faf3",
+      "lines": 49,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": ["NODE_ENV"]
+    },
+    {
+      "path": "package.json",
+      "bytes": 3034,
+      "kind": "text",
+      "sha256": "c6c93ee2d042e1a0b1b15907678ebe616f9df9b91d417b0bb1c03c88bb231061",
+      "lines": 96
+    },
+    {
+      "path": "PARA_CLAUDE_CODE.md",
+      "bytes": 3587,
+      "kind": "text",
+      "sha256": "a98d33881653b30167798cef3384ac93f2e54a2dc6baca4b7b94d7100a4275ec",
+      "lines": 102,
+      "headings": [
+        "Instrucciones para Claude Code",
+        "¿Qué es este proyecto?",
+        "Lee estos archivos en orden antes de escribir código",
+        "Orden de implementación recomendado",
+        "Fase 1 — Base",
+        "Fase 2 — Backend (API Routes)",
+        "Fase 3 — Frontend Chofer (prioridad máxima)",
+        "Fase 4 — Frontend Recepción",
+        "Fase 5 — Frontend Admin",
+        "Reglas de implementación",
+        "Dependencias necesarias (package.json)",
+        "Nota de vigencia (2026-08-04)"
+      ]
+    },
+    {
+      "path": "postcss.config.js",
+      "bytes": 72,
+      "kind": "text",
+      "sha256": "8fa4b01f6633f478ec8ea70633058c85858e2298649cf0aee711362e5bce7b7a",
+      "lines": 6,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "prisma/schema.prisma",
+      "bytes": 24869,
+      "kind": "text",
+      "sha256": "4e134c905f7960828adb66ccc3d3b4edc3d53593f176dd50167417c289a29245",
+      "lines": 868
+    },
+    {
+      "path": "prisma/schema.spec.md",
+      "bytes": 2377,
+      "kind": "text",
+      "sha256": "98f163222dcb9cef1bf00fee625f229c03d3d47cf5e904a58a598b4fd004882d",
+      "lines": 65,
+      "headings": [
+        "Especificación: Prisma Schema",
+        "Configuración del generador",
+        "Configuración del datasource",
+        "Modelos a definir",
+        "Inventario",
+        "Relaciones entre modelos",
+        "Índices adicionales requeridos",
+        "Seeds (datos iniciales)",
+        "Notas para Claude Code",
+        "Actualización AUD-002 (2026-10-05)"
+      ]
+    },
+    {
+      "path": "prisma/seed.ts",
+      "bytes": 6737,
+      "kind": "text",
+      "sha256": "e175888ffb07fdd9eab84a29b21d267dac2e3697f92662dbc9b1f112d7214047",
+      "lines": 204,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": [
+        "company",
+        "materialType",
+        "orderCounter",
+        "position",
+        "tracker",
+        "user"
+      ],
+      "environmentNames": [
+        "NODE_ENV",
+        "SEED_ADMIN_PASSWORD",
+        "SEED_CHOFER_PASSWORD",
+        "SEED_RECEP_PASSWORD"
+      ]
+    },
+    {
+      "path": "PRODUCT.md",
+      "bytes": 4082,
+      "kind": "text",
+      "sha256": "011e44f374be20a74a75d410d1969e820badb4d58b040476bac08f52af37005f",
+      "lines": 45,
+      "headings": [
+        "Product",
+        "Register",
+        "Users",
+        "Product Purpose",
+        "Brand Personality",
+        "Anti-references",
+        "Design Principles",
+        "Accessibility & Inclusion"
+      ]
+    },
+    {
+      "path": "PROSPECCION_OUTREACH.md",
+      "bytes": 25659,
+      "kind": "text",
+      "sha256": "529e8eccdff0288e7fa8cb34ca7350e4c88212cf7f7803029b1a3150a0295511",
+      "lines": 437,
+      "headings": [
+        "Prospección y Outreach — Módulo CRM",
+        "1. Objetivo de negocio",
+        "2. Diagnóstico de los datos actuales",
+        "Conclusión",
+        "Otras observaciones relevantes",
+        "3. Decisiones de arquitectura y su razón",
+        "4. Arquitectura del pipeline",
+        "5. Cambios al modelo de datos",
+        "6. Endpoints a construir",
+        "7. Segmentación y mensajes",
+        "Segmento `LOGISTICA` (operadores, bodegas, almacenaje — 71 empresas)",
+        "Segmento `FARMACEUTICA` (laboratorios, droguerías — 49 empresas)",
+        "Variables disponibles para personalizar",
+        "8. Envío vía SMTP (Hostinger)",
+        "9. Cumplimiento legal (Chile)",
+        "10. Reglas de entregabilidad",
+        "11. Fases y criterios de aceptación",
+        "Fase 1 — Enriquecimiento de correos ✅ Completa (2026-08-04)",
+        "Fase 2 — Modelo e ingesta ✅ Completa (endpoint HTTP fuera de alcance v1)",
+        "Fase 3 — Motor de envío",
+        "Fase 4 — Visibilidad",
+        "12. Variables de entorno nuevas",
+        "SMTP (envío de correo) — Hostinger, no Microsoft 365 (ver §8)",
+        "Dos buzones: SMTP_USER envía (protegido si un antispam lo marca),",
+        "SMTP_REPLY_TO recibe las respuestas (la casilla pública del negocio)",
+        "Apify",
+        "Outreach",
+        "13. Decisiones pendientes",
+        "14. Fuera de alcance (v1)",
+        "15. Por dónde empezar"
+      ]
+    },
+    {
+      "path": "public/brand/coopera-pro-icon-192.png",
+      "bytes": 9594,
+      "kind": "asset",
+      "sha256": "f1d35470330795f5525b6d7b9024421d31624755d6769de94280e7d13a9859b4"
+    },
+    {
+      "path": "public/brand/coopera-pro-logo-96.png",
+      "bytes": 3735,
+      "kind": "asset",
+      "sha256": "8d90ea4f2e0feb1c7d085248b546d55f2361c5603ca05eb981304596ba4f3ad0"
+    },
+    {
+      "path": "public/brand/coopera-pro-logo.png",
+      "bytes": 46009,
+      "kind": "asset",
+      "sha256": "d01855794ca9e7f65c448a54d62382f92fe66aa77d1a445a59c51e7df6a5a7c4"
+    },
+    {
+      "path": "public/uploads/.gitkeep",
+      "bytes": 174,
+      "kind": "asset",
+      "sha256": "400a0c59a3e3535ba87e6d1e87a3aa1684238a02b2a52b483b3ffdf206e4f3fb"
+    },
+    {
+      "path": "RASTREO_GPS.md",
+      "bytes": 12816,
+      "kind": "text",
+      "sha256": "dcf1db763057e9f7e6afbe7d42560c4df9b832ff2e0afb9d74b4a8fd37a479e1",
+      "lines": 250,
+      "headings": [
+        "RASTREO_GPS.md — turnos, ubicación y el mapa de Operaciones",
+        "1. La idea en una frase",
+        "2. Quién participa",
+        "3. Ciclo de vida de un turno",
+        "Se abre",
+        "Se cierra — cuatro caminos",
+        "El umbral de 15 minutos",
+        "4. Consentimiento de ubicación",
+        "Qué dice el aviso",
+        "5. Ingesta de posiciones",
+        "6. El mapa (`/admin/mapa`)",
+        "Quién aparece",
+        "Cómo se ve",
+        "7. GPS físicos",
+        "8. Mapa del código",
+        "9. Qué estaba mal antes (y por qué el diseño es así)",
+        "10. Límites conocidos",
+        "11. Verificación"
+      ]
+    },
+    {
+      "path": "README.md",
+      "bytes": 4826,
+      "kind": "text",
+      "sha256": "99480185731bb6fab79c5006c8d24547a46950fbe213c4bea545a91f01db4a7e",
+      "lines": 88,
+      "headings": [
+        "TrackResiduos — Intranet de Coopera Pro",
+        "Propósito",
+        "Módulos",
+        "Stack tecnológico",
+        "Estructura del proyecto",
+        "Comandos",
+        "Documentación"
+      ]
+    },
+    {
+      "path": "REGISTRO_TRABAJO.md",
+      "bytes": 58485,
+      "kind": "text",
+      "sha256": "6582711456d4a09496c5254218ce5594933a20ee882204bf7b104447a5180e17",
+      "lines": 654,
+      "headings": [
+        "Coopera Pro — registro compartido de trabajo",
+        "Protocolo de trabajo",
+        "Estado de referencia",
+        "Tareas compartidas",
+        "Historial de sesiones y entregas",
+        "2026-10-04 — REV-001 — Codex",
+        "2026-10-04 — REV-002 — Codex",
+        "2026-10-04 — COORD-001 — Codex",
+        "2026-10-04 — UX-001 / UX-002 / UX-003 / UX-004 — Codex",
+        "2026-10-04 — UX-005 / UX-006 / DOC-001 — Claude",
+        "2026-10-04 — AUD-001 — Codex",
+        "2026-10-04 - SEC-001..SEC-005 / CAL-001 - Codex",
+        "2026-10-04 — INV-001 — Codex",
+        "2026-10-05 — AUD-002 — Claude",
+        "2026-10-05 — SEC-006..SEC-013 / BRAND-001 / PWA-001 / LOGIN-001 — Codex",
+        "2026-10-05 — cierre AUD-002 / INV-001 / UX-010 — Codex",
+        "2026-10-05 — UX-010 — corrección detectada en QA del login — Codex",
+        "2026-10-05 — alcance adicional LOGIN-001 — Codex",
+        "2026-10-05 — avance y validación AUD-002 / INV-001 — Codex",
+        "2026-10-05 — entrega Git AUD-002 — Codex",
+        "2026-10-05 — DEP-001 — publicación de las mejoras — Codex",
+        "2026-10-05 — DEP-001 — entorno y BD verificados antes de publicar",
+        "2026-10-05 — DEP-001 — Preview preparado",
+        "2026-10-05 — DEP-001 — causa confirmada y corrección prevista",
+        "2026-10-05 — DEP-001 — preparación y auditoría",
+        "2026-10-05 — DEP-001 — publicación verificada (Codex)",
+        "2026-10-11 — DOC-003 — Claude",
+        "2026-10-11 — COORD-002 — Codex",
+        "2026-10-11 — REV-003 — Codex",
+        "Plantilla para próximas entradas",
+        "AAAA-MM-DD — ID-TAREA — Codex / Claude"
+      ]
+    },
+    {
+      "path": "scripts/backfill-epp-inventario.spec.md",
+      "bytes": 635,
+      "kind": "text",
+      "sha256": "1c7096fae0b4e52be0f720d7f574de543d92062d31733a0fbf92b3894c5c8fca",
+      "lines": 11,
+      "headings": ["Backfill de EPP del inventario"]
+    },
+    {
+      "path": "scripts/backfill-epp-inventario.ts",
+      "bytes": 2951,
+      "kind": "text",
+      "sha256": "c0e899a99247145feca98d7dc4c0c3000bf9cfafe1283a9ea31851b3edb6f1df",
+      "lines": 99,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": ["inventoryItem"],
+      "environmentNames": ["DATABASE_URL", "DIRECT_URL"]
+    },
+    {
+      "path": "scripts/backfill-inventario.ts",
+      "bytes": 5269,
+      "kind": "text",
+      "sha256": "bd60a806dd3561fb8bf4fe04afaa0a17141e463de7b357c78fbdc761f749a526",
+      "lines": 174,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": ["inventoryItem"],
+      "environmentNames": []
+    },
+    {
+      "path": "scripts/backfill-trackers.ts",
+      "bytes": 675,
+      "kind": "text",
+      "sha256": "050418a199f71ad93c9c7e016fc126d3718b07905d5ea2289aeaa69b2f130fdf",
+      "lines": 32,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": ["tracker", "user"],
+      "environmentNames": []
+    },
+    {
+      "path": "scripts/cleanup-demo-trackers.ts",
+      "bytes": 2917,
+      "kind": "text",
+      "sha256": "e92667f312374546e6020110aaba610b21244f994459150d2fab332f48e74198",
+      "lines": 82,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": ["tracker", "user"],
+      "environmentNames": []
+    },
+    {
+      "path": "scripts/enrich-emails.spec.md",
+      "bytes": 2880,
+      "kind": "text",
+      "sha256": "0cf6208cb15d6d00457b3652441069ab78b66af6a034392e54afaf4dbdc2ce15",
+      "lines": 73,
+      "headings": [
+        "`scripts/enrich-emails.ts` — spec",
+        "Qué hace",
+        "Por qué existe como script y no como endpoint",
+        "Decisiones de diseño",
+        "Cómo correrlo",
+        "1. Agregar a .env.local",
+        "2. Correr",
+        "Salida esperada",
+        "Siguiente paso",
+        "Qué NO hace"
+      ]
+    },
+    {
+      "path": "scripts/enrich-emails.ts",
+      "bytes": 7663,
+      "kind": "text",
+      "sha256": "aed33a963599214484ac33b8f259753613423a861dc9435e1b628c1d36cd2306",
+      "lines": 268,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": ["APIFY_TOKEN"]
+    },
+    {
+      "path": "scripts/generate-brand-assets.spec.md",
+      "bytes": 499,
+      "kind": "text",
+      "sha256": "e69477abdcad0bef393ac337c8a477501492c661ffb7f10a5f8695f8c1f2ab89",
+      "lines": 9,
+      "headings": ["Derivados de marca"]
+    },
+    {
+      "path": "scripts/generate-brand-assets.ts",
+      "bytes": 3213,
+      "kind": "text",
+      "sha256": "ac8b1956a87bc0810fa38edffda80207dd71b907ebe5109a10ef0d98d2b736cc",
+      "lines": 98,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "scripts/import-prospects.spec.md",
+      "bytes": 5826,
+      "kind": "text",
+      "sha256": "a385f16e3294a75385d644e96c1818aa0132b67302e87a3832c1d073f635f8bd",
+      "lines": 117,
+      "headings": [
+        "`scripts/import-prospects.ts` — spec",
+        "Qué hace",
+        "Por qué existe como script y no como endpoint",
+        "Decisiones de diseño",
+        "Cómo correrlo",
+        "Salida esperada",
+        "Qué NO hace",
+        "Siguiente paso"
+      ]
+    },
+    {
+      "path": "scripts/import-prospects.ts",
+      "bytes": 11052,
+      "kind": "text",
+      "sha256": "221bd4421aa022ca1a06bc5e0e5c4d3a783f6a43e3054bc90b139eaf7015f208",
+      "lines": 350,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": ["company", "contact"],
+      "environmentNames": []
+    },
+    {
+      "path": "scripts/import-radar-pallets.spec.md",
+      "bytes": 6828,
+      "kind": "text",
+      "sha256": "6049dbfeb2dbaefb7328862236ed74c99088bb2ed400e1cd2adc1aaa04d9600b",
+      "lines": 130,
+      "headings": [
+        "`scripts/import-radar-pallets.ts` — spec",
+        "Qué hace",
+        "Por qué existe como script y no como endpoint",
+        "Decisiones de diseño",
+        "Cómo correrlo",
+        "...leer el resumen...",
+        "Salida esperada",
+        "Qué NO hace",
+        "Siguiente paso"
+      ]
+    },
+    {
+      "path": "scripts/import-radar-pallets.ts",
+      "bytes": 12731,
+      "kind": "text",
+      "sha256": "c144b361e42b8829c50de12b77fad440324a5a86b302033f22874ae5e3f49e01",
+      "lines": 372,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": ["company", "contact"],
+      "environmentNames": []
+    },
+    {
+      "path": "scripts/seed-outreach-campaigns.ts",
+      "bytes": 2937,
+      "kind": "text",
+      "sha256": "c1cee75a65a726cf5e43720fb550de272e2c15fb6bbe7c7d41acdd41b0bdf1e0",
+      "lines": 93,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": ["outreachCampaign"],
+      "environmentNames": ["OUTREACH_PDF_BLOB_URL"]
+    },
+    {
+      "path": "scripts/verify-security-concurrency.spec.md",
+      "bytes": 829,
+      "kind": "text",
+      "sha256": "f19fefd0080c3fb79bf978cb55bc4412ab909f2e69577f3064c4765fcd0d4a3d",
+      "lines": 14,
+      "headings": ["QA de concurrencia de seguridad"]
+    },
+    {
+      "path": "scripts/verify-security-concurrency.ts",
+      "bytes": 5116,
+      "kind": "text",
+      "sha256": "d532ca8447b4044a2e25e5ba5322ffd69f2192c23039b4e9479557ef1b57af27",
+      "lines": 157,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": [
+        "inventoryItem",
+        "inventoryMovement",
+        "passwordResetToken",
+        "user"
+      ],
+      "environmentNames": ["DATABASE_URL"]
+    },
+    {
+      "path": "setup.ps1",
+      "bytes": 1157,
+      "kind": "text",
+      "sha256": "a288c0818851316fc20eb0b60673787ec7bcc4031b4e8aab37e4a1fab19ea70f",
+      "lines": 38
+    },
+    {
+      "path": "tailwind.config.ts",
+      "bytes": 2991,
+      "kind": "text",
+      "sha256": "0d7cd1b3c833cbb59454f52bf90747b3aed83a781e11c242c85fc95867614783",
+      "lines": 97,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "tsconfig.json",
+      "bytes": 629,
+      "kind": "text",
+      "sha256": "484a7cdd2bc8d141736e1d279e491c1fa5dec088b5bc11bc9dfa9d9e48663484",
+      "lines": 30
+    },
+    {
+      "path": "tsconfig.scripts.json",
+      "bytes": 120,
+      "kind": "text",
+      "sha256": "fe8ce32cc7e182542682a4100598ef425e05bc4ebca9a665897396b0d8f99883",
+      "lines": 8
+    },
+    {
+      "path": "types/next-auth.d.ts",
+      "bytes": 639,
+      "kind": "text",
+      "sha256": "fb1bcd1020988fb1d7abdecb8871b06039121cdc026e71647456302430b0cf71",
+      "lines": 35,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    },
+    {
+      "path": "VARIABLES_ENTORNO.md",
+      "bytes": 4948,
+      "kind": "text",
+      "sha256": "26ce96cdf0f6cf03e483f95125e07b1bbdcde86f7465a9cae1625e2dfeb20675",
+      "lines": 106,
+      "headings": [
+        "Variables de Entorno",
+        "Archivo `.env.local` (desarrollo)",
+        "Base de datos — PostgreSQL en Neon (sa-east-1). El proyecto NO usa SQLite.",
+        "DATABASE_URL: conexión pooled (host con \"-pooler\") — la usa Prisma en runtime.",
+        "DIRECT_URL:  conexión directa (host SIN \"-pooler\"; en Neon = \"DATABASE_URL_UNPOOLED\")",
+        "— obligatoria para `npm run db:push`, `npx prisma validate` y `pg_dump`.",
+        "NextAuth",
+        "Almacenamiento de fotos",
+        "Umbral de discrepancia (porcentaje)",
+        "Prospección — enriquecimiento de correos (ver PROSPECCION_OUTREACH.md)",
+        "Prospección — motor de envío vía SMTP de Hostinger (ver PROSPECCION_OUTREACH.md §8 y §12)",
+        "El correo de Coopera Pro está hosteado en Hostinger, no en Microsoft 365 —",
+        "por eso SMTP directo y no Microsoft Graph. Datos en el dashboard de correos",
+        "de Hostinger, sección \"Configuración\" / \"Conectar dispositivos\".",
+        "Estrategia de dos buzones: se autentica y envía desde SMTP_USER",
+        "(operaciones@) para que SPF/DKIM calcen con quien manda de verdad, pero",
+        "las respuestas del prospecto van a SMTP_REPLY_TO (contacto@) — así un",
+        "antispam que marque la casilla de envío no arrastra a la casilla pública.",
+        "Prospección — cron y cumplimiento legal (ver PROSPECCION_OUTREACH.md §9)",
+        "OUTREACH_DAILY_CAP: tope GLOBAL de correos que `/api/cron/outreach` envía por día,",
+        "repartido entre las campañas activas en proporción a su pool de elegibles",
+        "(ver PROSPECCION_OUTREACH.md §11 e IMPORTACION_RADAR_PALLETS.md). Opcional: si no",
+        "está seteada, el cron usa 25. `OutreachCampaign.dailyCap` queda como sub-techo por campaña.",
+        "Prospección — pie de correo obligatorio por Ley 19.496 art. 28 B (Chile)",
+        "Finanzas — cifrado de cuentas bancarias (ver blueprints/modulo-finanzas/blueprint.md §14)",
+        "Generar con: node -e \"console.log(require('crypto').randomBytes(32).toString('base64'))\"",
+        "PERDER FINANZAS_ENCRYPTION_KEY HACE IRRECUPERABLES LOS DATOS BANCARIOS CIFRADOS.",
+        "No hay puerta trasera ni recuperación: el respaldo de la base contiene el",
+        "ciphertext, no la clave. Guardarla en un gestor de contraseñas fuera del",
+        "computador que la generó, ANTES de cifrar la primera cuenta real.",
+        "Clave anterior, sólo mientras dura una rotación (procedimiento sin downtime",
+        "en el blueprint §14). Vacía en régimen normal.",
+        "Finanzas — destinatarios del aviso de cambio de permisos (separados por coma).",
+        "Los correos de Marcela y Elizabeth. No van al repo.",
+        "Archivo `.env.production` (producción)",
+        "Base de datos PostgreSQL en Neon — pooled + directa (misma base)",
+        "NextAuth",
+        "Almacenamiento (si se migra a S3)",
+        "STORAGE_PROVIDER=\"s3\"",
+        "AWS_BUCKET_NAME=\"\"",
+        "AWS_REGION=\"\"",
+        "AWS_ACCESS_KEY_ID=\"\"",
+        "AWS_SECRET_ACCESS_KEY=\"\"",
+        "Por defecto almacena en sistema de archivos local",
+        "Notas"
+      ]
+    },
+    {
+      "path": "vercel.json",
+      "bytes": 151,
+      "kind": "text",
+      "sha256": "b7247ff90bdf68da45e876c0322b6fb9fe6b65724ccebbec17fd3da583ffaab3",
+      "lines": 10
+    },
+    {
+      "path": "vercel.spec.md",
+      "bytes": 762,
+      "kind": "text",
+      "sha256": "7a4e1db105455d0b1b9eff983d594fce6fe29ba78748e340f578e55e40ca7574",
+      "lines": 12,
+      "headings": ["Configuración Vercel"]
+    },
+    {
+      "path": "vitest.config.ts",
+      "bytes": 154,
+      "kind": "text",
+      "sha256": "db4430850f55595ab2722fe867ccdc2251c7b4301de67c032bcd717bff700dd2",
+      "lines": 9,
+      "exports": [],
+      "httpMethods": [],
+      "prismaModels": [],
+      "environmentNames": []
+    }
+  ],
+  "dependencies": {
+    "next": "15.5.27",
+    "react": "18.3.1",
+    "prisma": "5.22.0",
+    "@prisma/client": "5.22.0",
+    "vitest": "4.1.11",
+    "typescript": "5.9.3",
+    "tailwindcss": "4.3.3",
+    "nodemailer": "10.0.14"
+  }
+}

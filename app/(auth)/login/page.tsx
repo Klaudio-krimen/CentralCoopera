@@ -1,250 +1,194 @@
 "use client";
-
+import {
+  Component,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
+import dynamic from "next/dynamic";
 import BrandLogo from "@/components/ui/BrandLogo";
+import LoginForm from "@/components/login/LoginForm";
+import type { ControlEscena } from "@/components/login-escena/EscenaBodega";
+import type { EventoEscena, Fase } from "@/lib/login-escena/maquina";
+import "./login.css";
 
-import { useState } from "react";
-import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { Eye, EyeSlash, ArrowRight, Warning } from "@phosphor-icons/react";
-
-export default function LoginPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPw, setShowPw] = useState(false);
-  const [remember, setRemember] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const router = useRouter();
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!email || !password) return;
-    setLoading(true);
-    setError("");
-
-    try {
-      const result = await signIn("credentials", {
-        email,
-        password,
-        remember: remember ? "1" : "0",
-        redirect: false,
-      });
-      if (!result?.ok) {
-        setError("Correo o contraseña incorrectos");
-        return;
-      }
-      router.push("/");
-      router.refresh();
-    } catch {
-      setError("No se pudo iniciar sesión. Intenta nuevamente.");
-    } finally {
-      setLoading(false);
-    }
+const EscenaBodega = dynamic(
+  () => import("@/components/login-escena/EscenaBodega"),
+  { ssr: false }
+);
+class SceneBoundary extends Component<
+  { children: ReactNode; onFallo(): void },
+  { failed: boolean }
+> {
+  state = { failed: false };
+  static getDerivedStateFromError() {
+    return { failed: true };
   }
-
+  componentDidCatch() {
+    this.props.onFallo();
+  }
+  render() {
+    return this.state.failed ? null : this.props.children;
+  }
+}
+export default function LoginPage() {
+  const [desktop, setDesktop] = useState(false),
+    [fallback, setFallback] = useState(false);
+  const host = useRef<HTMLElement>(null),
+    control = useRef<ControlEscena | null>(null);
+  const pending = useRef<EventoEscena | null>(null);
+  const pendingFocus = useRef<EventoEscena | null>(null);
+  useEffect(() => {
+    const media = window.matchMedia("(min-width: 1024px) and (pointer: fine)");
+    const update = () => setDesktop(media.matches);
+    update();
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
+  const enviar = useCallback((event: EventoEscena) => {
+    pending.current = event;
+    if (event === "FOCO_CORREO" || event === "FOCO_CLAVE" || event === "BLUR")
+      pendingFocus.current = event;
+    return control.current?.enviar(event);
+  }, []);
+  const onListo = useCallback((value: ControlEscena | null) => {
+    control.current = value;
+    if (value) {
+      host.current?.style.setProperty("--font-night", value.fuente);
+      if (pending.current) void value.enviar(pending.current);
+      if (pendingFocus.current && pendingFocus.current !== pending.current)
+        void value.enviar(pendingFocus.current);
+    }
+  }, []);
+  const onEstado = useCallback((fase: Fase, opacity: number) => {
+    if (host.current) {
+      host.current.dataset.sceneState = fase;
+      host.current.style.setProperty("--scene-form-opacity", String(opacity));
+    }
+  }, []);
+  const onFallo = useCallback(() => {
+    control.current = null;
+    setFallback(true);
+  }, []);
+  useEffect(() => {
+    if (!desktop || fallback) return;
+    const skip = () => {
+      void enviar("SALTAR");
+    };
+    document.addEventListener("keydown", skip);
+    document.addEventListener("pointerdown", skip);
+    return () => {
+      document.removeEventListener("keydown", skip);
+      document.removeEventListener("pointerdown", skip);
+    };
+  }, [desktop, fallback, enviar]);
   return (
-    <div className="min-h-[100dvh] flex">
-      {/* ── Left panel ─────────────────────────────────────── */}
-      <div className="hidden lg:flex lg:w-[46%] bg-zinc-950 relative overflow-hidden flex-col justify-between p-14">
-        {/* Grid texture */}
-        <div
-          className="absolute inset-0 opacity-[0.025]"
-          style={{
-            backgroundImage: `
+    <main
+      ref={host}
+      className={`login-page${fallback ? " login-fallback" : ""}`}
+      data-scene-enabled={desktop && !fallback}
+    >
+      <div className="login-stage">
+        {desktop && !fallback && (
+          <SceneBoundary onFallo={onFallo}>
+            <EscenaBodega
+              onListo={onListo}
+              onEstado={onEstado}
+              onFallo={onFallo}
+            />
+          </SceneBoundary>
+        )}
+      </div>
+      <div className="login-classic min-h-[100dvh] flex">
+        {/* ── Left panel ─────────────────────────────────────── */}
+        <div className="login-classic-panel hidden lg:flex lg:w-[46%] bg-zinc-950 relative overflow-hidden flex-col justify-between p-14">
+          {/* Grid texture */}
+          <div
+            className="absolute inset-0 opacity-[0.025]"
+            style={{
+              backgroundImage: `
               linear-gradient(rgba(255,255,255,1) 1px, transparent 1px),
               linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)`,
-            backgroundSize: "48px 48px",
-          }}
-        />
-        {/* Emerald bloom */}
-        <div className="absolute -top-32 -left-32 w-[500px] h-[500px] bg-emerald-500/8 rounded-full blur-[140px] pointer-events-none" />
-        <div className="absolute bottom-0 right-0 w-[300px] h-[300px] bg-emerald-600/5 rounded-full blur-[100px] pointer-events-none" />
+              backgroundSize: "48px 48px",
+            }}
+          />
+          {/* Emerald bloom */}
+          <div className="absolute -top-32 -left-32 w-[500px] h-[500px] bg-emerald-500/8 rounded-full blur-[140px] pointer-events-none" />
+          <div className="absolute bottom-0 right-0 w-[300px] h-[300px] bg-emerald-600/5 rounded-full blur-[100px] pointer-events-none" />
 
-        {/* Logo */}
-        <div className="relative z-10 flex items-center gap-3">
-          <BrandLogo size={56} decorative priority />
-          <div>
-            <p className="text-white font-semibold text-base leading-none tracking-tight">
-              Central Coopera
-            </p>
-            <p className="text-zinc-500 text-xs mt-1 leading-none">
-              Intranet operativa
-            </p>
-          </div>
-        </div>
-
-        {/* Hero text */}
-        <div className="relative z-10">
-          <p className="text-zinc-500 text-xs uppercase tracking-[0.15em] font-medium mb-4">
-            Cadena de custodia
-          </p>
-          <h1 className="text-[3.25rem] font-semibold tracking-tight text-white leading-[1.05] mb-5">
-            Trazabilidad
-            <br />
-            <span className="text-emerald-400">Interna.</span>
-          </h1>
-          <p className="text-zinc-400 text-base leading-relaxed max-w-[340px]">
-            Registro completo, sistema de operación y GPS track de vehículos de
-            la empresa.
-          </p>
-
-          {/* Módulos */}
-          <div className="mt-10 grid grid-cols-3 gap-3">
-            {[
-              { name: "Operaciones", desc: "Choferes · GPS" },
-              { name: "CRM", desc: "Clientes" },
-              { name: "Inventario", desc: "Pallets · stock" },
-            ].map((m) => (
-              <div
-                key={m.name}
-                className="border border-zinc-800 rounded-xl p-4 bg-zinc-900/40 backdrop-blur-sm"
-              >
-                <p className="text-emerald-400 font-semibold text-[15px] tracking-tight leading-none">
-                  {m.name}
-                </p>
-                <p className="text-zinc-500 text-[11px] mt-1.5">{m.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Footer */}
-        <div className="relative z-10">
-          <p className="text-zinc-700 text-xs">
-            © {new Date().getFullYear()} Coopera Pro
-          </p>
-        </div>
-      </div>
-
-      {/* ── Right panel — form ──────────────────────────────── */}
-      <div className="flex-1 flex items-center justify-center px-6 lg:px-16 bg-zinc-50">
-        <div className="w-full max-w-[400px]">
-          {/* Mobile logo */}
-          <div className="flex items-center gap-3 mb-10 lg:hidden">
-            <BrandLogo size={48} decorative priority />
-            <p className="text-zinc-900 font-semibold tracking-tight">
-              Central Coopera
-            </p>
-          </div>
-
-          <div className="mb-8">
-            <h2 className="text-2xl font-semibold tracking-tight text-zinc-900">
-              Iniciar sesión
-            </h2>
-            <p className="text-zinc-500 text-sm mt-1">
-              Ingresa tus credenciales para continuar
-            </p>
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Email */}
-            <div className="space-y-1.5">
-              <label
-                htmlFor="login-email"
-                className="block text-sm font-medium text-zinc-700"
-              >
-                Correo electrónico
-              </label>
-              <input
-                id="login-email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="nombre@cooperapro.cl"
-                className="input-base"
-                autoComplete="email"
-                required
-              />
+          {/* Logo */}
+          <div className="relative z-10 flex items-center gap-3">
+            <BrandLogo size={56} decorative priority />
+            <div>
+              <p className="text-white font-semibold text-base leading-none tracking-tight">
+                Central Coopera
+              </p>
+              <p className="text-zinc-500 text-xs mt-1 leading-none">
+                Intranet operativa
+              </p>
             </div>
+          </div>
 
-            {/* Password */}
-            <div className="space-y-1.5">
-              <label
-                htmlFor="login-password"
-                className="block text-sm font-medium text-zinc-700"
-              >
-                Contraseña
-              </label>
-              <div className="relative">
-                <input
-                  id="login-password"
-                  type={showPw ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="input-base pr-12"
-                  autoComplete="current-password"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPw(!showPw)}
-                  aria-label={
-                    showPw ? "Ocultar contraseña" : "Mostrar contraseña"
-                  }
-                  className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 transition-colors"
+          {/* Hero text */}
+          <div className="relative z-10">
+            <p className="text-zinc-500 text-xs uppercase tracking-[0.15em] font-medium mb-4">
+              Cadena de custodia
+            </p>
+            <h1 className="text-[3.25rem] font-semibold tracking-tight text-white leading-[1.05] mb-5">
+              Trazabilidad
+              <br />
+              <span className="text-emerald-400">Interna.</span>
+            </h1>
+            <p className="text-zinc-400 text-base leading-relaxed max-w-[340px]">
+              Registro completo, sistema de operación y GPS track de vehículos
+              de la empresa.
+            </p>
+
+            {/* Módulos */}
+            <div className="mt-10 grid grid-cols-3 gap-3">
+              {[
+                { name: "Operaciones", desc: "Choferes · GPS" },
+                { name: "CRM", desc: "Clientes" },
+                { name: "Inventario", desc: "Pallets · stock" },
+              ].map((m) => (
+                <div
+                  key={m.name}
+                  className="border border-zinc-800 rounded-xl p-4 bg-zinc-900/40 backdrop-blur-sm"
                 >
-                  {showPw ? <EyeSlash size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
+                  <p className="text-emerald-400 font-semibold text-[15px] tracking-tight leading-none">
+                    {m.name}
+                  </p>
+                  <p className="text-zinc-500 text-[11px] mt-1.5">{m.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className="relative z-10">
+            <p className="text-zinc-700 text-xs">
+              © {new Date().getFullYear()} Coopera Pro
+            </p>
+          </div>
+        </div>
+
+        {/* ── Right panel — form ──────────────────────────────── */}
+        <div className="login-form-panel flex-1 flex items-center justify-center px-6 lg:px-16 bg-zinc-50">
+          <div className="login-form-wrapper w-full max-w-[400px]">
+            {/* Mobile logo */}
+            <div className="flex items-center gap-3 mb-10 lg:hidden">
+              <BrandLogo size={48} decorative priority />
+              <p className="text-zinc-900 font-semibold tracking-tight">
+                Central Coopera
+              </p>
             </div>
 
-            <label
-              htmlFor="login-remember"
-              className="flex min-h-11 cursor-pointer items-center gap-3 text-sm text-zinc-700"
-            >
-              <input
-                id="login-remember"
-                name="remember"
-                type="checkbox"
-                checked={remember}
-                onChange={(event) => setRemember(event.target.checked)}
-                disabled={loading}
-                className="size-4 shrink-0 accent-emerald-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700"
-              />
-              <span>Mantener sesión iniciada en este equipo</span>
-            </label>
-
-            {/* Error */}
-            {error && (
-              <div
-                role="alert"
-                className="flex items-center gap-2.5 px-4 py-3 rounded-xl bg-red-50 border border-red-100"
-              >
-                <Warning
-                  size={16}
-                  className="text-red-500 shrink-0"
-                  weight="fill"
-                />
-                <p className="text-sm text-red-600">{error}</p>
-              </div>
-            )}
-
-            {/* Submit */}
-            <button
-              type="submit"
-              disabled={loading || !email || !password}
-              className="btn-primary w-full mt-2"
-            >
-              {loading ? (
-                <>
-                  <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Ingresando...
-                </>
-              ) : (
-                <>
-                  Ingresar
-                  <ArrowRight size={17} weight="bold" />
-                </>
-              )}
-            </button>
-          </form>
-
-          <p className="text-center text-xs text-zinc-400 mt-8">
-            ¿No tienes cuenta? Contacta al administrador.
-          </p>
+            <LoginForm onEscenaEvento={enviar} />
+          </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 }

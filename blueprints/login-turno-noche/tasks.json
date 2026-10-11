@@ -1,0 +1,250 @@
+[
+  {
+    "id": "E0-T1",
+    "title": "Extraer el formulario a components/login/LoginForm.tsx sin cambiar comportamiento",
+    "epic": "00-preparacion",
+    "owner": "Codex",
+    "dependencies": [],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN se usa /login en móvil o escritorio THE SYSTEM SHALL comportarse como describe app/(auth)/login/page.spec.md (signIn, remember, mensajes de error, navegación a /).",
+      "WHEN LoginForm recibe la prop opcional onEscenaEvento THE SYSTEM SHALL emitir sólo FOCO_CORREO, FOCO_CLAVE, BLUR, ACTIVIDAD, ERROR, EXITO, sin valores de los campos.",
+      "WHEN LoginForm no recibe onEscenaEvento THE SYSTEM SHALL funcionar igual que hoy."
+    ],
+    "verify": [
+      "npm run typecheck",
+      "npm run test",
+      "npm run build"
+    ],
+    "checkpoint": "e0-t1",
+    "files": [
+      "components/login/LoginForm.tsx",
+      "components/login/LoginForm.spec.md",
+      "app/(auth)/login/page.tsx",
+      "app/(auth)/login/page.spec.md"
+    ],
+    "status": "todo"
+  },
+  {
+    "id": "E1-T2",
+    "title": "Máquina de estados pura (lib/login-escena/maquina.ts) con los tiempos del prototipo",
+    "epic": "01-motor-escena",
+    "owner": "Codex",
+    "dependencies": [],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN se ejecutan los tests THE SYSTEM SHALL cubrir intro completa y corta, SALTAR desde cada estado de intro, MIRA/TAPA_OJOS, ERROR→estado según foco, EXITO terminal con navegación ≤ 800 ms, 30 s→SENTADA y modo REDUCIDO.",
+      "WHEN se inspecciona maquina.ts THE SYSTEM SHALL no importar React, DOM, @/ ni Next (imports relativos)."
+    ],
+    "verify": [
+      "npx vitest run lib/login-escena/maquina.test.ts",
+      "npm run typecheck",
+      "npm run test",
+      "npm run build"
+    ],
+    "checkpoint": "e1-t2",
+    "files": [
+      "lib/login-escena/maquina.ts",
+      "lib/login-escena/maquina.test.ts"
+    ],
+    "status": "todo"
+  },
+  {
+    "id": "E1-T3",
+    "title": "Escalado entero y posición del cartel (lib/login-escena/escala.ts)",
+    "epic": "01-motor-escena",
+    "owner": "Codex",
+    "dependencies": [],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN el viewport es 1280×720, 1440×900 o 1920×1080 THE SYSTEM SHALL devolver escala 4, 4 y 6 con letterbox centrado.",
+      "WHEN el viewport es ≥ 1024 px THE SYSTEM SHALL devolver escala ≥ 3 y el rectángulo del formulario = área útil del cartel × escala."
+    ],
+    "verify": [
+      "npx vitest run lib/login-escena/escala.test.ts",
+      "npm run typecheck",
+      "npm run test",
+      "npm run build"
+    ],
+    "checkpoint": "e1-t3",
+    "files": [
+      "lib/login-escena/escala.ts",
+      "lib/login-escena/escala.test.ts"
+    ],
+    "status": "todo"
+  },
+  {
+    "id": "E1-T4",
+    "title": "Paleta y dibujo procedural puro: fondo, operaria, lámpara y emblema de Coopera Pro sobre la interfaz Pincel",
+    "epic": "01-motor-escena",
+    "owner": "Codex",
+    "dependencies": [],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN se dibuja el fondo, la lámpara o cualquier pose de la operaria (caminar, buscar, cadena, reposo, mirar, tapar-ojos, rascar, palanca, sentarse) THE SYSTEM SHALL emitir sólo rectángulos dentro de 320×180 y con colores de lib/login-escena/paleta.ts.",
+      "WHEN face = -1 THE SYSTEM SHALL dibujar la operaria espejada respecto de face = 1.",
+      "WHEN se compara visualmente con blueprints/login-turno-noche/referencia/turno-de-noche.html THE SYSTEM SHALL reproducir la composición (rack, ventana con luna, rótulos COOPERA PRO / BODEGA 2, ruma de pallets, pallet bajo, fardos, palanca, cartel azul de marca).",
+      "WHEN se inspeccionan los módulos THE SYSTEM SHALL ser puros: sin DOM, sin React, sin @/.",
+      "WHEN se dibuja el emblema THE SYSTEM SHALL reproducir el círculo azul, el ícono de reciclaje 18×18 y COOPERAPRO (crema + verde) de blueprint §8.1, y en modo neón agregar halo verde e ícono #8ae85a sin parpadeo."
+    ],
+    "verify": [
+      "npx vitest run lib/login-escena",
+      "npm run typecheck",
+      "npm run test",
+      "npm run build"
+    ],
+    "checkpoint": "e1-t4",
+    "files": [
+      "lib/login-escena/paleta.ts",
+      "lib/login-escena/fondo.ts",
+      "lib/login-escena/operaria.ts",
+      "lib/login-escena/lampara.ts",
+      "lib/login-escena/emblema.ts",
+      "lib/login-escena/*.test.ts"
+    ],
+    "status": "todo"
+  },
+  {
+    "id": "E1-T5",
+    "title": "Luz pura: lámpara, linterna, luna, Bayer 4×4, sombreado en 4 niveles y emisivos",
+    "epic": "01-motor-escena",
+    "owner": "Codex",
+    "dependencies": [],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN la lámpara está apagada THE SYSTEM SHALL dejar en nivel 0 todo píxel fuera de la ventana y del haz de luna.",
+      "WHEN el radio de luz es máximo THE SYSTEM SHALL dar nivel 2 en el centro del cartel en ≥ 50 % de los píxeles de una muestra 8×8.",
+      "WHEN el barrido de EXITO pasa una columna THE SYSTEM SHALL darle nivel 3.",
+      "WHEN se aplica la tabla de sombreado THE SYSTEM SHALL ser determinista y cachear por color.",
+      "WHEN el barrido de EXITO supera el borde derecho del emblema THE SYSTEM SHALL pintar el emblema en modo neón como emisivo."
+    ],
+    "verify": [
+      "npx vitest run lib/login-escena/luz.test.ts",
+      "npm run typecheck",
+      "npm run test",
+      "npm run build"
+    ],
+    "checkpoint": "e1-t5",
+    "files": [
+      "lib/login-escena/luz.ts",
+      "lib/login-escena/luz.test.ts"
+    ],
+    "status": "todo"
+  },
+  {
+    "id": "E2-T1",
+    "title": "EscenaBodega: canvas, bucle rAF, sólo escritorio, reduced motion, fallback y protección de rendimiento",
+    "epic": "02-integracion-login",
+    "owner": "Codex",
+    "dependencies": [
+      "E1-T2",
+      "E1-T3",
+      "E1-T4",
+      "E1-T5"
+    ],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN el viewport es < 1024 px o el puntero no es fino THE SYSTEM SHALL no cargar el chunk de la escena (next/dynamic con ssr: false).",
+      "WHEN prefers-reduced-motion está activo THE SYSTEM SHALL renderizar una vez la escena iluminada y no iniciar el bucle.",
+      "WHEN el canvas no está disponible o la escena lanza THE SYSTEM SHALL mostrar el login actual (error boundary).",
+      "WHEN el frame promedio supera 50 ms durante 2 s THE SYSTEM SHALL congelar en estático iluminado.",
+      "WHEN la escena está montada THE SYSTEM SHALL tener aria-hidden=true, ningún elemento enfocable y titileo ≤ 3 destellos/s.",
+      "WHEN se hidrata en escritorio THE SYSTEM SHALL no producir salto de layout visible."
+    ],
+    "verify": [
+      "npm run typecheck",
+      "npm run test",
+      "npm run build"
+    ],
+    "checkpoint": "e2-t1",
+    "files": [
+      "components/login-escena/EscenaBodega.tsx",
+      "components/login-escena/EscenaBodega.spec.md",
+      "app/(auth)/login/page.tsx"
+    ],
+    "status": "todo"
+  },
+  {
+    "id": "E2-T2",
+    "title": "Montar el formulario en el cartel con los colores de Coopera Pro (fondo azul, botón verde)",
+    "epic": "02-integracion-login",
+    "owner": "Codex",
+    "dependencies": [
+      "E0-T1",
+      "E2-T1"
+    ],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN la escena está activa THE SYSTEM SHALL posicionar LoginForm sobre el área útil del cartel según escala.ts.",
+      "WHEN se renderiza el cartel THE SYSTEM SHALL usar fondo #2a344d, campos #1c2438 con borde #5d6a8c, botón #5bbd2f con sombra #3b8a1a y texto #15203a, título en #5bbd2f (blueprint §8).",
+      "WHEN se mide el contraste THE SYSTEM SHALL cumplir AA en etiquetas, campos, botón y error.",
+      "WHEN se carga la fuente pixel del título THE SYSTEM SHALL servirla con next/font/google (autoalojada) sin tocar la CSP."
+    ],
+    "verify": [
+      "npm run typecheck",
+      "npm run test",
+      "npm run build"
+    ],
+    "checkpoint": "e2-t2",
+    "files": [
+      "components/login/LoginForm.tsx",
+      "components/login-escena/EscenaBodega.tsx",
+      "app/(auth)/login/page.tsx",
+      "app/(auth)/login/page.spec.md"
+    ],
+    "status": "todo"
+  },
+  {
+    "id": "E2-T3",
+    "title": "Conectar eventos: reacciones, saltar intro, primera visita, inactividad y éxito ≤ 800 ms",
+    "epic": "02-integracion-login",
+    "owner": "Codex",
+    "dependencies": [
+      "E2-T2"
+    ],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN el usuario presiona una tecla, hace clic o enfoca un campo durante la intro THE SYSTEM SHALL pasar al estado según foco en el siguiente frame.",
+      "WHEN signIn devuelve ok THE SYSTEM SHALL reproducir EXITO y navegar a / en ≤ 800 ms.",
+      "WHEN localStorage no está disponible THE SYSTEM SHALL tratar la visita como repetida sin errores.",
+      "WHEN se revisa el flujo de autenticación THE SYSTEM SHALL no haber cambiado signIn, remember, límites de sesión ni mensajes de error."
+    ],
+    "verify": [
+      "npm run typecheck",
+      "npm run test",
+      "npm run build"
+    ],
+    "checkpoint": "e2-t3",
+    "files": [
+      "components/login/LoginForm.tsx",
+      "components/login-escena/EscenaBodega.tsx",
+      "app/(auth)/login/page.tsx"
+    ],
+    "status": "todo"
+  },
+  {
+    "id": "E2-T4",
+    "title": "QA, evidencia y cierre",
+    "epic": "02-integracion-login",
+    "owner": "Codex",
+    "dependencies": [
+      "E2-T3"
+    ],
+    "priority": "p1",
+    "acceptance": [
+      "WHEN se recorre en Chrome, Edge y Firefox de escritorio, en un PC de oficina y en un viewport móvil THE SYSTEM SHALL tener evidencia en docs/qa/LOGIN-002.md (capturas, tiempos, peso del chunk, fps, contraste).",
+      "WHEN el usuario aprueba THE SYSTEM SHALL cerrar LOGIN-002 en REGISTRO_TRABAJO.md con commit/PR."
+    ],
+    "verify": [
+      "npm run typecheck",
+      "npm run test",
+      "npm run build"
+    ],
+    "checkpoint": "e2-t4",
+    "files": [
+      "docs/qa/LOGIN-002.md",
+      "REGISTRO_TRABAJO.md"
+    ],
+    "status": "todo"
+  }
+]

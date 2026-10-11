@@ -1,0 +1,41 @@
+{
+  "success": true,
+  "data": {
+    "lifecycle": {
+      "effectiveLaunch": {
+        "browserLaunched": true,
+        "engine": "chrome",
+        "launchHash": 12798390076057945372
+      },
+      "launched": false,
+      "relaunchedBrowser": false,
+      "restartedBackground": false,
+      "restoreStatus": "not_configured",
+      "reused": true,
+      "saveStatus": "not_attempted"
+    },
+    "origin": "http://127.0.0.1:3025/login",
+    "result": {
+      "averageFrameMs": 5.640000000016557,
+      "contrasts": {
+        "button": 6.7443781273077335,
+        "error": 5.383606496610304,
+        "input": 13.755757167594076,
+        "labels": 8.915011704760282,
+        "placeholder": 7.412063977965705,
+        "title": 5.165527985980377
+      },
+      "formOpacity": "1",
+      "fps": 177.3049645384866,
+      "motion": "animated",
+      "sceneResources": [
+        "http://127.0.0.1:3025/_next/static/chunks/_app-pages-browser_components_login-escena_EscenaBodega_tsx.js",
+        "http://127.0.0.1:3025/_next/static/css/_app-pages-browser_components_login-escena_EscenaBodega_tsx.css"
+      ],
+      "scroll": 1440,
+      "state": "MIRA",
+      "viewport": [1440, 900]
+    }
+  },
+  "error": null
+}

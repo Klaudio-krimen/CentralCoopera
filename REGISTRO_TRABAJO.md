@@ -685,6 +685,7 @@ Autor y propósito no confirmados. Preservarlos; no incluirlos en commits de otr
 - Fuente pixel: `next/font/google` se reemplazó por `next/font/local` con `components/login-escena/fonts/press-start-2p-latin-400-normal.woff2` (Fontsource, OFL, licencia incluida). Motivo: el build fallaba sin acceso a Google Fonts; ahora no depende de red al compilar. Spec y blueprint §7.4 actualizados.
 - Verificación (copia aislada en Linux, `npm ci --legacy-peer-deps`, tipos de Prisma copiados del checkout porque la red bloquea binaries.prisma.sh): `tsc --noEmit` exit 0; `vitest run` 35 archivos / 393 tests OK (incluye 5 nuevos de `emblema.test.ts`); `next build` exit 0 con variables sintéticas. Render de la escena real (estados ILUMINADO y EXITO) generado con los módulos puros sin errores. Sin QA autenticada en navegador ni cuentas reales.
 - Entrega Git: sin commit ni push; el usuario hará commit/push. Despliegue: pendiente (se recomienda probar primero en Preview de Vercel).
+- 2026-10-11, publicación: el usuario hizo commit `7219613` y push; Preview `dpl_yCqGR5Qkr3sDHFhvbrQFCFT9SFCJ` READY. PR #2 hacia `master`: la CI falló en `npm audit` por un aviso nuevo (alto) en `source-map-js` 1.2.1, dependencia transitiva de compilación y ajena al login. Corrección mínima en `package-lock.json` (sólo esa entrada: 1.2.1 → 1.2.2); en copia limpia: `npm audit` 0 vulnerabilidades, typecheck OK, 393 tests OK, build OK. Producción anterior para reversión: `dpl_8mVGfb4RJBwTTQ2yqNmSBxaWtMQr` (`528c100`).
 
 ## Plantilla para próximas entradas
 

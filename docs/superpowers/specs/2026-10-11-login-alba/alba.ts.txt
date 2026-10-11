@@ -1,0 +1,590 @@
+// Maqueta "Alba": pixel art a 320×180 + iluminación en alta resolución encima.
+// Capas: escena pixel (cielo vivo, Andes, sol, disco) → gradación → rayos volumétricos
+// → polvo en el haz → cono de la lámpara → bloom → bruma → viñeta → grano.
+import { WIDTH as W, HEIGHT as H } from "./dawn/escala";
+import {
+  crearEstado,
+  paso,
+  transicion,
+  type EventoEscena,
+} from "./dawn/maquina";
+import { crearPincel } from "./dawn/pincel";
+import { dibujarFondo } from "./dawn/fondo";
+import { dibujarOperaria } from "./dawn/operaria";
+import { dibujarLampara, dibujarPalanca } from "./dawn/lampara";
+import {
+  mapaLuna,
+  crearTablaSombreado,
+  aplicarLuz,
+  dibujarEmisivos,
+  posicionLuz,
+} from "./dawn/luz";
+
+// ── utilidades de color ────────────────────────────────────────────────
+type RGB = [number, number, number];
+const hx = (h: string): RGB =>
+  [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16)) as RGB;
+const mix = (a: RGB, b: RGB, t: number): RGB => [
+  a[0] + (b[0] - a[0]) * t,
+  a[1] + (b[1] - a[1]) * t,
+  a[2] + (b[2] - a[2]) * t,
+];
+const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5].map(
+  (v) => v / 16 - 0.47
+);
+const bay = (x: number, y: number) => BAYER[(y & 3) * 4 + (x & 3)];
+/** Cuantiza a 16 niveles por canal con dithering ordenado: degradado suave con textura pixel. */
+function pack(c: RGB, x: number, y: number) {
+  const d = bay(x, y) * 14;
+  const q = (v: number) =>
+    Math.max(0, Math.min(255, Math.round((v + d) / 15) * 15));
+  return (0xff000000 | (q(c[2]) << 16) | (q(c[1]) << 8) | q(c[0])) >>> 0;
+}
+const smooth = (a: number, b: number, x: number) => {
+  const t = Math.max(0, Math.min(1, (x - a) / (b - a)));
+  return t * t * (3 - 2 * t);
+};
+
+// ── cielo del alba (keyframes de arriba hacia abajo) ──────────────────
+const PRE = [
+  "#121534",
+  "#1c1f47",
+  "#2b2656",
+  "#433066",
+  "#61386a",
+  "#7c4468",
+].map(hx);
+const SOL = [
+  "#39407c",
+  "#62549a",
+  "#a8679f",
+  "#e9848a",
+  "#ffac78",
+  "#ffd596",
+].map(hx);
+const PANE = { x0: 22, x1: 62, y0: 24, y1: 48 };
+const SUN_X = 50;
+/** Perfil de la cordillera (altura en filas del cielo). Determinista. */
+const RIDGE = new Int8Array(64);
+for (let x = 0; x < 64; x++)
+  RIDGE[x] = Math.round(
+    44.6 -
+      (2.3 * Math.sin(x * 0.29 + 0.6) +
+        1.3 * Math.sin(x * 0.83 + 2) +
+        0.7 * Math.sin(x * 2.1))
+  );
+RIDGE[SUN_X - 1] = Math.max(RIDGE[SUN_X - 1], 44);
+const STARS: [number, number, number][] = [
+  [25, 26, 0.2],
+  [31, 30, 0.35],
+  [37, 25, 0.1],
+  [47, 27, 0.25],
+  [59, 29, 0.4],
+  [55, 25, 0.15],
+];
+
+function cielo(px: Uint32Array, mask: Uint8Array, p: number, t: number) {
+  const pal = PRE.map((c, i) => mix(c, SOL[i], p));
+  const sunY = 50 - 11 * smooth(0.08, 1, p); // sale desde detrás de la cordillera
+  const sunR = 4.6;
+  const cloudX = (t / 1000) * 0.35;
+  for (let y = PANE.y0; y < PANE.y1; y++) {
+    const ty =
+      ((y - PANE.y0) / (PANE.y1 - PANE.y0 - 1)) ** 0.62 * (pal.length - 1);
+    const i = Math.min(pal.length - 2, Math.floor(ty));
+    const base = mix(pal[i], pal[i + 1], ty - i);
+    for (let x = PANE.x0; x < PANE.x1; x++) {
+      const k = y * W + x;
+      if (!mask[k]) continue;
+      let c = base;
+      // resplandor alrededor del sol (dispersión de Mie, cálida)
+      const dx = x - SUN_X,
+        dy = y - sunY,
+        d = Math.hypot(dx, dy * 1.25);
+      c = mix(c, hx("#ffd7a0"), Math.max(0, 1 - d / 16) ** 2 * 0.75 * p);
+      // nubes estiradas iluminadas desde abajo
+      for (const [cy, len, off] of [
+        [29, 13, 0],
+        [33, 9, 21],
+        [27, 7, 11],
+      ] as const) {
+        const cx = PANE.x0 + ((off + cloudX) % 46) - 6;
+        if (x >= cx && x < cx + len - Math.abs(y - cy) * 3) {
+          if (y === cy) c = mix(hx("#5a4a86"), hx("#c88aa8"), p);
+          if (y === cy + 1) c = mix(hx("#7a4c78"), hx("#ffb38a"), p);
+        }
+      }
+      // sol
+      if (d < sunR) c = mix(hx("#ffe9b8"), hx("#fff6dc"), 1 - d / sunR);
+      // estrellas que se apagan
+      for (const [sx, sy, fade] of STARS)
+        if (x === sx && y === sy && p < 0.75 - fade + bay(x, y) * 0.3)
+          c = mix(c, hx("#e6e0ff"), 1 - p);
+      // cordillera: perspectiva aérea + arrebol rosado en las cumbres
+      const ridge = RIDGE[x];
+      if (y >= ridge) {
+        const far = mix(hx("#2a2148"), hx("#6a4a7e"), p * 0.65);
+        c =
+          y === ridge
+            ? mix(far, hx("#ff9fa8"), smooth(0.25, 1, p) * 0.85)
+            : mix(far, base, 0.18);
+      }
+      px[k] = pack(c, x, y);
+    }
+  }
+}
+
+// ── disco de acceso, en pixel art ──────────────────────────────────────
+export const DISCO = { cx: 184, cy: 98, r: 46 };
+const C32 = (h: string) => pack(hx(h), 0, 1);
+function disco(px: Uint32Array, t: number) {
+  const { cx, cy, r } = DISCO;
+  const rim = hx("#141a29"),
+    rimHi = hx("#5a6890");
+  const sweep = ((t / 2600) % 1) * Math.PI * 2 - Math.PI / 2;
+  for (let y = cy - r - 8; y <= cy + r + 8; y++)
+    for (let x = cx - r - 8; x <= cx + r + 8; x++) {
+      if (x < 0 || x >= W || y < 0 || y >= H) continue;
+      const k = y * W + x;
+      const d = Math.hypot(x - cx, y - cy);
+      if (d > r) {
+        // sombra proyectada sobre el muro (luz desde arriba-izquierda: lámpara + ventana)
+        if (Math.hypot(x - cx - 3, y - cy - 5) <= r + 0.5) {
+          const v = px[k];
+          const f = 0.58;
+          px[k] =
+            (0xff000000 |
+              ((((v >>> 16) & 255) * f) << 16) |
+              ((((v >>> 8) & 255) * f) << 8) |
+              ((v & 255) * f)) >>>
+            0;
+        }
+        continue;
+      }
+      // cuerpo: azul de marca con luz cenital de la lámpara
+      const lit = Math.max(
+        0,
+        1 - Math.hypot(x - cx, y - (cy - r * 0.95)) / (r * 1.7)
+      );
+      let c = mix(hx("#1e263b"), hx("#3b4870"), lit ** 1.4);
+      if (d > r - 2.2) c = rim;
+      else if (d > r - 3.2 && y < cy - r * 0.35)
+        c = mix(rim, rimHi, smooth(cy - r * 0.35, cy - r, y)); // filo iluminado
+      else if (d > r - 6 && d <= r - 5) {
+        // aro verde con destello que lo recorre
+        const a = Math.atan2(y - cy, x - cx);
+        let da = Math.abs(a - sweep);
+        if (da > Math.PI) da = Math.PI * 2 - da;
+        c = mix(hx("#3f8f22"), hx("#b6ff8a"), Math.max(0, 1 - da / 0.5) ** 2);
+        if (da > 0.5) c = mix(hx("#3f8f22"), hx("#5bbd2f"), lit);
+      }
+      px[k] = pack(c, x, y);
+    }
+}
+
+// ── geometría compartida de las capas de luz ───────────────────────────
+/** Haz de sol: misma geometría que el mapa de luz de la escena original. */
+const SHAFT: [number, number][] = [
+  [22, 48],
+  [62, 48],
+  [62 + 94 * 0.85, 142],
+  [22 + 94 * 0.55, 142],
+];
+function enHaz(x: number, y: number) {
+  if (y < 48 || y > 142) return 0;
+  const l = 22 + (y - 48) * 0.55,
+    r = 62 + (y - 48) * 0.85;
+  if (x < l || x > r) return 0;
+  return Math.min(1, (x - l) / 6, (r - x) / 6) * (1 - (y - 48) / 110);
+}
+
+// ── estado y canvases ──────────────────────────────────────────────────
+export function iniciarAlba(
+  stage: HTMLElement,
+  out: HTMLCanvasElement,
+  opciones: { reducido: boolean; tFijo?: number }
+) {
+  const reducido = opciones.reducido;
+  let s = crearEstado(false, true);
+  s.reducido = reducido;
+  s.ch.face = -1;
+  const bg = new Uint32Array(W * H),
+    px = new Uint32Array(W * H);
+  dibujarFondo(crearPincel(bg));
+  const mask = new Uint8Array(W * H);
+  const magenta = (0xff000000 | (0xff << 16) | 0xff) >>> 0;
+  for (let i = 0; i < bg.length; i++) mask[i] = bg[i] === magenta ? 1 : 0;
+  const brush = crearPincel(px),
+    moon = mapaLuna(),
+    shades = crearTablaSombreado();
+
+  const low = document.createElement("canvas");
+  low.width = W;
+  low.height = H;
+  const lctx = low.getContext("2d")!;
+  const img = new ImageData(new Uint8ClampedArray(px.buffer), W, H);
+  // bloom: pasada de brillo a resolución nativa, desenfoque en dos escalas
+  const bright = document.createElement("canvas");
+  bright.width = W;
+  bright.height = H;
+  const bctx = bright.getContext("2d")!;
+  const bpx = new Uint32Array(W * H);
+  const bimg = new ImageData(new Uint8ClampedArray(bpx.buffer), W, H);
+  const b1 = Object.assign(document.createElement("canvas"), {
+    width: 160,
+    height: 90,
+  });
+  const b2 = Object.assign(document.createElement("canvas"), {
+    width: 80,
+    height: 45,
+  });
+  const b1c = b1.getContext("2d")!,
+    b2c = b2.getContext("2d")!;
+  // grano de película pre-calculado
+  const grain = Object.assign(document.createElement("canvas"), {
+    width: 256,
+    height: 256,
+  });
+  {
+    const g = grain.getContext("2d")!,
+      d = g.createImageData(256, 256);
+    let seed = 99;
+    for (let i = 0; i < d.data.length; i += 4) {
+      seed = (seed * 16807) % 2147483647;
+      const v = (seed / 2147483647) * 255;
+      d.data[i] = d.data[i + 1] = d.data[i + 2] = v;
+      d.data[i + 3] = 255;
+    }
+    g.putImageData(d, 0, 0);
+  }
+  // motas de polvo en el haz (coordenadas de escena)
+  let seed = 11;
+  const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const motas = Array.from({ length: 90 }, () => ({
+    x: 22 + rnd() * 120,
+    y: 48 + rnd() * 94,
+    vx: (rnd() - 0.5) * 2,
+    vy: -0.6 - rnd() * 1.2,
+    ph: rnd() * 6.28,
+  }));
+
+  const ctx = out.getContext("2d")!;
+  let S = 4,
+    t0 = performance.now(),
+    last = t0,
+    raf = 0;
+  const DURACION = 14000;
+  function resize() {
+    S = Math.max(
+      3,
+      Math.min(Math.floor(innerWidth / W), Math.floor(innerHeight / H))
+    );
+    out.width = W * S;
+    out.height = H * S;
+    stage.style.setProperty("--s", String(S));
+  }
+  resize();
+  addEventListener("resize", () => {
+    resize();
+    if (reducido || opciones.tFijo !== undefined) frame(performance.now());
+  });
+
+  function frame(now: number) {
+    const dt = Math.min(50, now - last);
+    last = now;
+    const fijo = opciones.tFijo;
+    const t = fijo ?? now - t0;
+    const p =
+      reducido && fijo === undefined
+        ? 1
+        : 0.12 + 0.88 * smooth(0, 1, t / DURACION);
+    const shaftI = smooth(0.3, 1, p);
+    s = paso(s, reducido ? 0 : dt);
+    s.ch.face = -1; // mira al círculo
+
+    // 1 · escena pixel
+    px.set(bg);
+    dibujarPalanca(brush, s.lever);
+    dibujarLampara(brush, s.lamp);
+    const hand = dibujarOperaria(brush, s.ch);
+    aplicarLuz(px, s, moon, hand, shades);
+    cielo(px, mask, p, reducido ? 0 : t);
+    dibujarEmisivos(brush, s, hand);
+    disco(px, reducido ? 1300 : t);
+    lctx.putImageData(img, 0, 0);
+
+    ctx.imageSmoothingEnabled = false;
+    ctx.globalCompositeOperation = "source-over";
+    ctx.globalAlpha = 1;
+    ctx.filter = "none";
+    ctx.drawImage(low, 0, 0, W * S, H * S);
+    const X = (v: number) => v * S;
+
+    // 2 · gradación: sombras lavanda arriba, calidez abajo; avanza con el alba
+    {
+      const g = ctx.createLinearGradient(0, 0, 0, X(H));
+      g.addColorStop(0, `rgba(120,110,190,${0.32 - 0.1 * p})`);
+      g.addColorStop(0.55, `rgba(200,140,150,${0.18 + 0.12 * p})`);
+      g.addColorStop(1, `rgba(255,170,120,${0.12 + 0.18 * p})`);
+      ctx.globalCompositeOperation = "soft-light";
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, X(W), X(H));
+    }
+
+    // 3 · rayos volumétricos desde la ventana
+    ctx.globalCompositeOperation = "screen";
+    {
+      const g = ctx.createLinearGradient(X(42), X(40), X(110), X(142));
+      g.addColorStop(0, `rgba(255,196,140,${0.3 * shaftI})`);
+      g.addColorStop(0.6, `rgba(255,160,120,${0.16 * shaftI})`);
+      g.addColorStop(1, "rgba(255,150,120,0)");
+      ctx.fillStyle = g;
+      ctx.filter = `blur(${S * 2}px)`;
+      ctx.beginPath();
+      SHAFT.forEach(([x, y], i) =>
+        i ? ctx.lineTo(X(x), X(y)) : ctx.moveTo(X(x), X(y))
+      );
+      ctx.closePath();
+      ctx.fill();
+      // haces finos con parpadeo lento (polvo en suspensión que corta la luz)
+      for (let i = 0; i < 7; i++) {
+        const u = (i + 0.5) / 7;
+        const a =
+          0.07 *
+          shaftI *
+          (0.55 + 0.45 * Math.sin(t / (1900 + i * 370) + i * 2.1));
+        const x0 = 22 + 40 * u,
+          w0 = 1.2 + (i % 3);
+        const gx = ctx.createLinearGradient(0, X(48), 0, X(142));
+        gx.addColorStop(0, `rgba(255,220,170,${a})`);
+        gx.addColorStop(1, "rgba(255,220,170,0)");
+        ctx.fillStyle = gx;
+        ctx.beginPath();
+        ctx.moveTo(X(x0), X(48));
+        ctx.lineTo(X(x0 + w0), X(48));
+        ctx.lineTo(X(22 + 94 * 0.55 + (40 + 94 * 0.3) * u + w0 * 2.4), X(142));
+        ctx.lineTo(X(22 + 94 * 0.55 + (40 + 94 * 0.3) * u), X(142));
+        ctx.closePath();
+        ctx.fill();
+      }
+      ctx.filter = "none";
+      // charco de luz donde el haz toca el piso
+      const fp = ctx.createRadialGradient(
+        X(118),
+        X(146),
+        0,
+        X(118),
+        X(146),
+        X(48)
+      );
+      fp.addColorStop(0, `rgba(255,190,130,${0.28 * shaftI})`);
+      fp.addColorStop(1, "rgba(255,190,130,0)");
+      ctx.fillStyle = fp;
+      ctx.save();
+      ctx.translate(0, X(146));
+      ctx.scale(1, 0.32);
+      ctx.translate(0, -X(146));
+      ctx.fillRect(X(60), X(100), X(120), X(92));
+      ctx.restore();
+    }
+
+    // 4 · motas de polvo: cuadrados de 1 px de escena, alineados a la grilla
+    ctx.globalCompositeOperation = "lighter";
+    for (const m of motas) {
+      if (!reducido) {
+        m.ph += dt / 900;
+        m.x += ((m.vx * 0.6 + Math.sin(m.ph) * 0.8) * dt) / 1000;
+        m.y += ((m.vy * dt) / 1000) * 0.8;
+        if (m.y < 48) {
+          m.y = 142;
+          m.x = 22 + rnd() * 120;
+        }
+      }
+      const a = enHaz(m.x, m.y) * shaftI * (0.55 + 0.45 * Math.sin(m.ph * 2.3));
+      if (a <= 0.02) continue;
+      ctx.fillStyle = `rgba(255,214,160,${a})`;
+      ctx.fillRect(X(Math.round(m.x)), X(Math.round(m.y)), S, S);
+    }
+
+    // 5 · lámpara: halo de la ampolleta y cono sobre el disco
+    const L = posicionLuz(s);
+    {
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(0, 0, X(W), X(H));
+      ctx.arc(X(DISCO.cx), X(DISCO.cy), X(DISCO.r - 0.5), 0, Math.PI * 2);
+      ctx.clip("evenodd");
+      ctx.filter = `blur(${S * 1.5}px)`;
+      ctx.globalCompositeOperation = "screen";
+      const cone = ctx.createLinearGradient(0, X(L.y), 0, X(DISCO.cy + 20));
+      cone.addColorStop(0, "rgba(255,222,160,0.30)");
+      cone.addColorStop(1, "rgba(255,222,160,0)");
+      ctx.filter = `blur(${S * 2}px)`;
+      ctx.fillStyle = cone;
+      ctx.beginPath();
+      ctx.moveTo(X(L.x - 5), X(L.y - 1));
+      ctx.lineTo(X(L.x + 5), X(L.y - 1));
+      ctx.lineTo(X(L.x + 40), X(DISCO.cy + 30));
+      ctx.lineTo(X(L.x - 40), X(DISCO.cy + 30));
+      ctx.closePath();
+      ctx.fill();
+      ctx.filter = "none";
+      ctx.globalCompositeOperation = "lighter";
+      const glow = ctx.createRadialGradient(
+        X(L.x),
+        X(L.y),
+        0,
+        X(L.x),
+        X(L.y),
+        X(22)
+      );
+      glow.addColorStop(0, "rgba(255,236,190,0.55)");
+      glow.addColorStop(0.25, "rgba(255,200,130,0.18)");
+      glow.addColorStop(1, "rgba(255,180,110,0)");
+      ctx.fillStyle = glow;
+      ctx.fillRect(X(L.x - 22), X(L.y - 22), X(44), X(44));
+      // halo cálido que abraza el disco
+      ctx.globalCompositeOperation = "screen";
+      const ring = ctx.createRadialGradient(
+        X(DISCO.cx),
+        X(DISCO.cy),
+        X(DISCO.r - 2),
+        X(DISCO.cx),
+        X(DISCO.cy),
+        X(DISCO.r + 16)
+      );
+      ring.addColorStop(0, "rgba(255,206,150,0.30)");
+      ring.addColorStop(1, "rgba(255,206,150,0)");
+      ctx.fillStyle = ring;
+      ctx.fillRect(X(DISCO.cx - 70), X(DISCO.cy - 70), X(140), X(140));
+      ctx.restore();
+      // dentro del disco: solo un toque cenital, el azul de marca manda
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(X(DISCO.cx), X(DISCO.cy), X(DISCO.r - 3), 0, Math.PI * 2);
+      ctx.clip();
+      ctx.globalCompositeOperation = "screen";
+      const top = ctx.createRadialGradient(
+        X(DISCO.cx),
+        X(DISCO.cy - DISCO.r),
+        0,
+        X(DISCO.cx),
+        X(DISCO.cy - DISCO.r),
+        X(DISCO.r * 1.1)
+      );
+      top.addColorStop(0, "rgba(255,226,170,0.16)");
+      top.addColorStop(1, "rgba(255,226,170,0)");
+      ctx.fillStyle = top;
+      ctx.fillRect(
+        X(DISCO.cx - DISCO.r),
+        X(DISCO.cy - DISCO.r),
+        X(DISCO.r * 2),
+        X(DISCO.r * 2)
+      );
+      ctx.restore();
+    }
+
+    // 7 · bruma baja y viñeta
+    ctx.globalCompositeOperation = "screen";
+    const haze = ctx.createLinearGradient(0, X(120), 0, X(H));
+    haze.addColorStop(0, "rgba(255,180,150,0)");
+    haze.addColorStop(1, `rgba(255,170,140,${0.06 + 0.06 * p})`);
+    ctx.fillStyle = haze;
+    ctx.fillRect(0, X(120), X(W), X(60));
+    ctx.globalCompositeOperation = "multiply";
+    const vig = ctx.createRadialGradient(
+      X(165),
+      X(88),
+      X(90),
+      X(165),
+      X(88),
+      X(215)
+    );
+    vig.addColorStop(0, "rgba(255,255,255,1)");
+    vig.addColorStop(1, "rgba(92,70,110,1)");
+    ctx.fillStyle = vig;
+    ctx.fillRect(0, 0, X(W), X(H));
+
+    // el cielo es fuente de luz: se repone sin gradación ni viñeta
+    ctx.globalCompositeOperation = "source-over";
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(
+      low,
+      PANE.x0 + 2,
+      PANE.y0,
+      PANE.x1 - PANE.x0 - 2,
+      PANE.y1 - PANE.y0,
+      X(PANE.x0 + 2),
+      X(PANE.y0),
+      X(PANE.x1 - PANE.x0 - 2),
+      X(PANE.y1 - PANE.y0)
+    );
+    // 6 · bloom: pasada de brillo (luminancia alta) desenfocada a 1/2 y 1/4
+    for (let i = 0; i < px.length; i++) {
+      const v = px[i],
+        r = v & 255,
+        g = (v >>> 8) & 255,
+        b = (v >>> 16) & 255;
+      const lum = 0.299 * r + 0.587 * g + 0.114 * b;
+      bpx[i] = lum > 168 ? v : 0;
+    }
+    bctx.putImageData(bimg, 0, 0);
+    b1c.clearRect(0, 0, 160, 90);
+    b1c.filter = "blur(1.5px)";
+    b1c.drawImage(bright, 0, 0, 160, 90);
+    b2c.clearRect(0, 0, 80, 45);
+    b2c.filter = "blur(2px)";
+    b2c.drawImage(bright, 0, 0, 80, 45);
+    ctx.imageSmoothingEnabled = true;
+    ctx.globalCompositeOperation = "lighter";
+    ctx.globalAlpha = 0.38;
+    ctx.drawImage(b1, 0, 0, X(W), X(H));
+    ctx.globalAlpha = 0.32;
+    ctx.drawImage(b2, 0, 0, X(W), X(H));
+    ctx.globalAlpha = 1;
+
+    // 8 · grano fino
+    ctx.globalCompositeOperation = "overlay";
+    ctx.globalAlpha = 0.05;
+    const ox = reducido ? 0 : (t * 0.37) % 256,
+      oy = reducido ? 0 : (t * 0.61) % 256;
+    ctx.fillStyle = ctx.createPattern(grain, "repeat")!;
+    ctx.save();
+    ctx.translate(-ox, -oy);
+    ctx.fillRect(ox, oy, X(W), X(H));
+    ctx.restore();
+    ctx.globalAlpha = 1;
+    ctx.globalCompositeOperation = "source-over";
+
+    stage.dataset.alba = p.toFixed(2);
+    if (!reducido && fijo === undefined) raf = requestAnimationFrame(frame);
+  }
+  if (opciones.tFijo !== undefined) {
+    for (let k = 0; k < 120; k++) {
+      s = paso(s, 16);
+    }
+    for (let k = 0; k < 600; k++)
+      for (const m of motas) {
+        m.ph += 16 / 900;
+        m.x += (m.vx * 0.6 + Math.sin(m.ph) * 0.8) * 0.016;
+        m.y += m.vy * 0.016 * 0.8;
+        if (m.y < 48) {
+          m.y = 142;
+          m.x = 22 + rnd() * 120;
+        }
+      }
+    frame(performance.now());
+  } else raf = requestAnimationFrame(frame);
+  return {
+    enviar(e: EventoEscena) {
+      s = transicion(s, e);
+      if (reducido) requestAnimationFrame(frame);
+    },
+    reiniciar() {
+      t0 = performance.now();
+    },
+    detener() {
+      cancelAnimationFrame(raf);
+    },
+  };
+}

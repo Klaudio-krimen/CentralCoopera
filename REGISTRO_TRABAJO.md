@@ -107,6 +107,8 @@ Autor y propósito no confirmados. Preservarlos; no incluirlos en commits de otr
 
 | LOGIN-002 | Login de escritorio «Turno de noche»: escena pixel art animada (solo planificación) | Media | Codex → Claude | EN REVISIÓN | Implementación completa (Codex) + emblema y fuente local (Claude); portón en verde; listo para commit/push del usuario y prueba en Preview |
 
+| LOGIN-003 | Login «Alba»: acceso circular bajo la lámpara y amanecer en la ventana | Media | Claude | EN CURSO | `feat/login-alba` desde `ffe07bd`; fase de diseño: `docs/superpowers/specs/2026-10-11-login-alba-design.md` |
+
 ## Historial de sesiones y entregas
 
 ### 2026-10-04 — REV-001 — Codex
@@ -686,6 +688,14 @@ Autor y propósito no confirmados. Preservarlos; no incluirlos en commits de otr
 - Verificación (copia aislada en Linux, `npm ci --legacy-peer-deps`, tipos de Prisma copiados del checkout porque la red bloquea binaries.prisma.sh): `tsc --noEmit` exit 0; `vitest run` 35 archivos / 393 tests OK (incluye 5 nuevos de `emblema.test.ts`); `next build` exit 0 con variables sintéticas. Render de la escena real (estados ILUMINADO y EXITO) generado con los módulos puros sin errores. Sin QA autenticada en navegador ni cuentas reales.
 - Entrega Git: sin commit ni push; el usuario hará commit/push. Despliegue: pendiente (se recomienda probar primero en Preview de Vercel).
 - 2026-10-11, publicación: el usuario hizo commit `7219613` y push; Preview `dpl_yCqGR5Qkr3sDHFhvbrQFCFT9SFCJ` READY. PR #2 hacia `master`: la CI falló en `npm audit` por un aviso nuevo (alto) en `source-map-js` 1.2.1, dependencia transitiva de compilación y ajena al login. Corrección mínima en `package-lock.json` (sólo esa entrada: 1.2.1 → 1.2.2); en copia limpia: `npm audit` 0 vulnerabilidades, typecheck OK, 393 tests OK, build OK. Producción anterior para reversión: `dpl_8mVGfb4RJBwTTQ2yqNmSBxaWtMQr` (`528c100`).
+
+### 2026-10-11 — LOGIN-003 — Claude
+
+- Solicitud y alcance: el usuario propone, sobre LOGIN-002 ya en producción, un login **circular** centrado en la luz de la lámpara y una ventana con **tonalidades del alba** («se trabaja de día; es el comienzo del día»). Pide mejorar la maqueta con técnicas de programación gráfica de alto nivel y aprueba la dirección («si continúa»).
+- Responsable, rama y commit base: Claude; `feat/login-alba` desde `origin/master` `ffe07bd`.
+- Fase actual: diseño (spec). Maqueta aprobada construida en un directorio temporal con copia de los módulos de `lib/login-escena/` (sin tocar el repo). Archivos previstos en esta fase: el spec y este registro. Implementación posterior, tras aprobar spec y plan: `lib/login-escena/`, `components/login-escena/`, `app/(auth)/login/login.css`, `page.spec.md`, specs de componentes.
+- Cambio local ajeno preservado: `.gitignore` modificado (agrega `.vercel` y `.env*.local`); no se incluye en commits de esta tarea.
+- Pedido a Codex: no editar `lib/login-escena/`, `components/login-escena/` ni `app/(auth)/login/` mientras LOGIN-003 esté EN CURSO.
 
 ## Plantilla para próximas entradas
 

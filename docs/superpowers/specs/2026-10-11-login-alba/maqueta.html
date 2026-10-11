@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="es">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Login al alba — maqueta de referencia (LOGIN-003)</title>
+  <style>
+    @font-face {
+      font-family: ps2p;
+      src: url(../../../../components/login-escena/fonts/press-start-2p-latin-400-normal.woff2)
+        format("woff2");
+    }
+    :root {
+      --s: 4;
+      --ink: #eef2f8;
+      --muted: #cfd5e4;
+      --green: #5bbd2f;
+      --green-dk: #3b8a1a;
+      --gold: #f2c230;
+      --field: #151c2e;
+      --edge: #56638a;
+    }
+    html,
+    body {
+      margin: 0;
+      height: 100%;
+      background: #0d0b16;
+      overflow: hidden;
+      font-family:
+        system-ui,
+        -apple-system,
+        "Segoe UI",
+        sans-serif;
+    }
+    .stage {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: calc(320px * var(--s));
+      height: calc(180px * var(--s));
+      transform: translate(-50%, -50%);
+    }
+    canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      image-rendering: pixelated;
+      display: none;
+    }
+    body:not(.noche) #c1 {
+      display: block;
+    }
+    body.noche #c0 {
+      display: block;
+    }
+    body.noche .circulo {
+      display: none;
+    }
+
+    /* ── círculo de acceso: el disco está pintado en la escena; esto es solo la tipografía y los campos ── */
+    .circulo {
+      position: absolute;
+      left: calc((184px - 31px) * var(--s));
+      top: calc((98px - 30px) * var(--s));
+      width: calc(62px * var(--s));
+      display: flex;
+      flex-direction: column;
+      gap: calc(2.4px * var(--s));
+      font-size: calc(4.1px * var(--s));
+      color: var(--ink);
+      color-scheme: dark;
+      animation: entra 1.2s 0.3s both cubic-bezier(0.2, 0.7, 0.2, 1);
+    }
+    @keyframes entra {
+      from {
+        opacity: 0;
+        transform: translateY(calc(2px * var(--s)));
+      }
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+    .cab {
+      text-align: center;
+      margin-bottom: calc(0.6px * var(--s));
+    }
+    .cab h1 {
+      margin: 0;
+      font: 400 0.6em/1.6 ps2p;
+      color: var(--green);
+      letter-spacing: 0.06em;
+      text-shadow: calc(0.5px * var(--s)) calc(0.5px * var(--s)) 0 #0f1422;
+    }
+    .saludo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45em;
+      margin-top: 0.15em;
+      font-size: 0.82em;
+      color: #ffdcb0;
+      letter-spacing: 0.01em;
+    }
+    .sol {
+      width: calc(5px * var(--s));
+      height: calc(3px * var(--s));
+      image-rendering: pixelated;
+    }
+    .campo label {
+      display: block;
+      font-size: 0.72em;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.3em;
+    }
+    .campo input {
+      box-sizing: border-box;
+      width: 100%;
+      font: inherit;
+      font-size: 0.9em;
+      line-height: 1.4;
+      padding: 0.42em 0.6em;
+      color: var(--ink);
+      background: var(--field);
+      border: 0;
+      border-radius: 0;
+      outline: 0;
+      /* bisel pixel: borde de 2 px, sombra interior arriba, luz abajo */
+      box-shadow:
+        0 0 0 2px var(--edge),
+        inset 0 2px 0 #0b1020,
+        0 2px 0 2px #2a3352;
+      transition: box-shadow 0.12s;
+    }
+    .campo input::placeholder {
+      color: #8792ad;
+    }
+    .campo input:hover {
+      box-shadow:
+        0 0 0 2px #6d7aa3,
+        inset 0 2px 0 #0b1020,
+        0 2px 0 2px #2a3352;
+    }
+    .campo input:focus-visible {
+      box-shadow:
+        0 0 0 2px var(--gold),
+        inset 0 2px 0 #0b1020,
+        0 0 0 5px rgba(242, 194, 48, 0.22);
+    }
+    .boton {
+      margin-top: calc(1.2px * var(--s));
+      font:
+        700 0.74em/1 system-ui,
+        sans-serif;
+      letter-spacing: 0.12em;
+      color: #10200a;
+      background: var(--green);
+      border: 0;
+      border-radius: 0;
+      padding: 0.95em 0.5em 0.85em;
+      cursor: pointer;
+      position: relative;
+      box-shadow:
+        inset 0 2px 0 #8fe060,
+        inset 0 -3px 0 #449a20,
+        0 3px 0 #2c6a12,
+        0 5px 12px rgba(91, 189, 47, 0.28);
+      transition:
+        transform 0.06s,
+        box-shadow 0.06s,
+        filter 0.15s;
+    }
+    .boton:hover {
+      filter: brightness(1.08) saturate(1.05);
+    }
+    .boton:active {
+      transform: translateY(3px);
+      box-shadow:
+        inset 0 2px 0 #8fe060,
+        inset 0 -2px 0 #449a20,
+        0 0 0 #2c6a12;
+    }
+    .boton:focus-visible {
+      outline: 2px solid var(--gold);
+      outline-offset: 3px;
+    }
+
+    .ui {
+      position: fixed;
+      left: 12px;
+      top: 12px;
+      z-index: 9;
+      display: flex;
+      gap: 6px;
+    }
+    .ui button {
+      font: 600 13px system-ui;
+      padding: 7px 12px;
+      border-radius: 6px;
+      border: 1px solid #4a4560;
+      background: rgba(20, 18, 32, 0.85);
+      color: #e4e0f0;
+      cursor: pointer;
+      backdrop-filter: blur(6px);
+    }
+    .ui button.on {
+      background: var(--gold);
+      color: #1a1a1a;
+      border-color: var(--gold);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .circulo {
+        animation: none;
+      }
+    }
+  </style>
+  <body>
+    <div class="ui">
+      <button id="bN">Noche (actual)</button>
+      <button id="bA" class="on">Alba · círculo (propuesta)</button>
+      <button id="repetir" title="Volver a ver el amanecer">↻ Amanecer</button>
+    </div>
+    <div class="stage" id="stage">
+      <canvas id="c0" width="320" height="180"></canvas>
+      <canvas id="c1"></canvas>
+      <form class="circulo" onsubmit="return false;" autocomplete="off">
+        <div class="cab">
+          <h1>CENTRAL COOPERA</h1>
+          <div class="saludo">
+            <svg
+              class="sol"
+              viewBox="0 0 5 3"
+              shape-rendering="crispEdges"
+              aria-hidden="true"
+            >
+              <path fill="#ffc46b" d="M1 1h3v2H1z" />
+              <path fill="#ffe6a8" d="M2 0h1v1H2zM0 2h1v1H0zM4 2h1v1H4z" />
+            </svg>
+            <span>Buenos días, equipo</span>
+          </div>
+        </div>
+        <div class="campo">
+          <label for="correo">Correo</label
+          ><input id="correo" type="email" placeholder="nombre@cooperapro.cl" />
+        </div>
+        <div class="campo">
+          <label for="clave">Contraseña</label
+          ><input id="clave" type="password" placeholder="••••••••" />
+        </div>
+        <button class="boton">INICIAR JORNADA</button>
+      </form>
+    </div>
+    <script>
+      function fit() {
+        var s = Math.max(
+          3,
+          Math.min(Math.floor(innerWidth / 320), Math.floor(innerHeight / 180))
+        );
+        document.getElementById("stage").style.setProperty("--s", s);
+      }
+      fit();
+      addEventListener("resize", fit);
+      function modo(n) {
+        document.body.classList.toggle("noche", n);
+        bN.classList.toggle("on", n);
+        bA.classList.toggle("on", !n);
+      }
+      bN.onclick = () => modo(true);
+      bA.onclick = () => modo(false);
+      if (location.hash.includes("noche")) modo(true);
+    </script>
+    <script src="maqueta.js"></script>
+  </body>
+</html>

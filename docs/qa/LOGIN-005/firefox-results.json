@@ -1,0 +1,25 @@
+{
+  "browser": "155.0.1",
+  "auth": "synthetic browser-only responses; no real accounts",
+  "initial": {
+    "alba": "0.12",
+    "blue": [10, 12, 26, 255],
+    "effects": "hd",
+    "formHeight": 183.0333251953125,
+    "heightLogical": 45.758331298828125,
+    "inputs": 1,
+    "motion": "animated",
+    "native": [1280, 720],
+    "overflow": false,
+    "safeRadius": 37.72871878043738,
+    "scale": 4,
+    "stage": [1280, 720],
+    "state": "OSCURO",
+    "viewport": [1440, 900]
+  },
+  "final_debug": {
+    "alert": null,
+    "location": "/login",
+    "state": null
+  }
+}

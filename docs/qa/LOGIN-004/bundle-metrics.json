@@ -1,0 +1,16 @@
+{
+  "application_scene_with_new_sprite": [
+    {
+      "file": "static/css/5056c730208bd289.css",
+      "bytes": 372,
+      "gzip_bytes": 244
+    },
+    {
+      "file": "static/chunks/7828.1f767c2a8330cc6d.js",
+      "bytes": 15969,
+      "gzip_bytes": 6947
+    }
+  ],
+  "prototype_js_gzip_bytes": 15675,
+  "note": "Application build includes the reusable Elizabeth sprite; Alba HD remains a prototype."
+}

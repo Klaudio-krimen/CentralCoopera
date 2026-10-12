@@ -56,6 +56,10 @@ export const C = {
   // Emblema de Coopera Pro (logo oficial)
   brandBlue: "#2a344d",
   brandRim: "#1a2132",
+  brandRimHi: "#5a6890",
+  brandShadowA: "#222630",
+  brandShadowB: "#1e2129",
+  brandShadowFloor: "#313336",
   brandGreen: "#5bbd2f",
   brandCream: "#efe9cf",
   neon: "#8ae85a",

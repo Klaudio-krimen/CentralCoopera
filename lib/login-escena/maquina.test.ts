@@ -44,7 +44,7 @@ describe("guion de la escena", () => {
       expect(email.ch.x).toBe(HOME);
       const password = transicion(s, "FOCO_CLAVE");
       expect(password.fase).toBe("TAPA_OJOS");
-      expect(password.ch.face).toBe(-1);
+      expect(password.ch.face).toBe(1);
       expect(password.formOp).toBe(1);
       expect(password.ch.torch).toBe(false);
     }
@@ -79,7 +79,7 @@ describe("guion de la escena", () => {
     expect(s.fase).toBe("ILUMINADO");
     expect(s.light.I).toBe(1);
     s = transicion(s, "FOCO_CLAVE");
-    expect(s.ch.face).toBe(-1);
+    expect(s.ch.face).toBe(1);
     expect(s.ch.bob).toBe(0);
     s = transicion(s, "ERROR");
     expect(s.light.I).toBe(1);
@@ -111,5 +111,43 @@ describe("guion de la escena", () => {
       previous = s.light.I;
     }
     expect(flashes).toBeLessThanOrEqual(2);
+  });
+});
+
+describe("amanecer y geometría Alba", () => {
+  it("mira al disco y se gira al escribir contraseña", () => {
+    expect(transicion(crearEstado(), "SALTAR").ch.face).toBe(-1);
+    expect(transicion(crearEstado(), "FOCO_CORREO").ch.face).toBe(-1);
+    expect(transicion(crearEstado(), "FOCO_CLAVE").ch.face).toBe(1);
+    expect(HOME).toBe(262);
+    expect(SEAT).toBe(294);
+  });
+  it("el alba avanza de 0,12 a 1 en 14 segundos y permanece acotada", () => {
+    const s = crearEstado();
+    expect(s.alba).toBe(0.12);
+    expect(avanzar(s, 7000).alba).toBeCloseTo(0.56);
+    expect(avanzar(s, 14000).alba).toBe(1);
+    expect(paso(s, 20000).alba).toBe(1);
+    expect(paso(s, NaN).alba).toBe(0.12);
+    expect(paso(s, -10).alba).toBe(0.12);
+  });
+  it("éxito completa el alba en el mismo plazo máximo de 700 ms", () => {
+    const initial = transicion(avanzar(crearEstado(), 1000), "EXITO");
+    const half = avanzar(initial, 350);
+    expect(half.alba).toBeGreaterThan(initial.alba);
+    const final = avanzar(initial, 700);
+    expect(final.alba).toBe(1);
+    expect(final.ch.x).toBe(243);
+    expect(final.lever).toBe(1);
+    expect(final.light.sweep).toBe(330);
+    expect(initial.alba).toBeLessThan(1);
+  });
+  it("movimiento reducido parte con amanecer completo y el éxito es inmediato", () => {
+    const initial = crearEstado(true, true);
+    expect(initial.alba).toBe(1);
+    const final = transicion(initial, "EXITO");
+    expect(final.alba).toBe(1);
+    expect(final.ch.x).toBe(243);
+    expect(final.light.sweep).toBe(330);
   });
 });

@@ -1,0 +1,41 @@
+{
+  "success": true,
+  "data": {
+    "lifecycle": {
+      "effectiveLaunch": {
+        "browserLaunched": true,
+        "engine": "chrome",
+        "launchHash": 12798390076057945372
+      },
+      "launched": false,
+      "relaunchedBrowser": false,
+      "restartedBackground": false,
+      "restoreStatus": "not_configured",
+      "reused": true,
+      "saveStatus": "not_attempted"
+    },
+    "origin": "http://127.0.0.1:8766/docs/superpowers/specs/2026-10-11-login-alba-elizabeth/maqueta.html?v=7",
+    "result": {
+      "alba": "1.00",
+      "canvasCenter": [42, 52, 77, 255],
+      "contrasts": {
+        "button": 6.7443781273077335,
+        "error": 5.383606496610304,
+        "label": 8.915011704760282,
+        "placeholder": 7.412063977965705,
+        "title": 5.165527985980377
+      },
+      "errorVisible": true,
+      "face": "-1",
+      "formHeight": 202.578125,
+      "greetingDisplay": "none",
+      "maxCornerLogical": 39.25833843125631,
+      "pose": "ILUMINADO",
+      "renderMs": 7,
+      "scale": 4,
+      "viewport": [1440, 900],
+      "withinSafeDisk": true
+    }
+  },
+  "error": null
+}

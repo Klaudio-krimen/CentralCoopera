@@ -1,6 +1,6 @@
 import { C } from "./paleta";
 import { R, line, type Pincel } from "./pincel";
-import { WIDTH as W } from "./escala";
+import { WIDTH as W, DISCO } from "./escala";
 import { texto } from "./fuente";
 import { dibujarEmblema } from "./emblema";
 /** Tubos fluorescentes del techo; el central queda fuera del halo del emblema. */
@@ -59,17 +59,6 @@ export function dibujarFondo(g: Pincel) {
   R(g, 20, 22, 44, 28, C.beamDark);
   R(g, 22, 24, 40, 24, C.sky);
   R(g, 22, 41, 40, 7, C.skyLow);
-  for (const [sx, sy] of [
-    [25, 26],
-    [31, 30],
-    [37, 25],
-    [47, 27],
-    [59, 34],
-    [27, 38],
-    [50, 39],
-    [35, 44],
-  ])
-    R(g, sx, sy, 1, 1, C.star);
   R(g, 41, 24, 2, 24, C.beamDark);
   R(g, 22, 35, 40, 2, C.beamDark);
   R(g, 18, 50, 48, 2, C.beam);
@@ -79,9 +68,8 @@ export function dibujarFondo(g: Pincel) {
   // rack a la izquierda
   for (const px of [6, 40, 74]) R(g, px, 52, 3, 90, C.rackPost);
   for (const by of [52, 82, 112]) R(g, 6, by, 71, 3, C.rackBeam);
-  box(g, 10, 40, 14, 12);
-  box(g, 26, 44, 11, 8);
-  box(g, 46, 42, 16, 10);
+  box(g, 10, 40, 9, 12);
+  box(g, 66, 44, 8, 8);
   box(g, 10, 70, 12, 12);
   box(g, 23, 74, 13, 8);
   pallet(g, 44, 82, 28);
@@ -111,21 +99,40 @@ export function dibujarFondo(g: Pincel) {
   bale(g, 176, 128, 22, 14);
   bale(g, 177, 114, 20, 14);
   // caja de la palanca y ducto
-  R(g, 205, 12, 1, 112, C.metalDark);
-  R(g, 202, 124, 7, 10, C.leverBox);
-  R(g, 203, 125, 5, 8, C.leverBoxIn);
-  // cartel del taller
-  R(g, 214, 22, 96, 114, C.boardFrame);
-  R(g, 214, 22, 96, 1, C.boardLight);
-  R(g, 214, 22, 1, 114, C.boardLight);
-  R(g, 217, 25, 90, 108, C.board);
-  for (const [bx, by] of [
-    [215, 23],
-    [308, 23],
-    [215, 134],
-    [308, 134],
-  ])
-    R(g, bx, by, 1, 1, C.bolt);
-  R(g, 230, 136, 2, 6, C.boardFrame);
-  R(g, 292, 136, 2, 6, C.boardFrame);
+  R(g, 249, 12, 1, 112, C.metalDark);
+  R(g, 246, 122, 7, 12, C.leverBox);
+  R(g, 247, 125, 5, 8, C.leverBoxIn);
+  R(g, 248, 123, 3, 2, C.lever);
+  for (let k = 0; k < 3; k++) pallet(g, 282, 142 - k * 5, 28);
+  dibujarDisco(g);
+}
+
+/** Fondo azul tranquilo: ningún tramado, texto ni variación de tono en el área útil. */
+export function dibujarDisco(g: Pincel) {
+  const { cx, cy, r } = DISCO;
+  for (let y = cy - r; y <= cy + r + 5; y++)
+    for (let x = cx - r; x <= cx + r + 3; x++) {
+      const d2 = (x - cx) ** 2 + (y - cy) ** 2;
+      if (d2 > r * r) {
+        if ((x - cx - 3) ** 2 + (y - cy - 5) ** 2 <= (r + 0.5) ** 2)
+          R(
+            g,
+            x,
+            y,
+            1,
+            1,
+            y >= 142
+              ? C.brandShadowFloor
+              : x % 4 < 2
+                ? C.brandShadowB
+                : C.brandShadowA
+          );
+        continue;
+      }
+      let color: string = C.brandBlue;
+      if (d2 > (r - 2) ** 2) color = C.brandRim;
+      else if (d2 > (r - 3) ** 2 && y < cy - r * 0.35) color = C.brandRimHi;
+      else if (d2 > (r - 6) ** 2 && d2 <= (r - 5) ** 2) color = C.brandGreen;
+      R(g, x, y, 1, 1, color);
+    }
 }

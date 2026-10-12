@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Eye, EyeSlash, ArrowRight, Warning } from "@phosphor-icons/react";
@@ -16,6 +16,15 @@ export default function LoginForm({ onEscenaEvento }: LoginFormProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
+  const passwordInput = useRef<HTMLInputElement>(null);
+  const [greeting, setGreeting] = useState("Bienvenido, equipo");
+  useEffect(() => {
+    setGreeting(
+      new Date().getHours() < 12
+        ? "Buenos días, equipo"
+        : "Buenas tardes, equipo"
+    );
+  }, []);
 
   function emitir(evento: EventoEscena) {
     try {
@@ -70,15 +79,16 @@ export default function LoginForm({ onEscenaEvento }: LoginFormProps) {
   }
 
   return (
-    <div className="login-form">
+    <div className={`login-form${error ? " login-form-error" : ""}`}>
       <div className="login-heading mb-8">
         <h2 className="text-2xl font-semibold tracking-tight text-zinc-900">
           <span className="login-normal-title">Iniciar sesión</span>
           <span className="login-pixel-title">CENTRAL COOPERA</span>
         </h2>
-        <p className="text-zinc-500 text-sm mt-1">
+        <p className="login-instructions text-zinc-500 text-sm mt-1">
           Ingresa tus credenciales para continuar
         </p>
+        <p className="login-greeting">{greeting}</p>
       </div>
 
       <form
@@ -133,6 +143,7 @@ export default function LoginForm({ onEscenaEvento }: LoginFormProps) {
           </label>
           <div className="relative">
             <input
+              ref={passwordInput}
               id="login-password"
               type={showPw ? "text" : "password"}
               value={password}
@@ -144,7 +155,10 @@ export default function LoginForm({ onEscenaEvento }: LoginFormProps) {
             />
             <button
               type="button"
-              onClick={() => setShowPw(!showPw)}
+              onClick={() => {
+                setShowPw(!showPw);
+                passwordInput.current?.focus();
+              }}
               aria-label={showPw ? "Ocultar contraseña" : "Mostrar contraseña"}
               className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 transition-colors"
             >

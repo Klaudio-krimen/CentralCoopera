@@ -55,6 +55,7 @@ export default function LoginPage() {
   }, []);
   const onListo = useCallback((value: ControlEscena | null) => {
     control.current = value;
+    if (host.current) host.current.dataset.sceneReady = String(!!value);
     if (value) {
       host.current?.style.setProperty("--font-night", value.fuente);
       if (pending.current) void value.enviar(pending.current);
@@ -100,6 +101,12 @@ export default function LoginPage() {
             />
           </SceneBoundary>
         )}
+        <div className="login-npc-name" aria-hidden="true">
+          ELIZABETH CABRERA
+        </div>
+        <div className="login-edition" aria-hidden="true">
+          COOPERA PRO · EL COMIENZO DE UNA NUEVA JORNADA
+        </div>
       </div>
       <div className="login-classic min-h-[100dvh] flex">
         {/* ── Left panel ─────────────────────────────────────── */}

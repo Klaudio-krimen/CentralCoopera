@@ -107,6 +107,10 @@ Autor y propósito no confirmados. Preservarlos; no incluirlos en commits de otr
 
 | LOGIN-002 | Login de escritorio «Turno de noche»: escena pixel art animada (solo planificación) | Media | Codex → Claude | EN REVISIÓN | Implementación completa (Codex) + emblema y fuente local (Claude); portón en verde; listo para commit/push del usuario y prueba en Preview |
 
+| LOGIN-003 | Login «Alba»: acceso circular bajo la lámpara y amanecer en la ventana | Media | Claude | EN REVISIÓN | `feat/login-alba`: diseño `9d692de`; implementación vía LOGIN-005; listo para commit/push del usuario |
+| LOGIN-004 | Revisión gráfica Alba vintage y Elizabeth | Media | Codex | TERMINADA | Entregada e integrada en LOGIN-005; evidencias en `docs/qa/LOGIN-004.md` |
+| LOGIN-005 | Integración de Alba con Elizabeth en la aplicación | Alta | Codex → Claude | EN REVISIÓN | Traspasada a `feat/login-alba` sin commit; portón verde; QA en `docs/qa/LOGIN-005.md`; pendiente commit/push del usuario y Preview |
+
 ## Historial de sesiones y entregas
 
 ### 2026-10-04 — REV-001 — Codex
@@ -686,6 +690,51 @@ Autor y propósito no confirmados. Preservarlos; no incluirlos en commits de otr
 - Verificación (copia aislada en Linux, `npm ci --legacy-peer-deps`, tipos de Prisma copiados del checkout porque la red bloquea binaries.prisma.sh): `tsc --noEmit` exit 0; `vitest run` 35 archivos / 393 tests OK (incluye 5 nuevos de `emblema.test.ts`); `next build` exit 0 con variables sintéticas. Render de la escena real (estados ILUMINADO y EXITO) generado con los módulos puros sin errores. Sin QA autenticada en navegador ni cuentas reales.
 - Entrega Git: sin commit ni push; el usuario hará commit/push. Despliegue: pendiente (se recomienda probar primero en Preview de Vercel).
 - 2026-10-11, publicación: el usuario hizo commit `7219613` y push; Preview `dpl_yCqGR5Qkr3sDHFhvbrQFCFT9SFCJ` READY. PR #2 hacia `master`: la CI falló en `npm audit` por un aviso nuevo (alto) en `source-map-js` 1.2.1, dependencia transitiva de compilación y ajena al login. Corrección mínima en `package-lock.json` (sólo esa entrada: 1.2.1 → 1.2.2); en copia limpia: `npm audit` 0 vulnerabilidades, typecheck OK, 393 tests OK, build OK. Producción anterior para reversión: `dpl_8mVGfb4RJBwTTQ2yqNmSBxaWtMQr` (`528c100`).
+
+### 2026-10-11 — LOGIN-003 — Claude
+
+- Solicitud y alcance: el usuario propone, sobre LOGIN-002 ya en producción, un login **circular** centrado en la luz de la lámpara y una ventana con **tonalidades del alba** («se trabaja de día; es el comienzo del día»). Pide mejorar la maqueta con técnicas de programación gráfica de alto nivel y aprueba la dirección («si continúa»).
+- Responsable, rama y commit base: Claude; `feat/login-alba` desde `origin/master` `ffe07bd`.
+- Fase actual: diseño (spec). Maqueta aprobada construida en un directorio temporal con copia de los módulos de `lib/login-escena/` (sin tocar el repo). Archivos previstos en esta fase: el spec y este registro. Implementación posterior, tras aprobar spec y plan: `lib/login-escena/`, `components/login-escena/`, `app/(auth)/login/login.css`, `page.spec.md`, specs de componentes.
+- Cambio local ajeno preservado: `.gitignore` modificado (agrega `.vercel` y `.env*.local`); no se incluye en commits de esta tarea.
+- Pedido a Codex: no editar `lib/login-escena/`, `components/login-escena/` ni `app/(auth)/login/` mientras LOGIN-003 esté EN CURSO.
+
+### 2026-10-11 — LOGIN-004 — revisión gráfica Codex
+
+- Autorización: el usuario solicita revisar el trabajo de Claude, mejorar el acabado vintage y representar a Elizabeth Cabrera con pelo largo castaño claro y visos rubios.
+- Responsable: Codex; EN CURSO; rama aislada codex/login-alba-elizabeth desde 9d692de. Copia: C:\Users\krmlo\.codex\visualizations\2026\10\11\01a12c2d-a89d-75a2-8588-f99e4689f3ad\centralcoopera-review.
+- Base vigente: diseño LOGIN-003 Alba, no la antigua composición rectangular. Se revisa y refina la maqueta y se prepara el personaje reusable; la integración de Alba sigue separada de su diseño.
+- Archivos previstos en la copia aislada: docs/superpowers/specs/2026-10-11-login-alba-elizabeth/, lib/login-escena/operaria.ts, su prueba, paleta.ts y docs/qa/LOGIN-004.md. Los archivos reservados por Claude en el checkout principal se conservan.
+- Sin commit, push, despliegue, cambios de autenticación ni datos reales. Las conversaciones privadas no son el canal de entrega: esta entrada registra el reparto.
+
+### 2026-10-11 — LOGIN-004 — entrega gráfica Codex
+
+- Estado: EN REVISIÓN. Copia aislada codex/login-alba-elizabeth desde 9d692de; no se tocaron los módulos reservados por Claude en el checkout principal.
+- Entrega: docs/superpowers/specs/2026-10-11-login-alba-elizabeth/ (maqueta interactiva y generador reproducible), docs/qa/LOGIN-004.md y evidencias; personaje reusable en lib/login-escena/operaria.ts, operaria.spec.md, operaria.test.ts y ajuste de dibujo.test.ts.
+- Ubicación de la copia: C:\Users\krmlo\.codex\visualizations\2026\10\11\01a12c2d-a89d-75a2-8588-f99e4689f3ad\centralcoopera-review. Revisar allí los cambios; no se copiaron sobre los archivos en curso de LOGIN-003.
+- Diseño: Elizabeth estilizada con pelo largo castaño claro y visos dorados; casco y chaleco conservados. Rampa de ocho tonos, textura vintage estable, bloom acotado a fuentes, disco azul uniforme, caja/lampara/asiento alineados con el spec y orientación de privacidad corregida. Formulario completo, área de 60 px lógicos y texto mínimo aumentado; variantes de diseño documentadas para integración.
+- Verificación: typecheck exit 0; 36 archivos/394 pruebas OK; build exit 0, 79/79 páginas. Build sobre base local sintética: avisos Prisma esperados al consultar otros módulos; sin QA de BD real. Generador y node --check OK. Chrome y Firefox 155: poses, error, visor, color #2a344d y contraste AA; escalas 3/4/6 con error dentro de radio44. Movimiento reducido estático y lentitud simulada congelada en alba completa. Éxito de maqueta completa el alba en699,1 ms; no es navegación autenticada.
+- Peso: escena de aplicación con el personaje6947 bytes gzip; maqueta15675 bytes gzip. Render Chrome headless local: media5,55 ms/90 frames al inicio del alba; no prueba 60fps físicos ni coste HD≤4ms. Firefox sólo recorrido estático. El informe detalla los límites.
+- Pendiente/siguiente responsable: Claude integra la variante Alba y el personaje, conservando los contratos del login. El generador de maqueta no sustituye las capas cacheadas de producción; medirlas en equipo real y validar flujo autenticado. Usuario revisa la entrega. Sin commit/push/despliegue.
+
+### 2026-10-12 — LOGIN-005 — integración de Alba aprobada — Codex
+
+- Autorización: el usuario aprueba la versión vintage con Elizabeth y pide dejar todo listo para producción. Se integra en la aplicación, además de la maqueta; publicación sigue pendiente de commit/push del usuario.
+- Responsable: Codex; EN CURSO; rama codex/login-alba-elizabeth, base9d692de, en copia aislada para preservar los archivos reservados por Claude. Checkout principal feat/login-alba con cambios locales previos .gitignore y registro; no se cambia su rama.
+- Archivos previstos: lib/login-escena/ (Alba, geometría, luz, estado, pruebas), components/login-escena/ (capa Canvas2D cacheada y componente/specs), components/login/LoginForm.tsx/spec y app/(auth)/login/ (disco/CSS/spec); docs/qa/LOGIN-005 y este registro.
+- Reparto de agentes Codex: alba_core escribe módulos puros salvo personaje/atmosfera; alba_lighting escribe atmosfera y capaLuz; raíz integra componente/formulario/CSS y verifica; release_review inspecciona sin editar. Claude conserva su trabajo; no se presupone revisión suya.
+- Alcance: diseño aprobado, autenticación intacta, móvil y fallback conservados, reduced/resize/errores/éxito≤800ms, cachés de efectos. Sin nuevas dependencias, cuentas reales, cambios de BD o CSP, commit/push ni despliegue.
+
+### 2026-10-12 — LOGIN-005 (cierre y traspaso) — Claude
+
+- Solicitud: el usuario pide terminar donde quedó Codex y dejar todo listo para que él haga commit y push.
+- Estado encontrado: LOGIN-005 EN CURSO en la copia aislada `codex/login-alba-elizabeth` (base `9d692de`), sin informe de QA ni entrada de cierre; recorrido de Firefox incompleto. Un `next start` de Codex quedó corriendo en el puerto 3026 (no se tocó).
+- Revisión del código: autenticación intacta (`signIn`, `remember`, errores y navegación sin cambios); `LoginForm` sólo agrega el saludo por hora (cliente, tras el montaje), la clase de error y el foco al mostrar/ocultar la contraseña. `capaLuz.ts` cachea capas, repone el disco al final y, si lanza, se libera y deja la escena pixel.
+- Traspaso: parche de los 19 archivos modificados + 27 nuevos de la copia aislada aplicado en `C:\dev\CentralCoopera`, rama `feat/login-alba`; contenido idéntico (sólo cambia CRLF → LF). Excluido `docs/qa/login005-build.log`. El registro ya era idéntico en ambos lados.
+- Verificación en el checkout principal: `npm run typecheck` exit 0; `npx vitest run` 38 archivos / 413 pruebas OK; `npm run build` exit 0 con variables sintéticas, 79/79 páginas, `/login` 9,53 kB (avisos Prisma esperados por la base sintética). Recorrido en Chrome headless sobre `next start`: escalas 3/4, movimiento reducido, `MIRA`, `TAPA_OJOS`, error dentro del disco, móvil clásico idéntico a producción, capa HD mediana 0,2 ms. Detalle y límites: `docs/qa/LOGIN-005.md`.
+- Observación sin corregir (no introducida aquí): en Chrome headless, con 1024–1039 px de ancho la escena no se monta aunque el CSS aplica el layout de escritorio; el formulario sigue operativo. Revisar en navegador real.
+- Entrega Git: sin commit ni push; el usuario hará commit/push de `feat/login-alba` y abrirá PR hacia `master`. No incluir `.gitignore` (cambio ajeno preexistente) salvo decisión del usuario.
+- Despliegue: pendiente; probar primero en Preview de Vercel. Producción actual para reversión: `ffe07bd`.
 
 ## Plantilla para próximas entradas
 

@@ -1,0 +1,99 @@
+{
+  "url": "http://127.0.0.1:3124/login",
+  "viewport": [1280, 720],
+  "inicio": {
+    "fase": "BUSCA",
+    "listo": "true",
+    "alba": "0.26",
+    "efectos": "hd",
+    "hdMs": "0.2999999998137355",
+    "alerta": null,
+    "alertaRect": null,
+    "form": {
+      "x": 614,
+      "y": 239.2109375,
+      "w": 180,
+      "h": 170.578125
+    },
+    "canvas": {
+      "x": 152,
+      "y": 42.5,
+      "w": 960,
+      "h": 540
+    }
+  },
+  "focoCorreo": {
+    "fase": "MIRA",
+    "listo": "true",
+    "alba": "0.35",
+    "efectos": "hd",
+    "hdMs": "4.399999999906868",
+    "alerta": null,
+    "alertaRect": null,
+    "form": {
+      "x": 614,
+      "y": 239.2109375,
+      "w": 180,
+      "h": 170.578125
+    },
+    "canvas": {
+      "x": 152,
+      "y": 42.5,
+      "w": 960,
+      "h": 540
+    }
+  },
+  "focoClave": {
+    "fase": "TAPA_OJOS",
+    "listo": "true",
+    "alba": "0.47",
+    "efectos": "hd",
+    "hdMs": "0.19999999995343387",
+    "alerta": null,
+    "alertaRect": null,
+    "form": {
+      "x": 614,
+      "y": 239.2109375,
+      "w": 180,
+      "h": 170.578125
+    },
+    "canvas": {
+      "x": 152,
+      "y": 42.5,
+      "w": 960,
+      "h": 540
+    }
+  },
+  "error": {
+    "fase": "TAPA_OJOS",
+    "listo": "true",
+    "alba": "0.91",
+    "efectos": "hd",
+    "hdMs": "0.10000000009313226",
+    "alerta": "Correo o contraseña incorrectos",
+    "alertaRect": {
+      "x": 614,
+      "y": 396.7265625,
+      "width": 180,
+      "height": 13.125
+    },
+    "form": {
+      "x": 614,
+      "y": 239.1484375,
+      "w": 180,
+      "h": 170.703125
+    },
+    "canvas": {
+      "x": 152,
+      "y": 42.5,
+      "w": 960,
+      "h": 540
+    }
+  },
+  "hdMs": {
+    "n": 30,
+    "mediana": 0.20000000018626451,
+    "p95": 0.30000000004656613,
+    "max": 0.39999999990686774
+  }
+}

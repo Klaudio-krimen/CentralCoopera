@@ -44,6 +44,8 @@ export interface EstadoEscena {
   fase: Fase;
   elapsed: number;
   reloj: number;
+  alba: number;
+  albaAlExito: number;
   inactividad: number;
   primera: boolean;
   reducido: boolean;
@@ -63,9 +65,9 @@ export const INTRO: ReadonlySet<Fase> = new Set([
   "ENCIENDE",
   "REVELA",
 ]);
-export const HOME = 185,
-  SEAT = 128,
-  LEVER_X = 199,
+export const HOME = 262,
+  SEAT = 294,
+  LEVER_X = 243,
   RMAX = 172;
 export const SUCCESS_MS = 700;
 
@@ -74,13 +76,15 @@ export function crearEstado(primera = false, reducido = false): EstadoEscena {
     fase: reducido ? "ILUMINADO" : "OSCURO",
     elapsed: 0,
     reloj: 0,
+    alba: reducido ? 1 : 0.12,
+    albaAlExito: reducido ? 1 : 0.12,
     inactividad: 0,
     primera,
     reducido,
     foco: null,
     ch: {
       x: primera && !reducido ? -14 : HOME,
-      face: 1,
+      face: -1,
       walk: null,
       head: "normal",
       lean: 0,
@@ -148,6 +152,7 @@ export function transicion(
   if (evento === "EXITO") {
     s.x0 = s.ch.x;
     s.dW = s.reducido ? 0 : Math.min(300, Math.abs(LEVER_X - s.ch.x) / 0.25);
+    s.albaAlExito = s.alba;
     ir(s, "EXITO");
     if (s.reducido) {
       s.ch.x = LEVER_X;
@@ -165,6 +170,15 @@ export function paso(estado: EstadoEscena, dt: number): EstadoEscena {
     delta = Number.isFinite(dt) ? Math.max(0, dt) : 0;
   s.elapsed += delta;
   s.reloj += delta;
+  const amanecer = Math.min(1, s.reloj / 14000);
+  s.alba = s.reducido
+    ? 1
+    : 0.12 + 0.88 * amanecer * amanecer * (3 - 2 * amanecer);
+  if (s.fase === "EXITO")
+    s.alba = Math.max(
+      s.alba,
+      s.albaAlExito + (1 - s.albaAlExito) * Math.min(1, s.elapsed / SUCCESS_MS)
+    );
   s.inactividad += delta;
   const ch = s.ch,
     lamp = s.lamp,
@@ -210,13 +224,13 @@ export function paso(estado: EstadoEscena, dt: number): EstadoEscena {
     case "ENCIENDE": {
       const duration = s.primera ? 700 : 520,
         p = e / duration;
-      ch.face = 1;
+      ch.face = -1;
       ch.head = "up";
       lamp.pull =
         e < 180
           ? Math.round((e / 180) * 3)
           : Math.max(0, Math.round(3 - (e - 180) / 70));
-      ch.armF = brazo(ch, 189, 126 + lamp.pull);
+      ch.armF = brazo(ch, 251, 124);
       light.R = 40;
       light.I = s.primera
         ? p < 0.2 || (p >= 0.42 && p < 0.58) || p >= 0.76
@@ -239,16 +253,16 @@ export function paso(estado: EstadoEscena, dt: number): EstadoEscena {
       break;
     }
     case "ILUMINADO":
-      ch.face = 1;
+      ch.face = -1;
       break;
     case "MIRA":
-      ch.face = 1;
+      ch.face = -1;
       ch.head = "up";
       ch.lean = 1;
       ch.armF = { a: 0.35, l: 8 };
       break;
     case "TAPA_OJOS":
-      ch.face = -1;
+      ch.face = 1;
       ch.head = "down";
       ch.armF = { a: 2.75, l: 6 };
       ch.armB = { a: 2.55, l: 6 };
@@ -291,7 +305,7 @@ export function paso(estado: EstadoEscena, dt: number): EstadoEscena {
         ch.x = LEVER_X;
         ch.face = 1;
         s.lever = s.reducido ? 1 : Math.min(1, (e - s.dW) / 200);
-        ch.armF = brazo(ch, 207, 120 + 14 * s.lever);
+        ch.armF = brazo(ch, 251, 120 + 14 * s.lever);
         light.sweep = s.reducido
           ? 330
           : Math.max(

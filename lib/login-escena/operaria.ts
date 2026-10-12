@@ -2,6 +2,13 @@ import { C } from "./paleta";
 import { R, line, type Pincel } from "./pincel";
 import type { Operaria } from "./maquina";
 const GROUND = 150;
+/** Interpretación pixel art de Elizabeth: castaño claro con mechas doradas. */
+export const ELIZABETH = {
+  cabello: "#b98554",
+  sombra: "#785337",
+  visos: "#e5bf7b",
+  brillo: "#f1d4a0",
+} as const;
 export function dibujarOperaria(ctx: Pincel, ch: Operaria) {
   const f = ch.face,
     X = Math.round(ch.x),
@@ -38,6 +45,16 @@ export function dibujarOperaria(ctx: Pincel, ch: Operaria) {
     return [X + Math.round(ex) * f, Y + Math.round(ey)];
   };
   if (!ch.sit) R(ctx, X - 3, Y, 8, 1, C.floorLine);
+  // Melena detrás del chaleco y los brazos. Vaivén de un píxel, ligado al paso.
+  const pelo =
+    ch.walk === null ? 0 : Math.round(Math.sin(ch.walk * 2 * Math.PI));
+  T(-4, -26, 4, 10, ELIZABETH.sombra);
+  T(-5 + pelo, -22, 4, 8, ELIZABETH.sombra);
+  T(-4 + pelo, -23, 3, 9, ELIZABETH.cabello);
+  T(-3, -25, 2, 7, ELIZABETH.cabello);
+  T(-4 + pelo, -22, 1, 6, ELIZABETH.visos);
+  T(-3 + pelo, -17, 1, 4, ELIZABETH.cabello);
+  T(-4 + pelo, -16, 1, 2, ELIZABETH.brillo);
   // brazo trasero
   arm(0, ch.armB.a, ch.armB.l, C.greenDark, 3);
   // piernas
@@ -71,11 +88,9 @@ export function dibujarOperaria(ctx: Pincel, ch: Operaria) {
   // cabeza
   T(0, -21, 2, 1, C.skinDark);
   T(-2, -26, 5, 5, C.skin);
-  T(-2, -26, 2, 5, C.hair);
-  const pt =
-    ch.walk !== null ? (Math.sin(ch.walk * 4 * Math.PI) > 0 ? 1 : 0) : 0;
-  T(-4, -25 + pt, 2, 2, C.hair);
-  T(-3, -24, 1, 1, C.hair);
+  T(-2, -26, 2, 5, ELIZABETH.cabello);
+  T(-2, -26, 1, 3, ELIZABETH.visos);
+  T(-3, -25, 1, 4, ELIZABETH.sombra);
   const ey = ch.head === "up" ? -25 : ch.head === "down" ? -23 : -24;
   T(3, ey + 1, 1, 1, C.skin);
   if (!ch.blink) T(1, ey, 1, 1, C.eye);
@@ -86,6 +101,8 @@ export function dibujarOperaria(ctx: Pincel, ch: Operaria) {
   T(4, -27, 1, 1, C.helmet);
   T(0, -29, 1, 1, C.helmetHi);
   T(-2, -28, 1, 1, C.green);
+  // Identificación del chaleco; sin texto diminuto que compita con el formulario.
+  T(1, -18, 1, 1, C.reflect);
   // brazo delantero (con linterna en la intro)
   const hand = arm(1, ch.armF.a, ch.armF.l, C.green, 3);
   if (ch.torch) {

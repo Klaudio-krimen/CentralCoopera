@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Alba · Elizabeth — revisión gráfica</title>
+    <link rel="icon" href="data:," />
+    <style>
+      @font-face {
+        font-family: pixel;
+        src: url(../../../../components/login-escena/fonts/press-start-2p-latin-400-normal.woff2)
+          format("woff2");
+        font-display: swap;
+      }
+      :root {
+        --s: 4;
+        --green: #5bbd2f;
+        --ink: #eef2f8;
+        --gold: #f2c230;
+        --field: #1c2438;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        min-height: 100dvh;
+        background: #11101a;
+        color: var(--ink);
+        font-family: system-ui, sans-serif;
+      }
+      body {
+        display: grid;
+        place-items: center;
+        min-width: 960px;
+        min-height: max(660px, 100dvh);
+        padding: 54px 0 64px;
+      }
+      .stage {
+        position: relative;
+        width: calc(320px * var(--s));
+        height: calc(180px * var(--s));
+        isolation: isolate;
+        box-shadow:
+          0 -2px #342f40,
+          0 1px #494354,
+          0 3px #0c0c14,
+          0 20px 60px #090911;
+      }
+      canvas {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        image-rendering: pixelated;
+      }
+      #c0 {
+        display: none;
+      }
+      .stage::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background: repeating-linear-gradient(
+          0deg,
+          transparent 0 3px,
+          #10111c0a 3px 4px
+        );
+        z-index: 1;
+      }
+      .circulo {
+        position: absolute;
+        left: calc(154px * var(--s));
+        top: calc(94px * var(--s));
+        transform: translateY(-50%);
+        width: calc(60px * var(--s));
+        display: flex;
+        flex-direction: column;
+        gap: calc(1px * var(--s));
+        font-size: max(12px, calc(4.1px * var(--s)));
+        color-scheme: dark;
+        z-index: 2;
+      }
+      .cab {
+        text-align: center;
+      }
+      h1 {
+        margin: 0;
+        font:
+          400 max(9px, 0.6em)/1.6 pixel,
+          monospace;
+        color: var(--green);
+        letter-spacing: 0.015em;
+      }
+      .saludo {
+        margin: 0.25em 0 0;
+        font-size: max(11px, 0.76em);
+        color: #ffddb3;
+      }
+      .circulo.error .saludo {
+        display: none;
+      }
+      .campo label {
+        display: block;
+        font-size: max(11px, 0.67em);
+        font-weight: 600;
+        color: #d5dbe8;
+        letter-spacing: 0.04em;
+        margin-bottom: 0.3em;
+      }
+      .campo input {
+        width: 100%;
+        min-width: 0;
+        font: inherit;
+        font-size: max(12px, 0.84em);
+        line-height: 1.35;
+        padding: 0.3em 0.5em;
+        border: 2px solid #5d6a8c;
+        border-radius: 0;
+        color: var(--ink);
+        background: var(--field);
+        box-shadow:
+          inset 0 2px #121828,
+          0 1px #75819a;
+      }
+      .campo input::placeholder {
+        color: #aab4c8;
+      }
+      input:focus-visible,
+      button:focus-visible {
+        outline: 2px solid var(--gold);
+        outline-offset: 2px;
+      }
+      .password {
+        position: relative;
+      }
+      #clave {
+        padding-right: 2em;
+      }
+      .eye {
+        position: absolute;
+        right: 0.25em;
+        top: 50%;
+        transform: translateY(-50%);
+        border: 0;
+        background: transparent;
+        color: #d5dbe8;
+        padding: 0.2em;
+        cursor: pointer;
+      }
+      .eye svg {
+        width: 1.05em;
+        height: 1.05em;
+        display: block;
+      }
+      .remember {
+        display: flex;
+        align-items: center;
+        gap: 0.5em;
+        min-height: 1.9em;
+        font-size: max(10.5px, 0.67em);
+        line-height: 1.35;
+        color: #d5dbe8;
+      }
+      .remember input {
+        margin: 0;
+        width: 1.1em;
+        height: 1.1em;
+        flex: none;
+        accent-color: var(--green);
+      }
+      .boton {
+        font:
+          700 max(11px, 0.73em)/1.4 system-ui,
+          sans-serif;
+        letter-spacing: 0.06em;
+        color: #15203a;
+        background: var(--green);
+        border: 0;
+        border-radius: 0;
+        padding: 0.62em 0.5em;
+        box-shadow:
+          inset 0 2px #8fd865,
+          0 3px #3b8a1a;
+        cursor: pointer;
+      }
+      .boton:hover {
+        background: #70cf42;
+      }
+      .boton:active {
+        transform: translateY(2px);
+        box-shadow: 0 1px #3b8a1a;
+      }
+      .aviso {
+        margin: 0;
+        color: #ff8a73;
+        font-size: max(10.5px, 0.7em);
+        line-height: 1.4;
+      }
+      [hidden] {
+        display: none !important;
+      }
+      .npc-name {
+        position: absolute;
+        left: calc(243px * var(--s));
+        top: calc(153px * var(--s));
+        width: calc(65px * var(--s));
+        text-align: center;
+        font: 500 max(9px, calc(2.3px * var(--s)))/1.5 monospace;
+        letter-spacing: 0.13em;
+        color: #e5c596;
+        z-index: 2;
+      }
+      .edition {
+        position: absolute;
+        left: 0;
+        bottom: calc(-10px * var(--s));
+        font: 500 10px/1.5 monospace;
+        letter-spacing: 0.14em;
+        color: #a7979f;
+      }
+      .ui {
+        position: fixed;
+        top: 14px;
+        left: 18px;
+        right: 18px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        z-index: 3;
+      }
+      .ui .caption {
+        font: 500 11px/1.5 monospace;
+        letter-spacing: 0.08em;
+        color: #c5b3b6;
+        margin-right: auto;
+      }
+      .ui button {
+        font: 500 12px/1.4 system-ui;
+        padding: 7px 11px;
+        border: 1px solid #635266;
+        background: #251d30;
+        color: #eee3de;
+        cursor: pointer;
+      }
+      dialog {
+        color: #eee3de;
+        background: #1c1927;
+        border: 1px solid #716076;
+        padding: 28px;
+        max-width: 95vw;
+      }
+      dialog::backdrop {
+        background: #0c0b15ce;
+      }
+      dialog h2 {
+        font:
+          400 12px/1.8 pixel,
+          monospace;
+        margin: 0 0 18px;
+        color: #e5bf7b;
+      }
+      dialog p {
+        font: 13px/1.5 system-ui;
+        max-width: 600px;
+        color: #cdbfc4;
+      }
+      .poses {
+        display: flex;
+        gap: 24px;
+      }
+      .poses figure {
+        margin: 0;
+        text-align: center;
+      }
+      .poses canvas {
+        position: static;
+        width: 192px;
+        height: 264px;
+        background: #2a344d;
+        image-rendering: pixelated;
+      }
+      .poses figcaption {
+        font: 12px/1.6 monospace;
+        color: #d9c2ad;
+        margin-top: 8px;
+      }
+      dialog button {
+        background: #5bbd2f;
+        color: #15203a;
+        border: 0;
+        padding: 9px 16px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          scroll-behavior: auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="ui" aria-label="Controles de la maqueta">
+      <span class="caption">REVISIÓN VISUAL · ALBA / ELIZABETH</span>
+      <button id="repetir" type="button">Repetir amanecer</button>
+      <button id="ver-personaje" type="button">Ver personaje</button>
+      <button id="probar-error" type="button">Probar error</button>
+      <button id="probar-exito" type="button">Ver éxito</button>
+    </div>
+    <main class="stage" id="stage">
+      <canvas id="c0" width="320" height="180" aria-hidden="true"></canvas>
+      <canvas id="c1" aria-hidden="true"></canvas>
+      <form class="circulo" id="acceso" autocomplete="off">
+        <div class="cab">
+          <h1>CENTRAL COOPERA</h1>
+          <p class="saludo">Buenos días, equipo</p>
+        </div>
+        <div class="campo">
+          <label for="correo">Correo electrónico</label
+          ><input id="correo" type="email" placeholder="nombre@cooperapro.cl" />
+        </div>
+        <div class="campo">
+          <label for="clave">Contraseña</label>
+          <div class="password">
+            <input id="clave" type="password" placeholder="••••••••" /><button
+              class="eye"
+              id="mostrar"
+              type="button"
+              aria-label="Mostrar contraseña"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                aria-hidden="true"
+              >
+                <path d="M2 12s4-6 10-6 10 6 10 6-4 6-10 6S2 12 2 12Z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+            </button>
+          </div>
+        </div>
+        <label class="remember"
+          ><input id="mantener" type="checkbox" />Mantener sesión iniciada en
+          este equipo</label
+        >
+        <button class="boton" type="submit">INICIAR TURNO</button>
+        <p class="aviso" role="alert" hidden>Correo o contraseña incorrectos</p>
+      </form>
+      <div class="npc-name" aria-hidden="true">ELIZABETH CABRERA</div>
+      <div class="edition" aria-hidden="true">
+        COOPERA PRO · EL COMIENZO DE UNA NUEVA JORNADA
+      </div>
+    </main>
+    <dialog id="personaje" aria-labelledby="personaje-titulo">
+      <h2 id="personaje-titulo">ELIZABETH CABRERA</h2>
+      <div class="poses">
+        <figure>
+          <canvas
+            id="pose-izquierda"
+            width="192"
+            height="264"
+            role="img"
+            aria-label="Elizabeth mirando a la izquierda, con melena castaña clara y visos rubios"
+          ></canvas>
+          <figcaption>Mira el acceso</figcaption>
+        </figure>
+        <figure>
+          <canvas
+            id="pose-derecha"
+            width="192"
+            height="264"
+            role="img"
+            aria-label="Elizabeth mirando a la derecha"
+          ></canvas>
+          <figcaption>Vista opuesta</figcaption>
+        </figure>
+        <figure>
+          <canvas
+            id="pose-clave"
+            width="192"
+            height="264"
+            role="img"
+            aria-label="Elizabeth cubriéndose los ojos al enfocar la contraseña"
+          ></canvas>
+          <figcaption>Privacidad</figcaption>
+        </figure>
+      </div>
+      <p>
+        Interpretación pixel art: pelo largo castaño claro, visos dorados y
+        equipo de seguridad.
+      </p>
+      <button type="button" id="cerrar-personaje">Volver a la escena</button>
+    </dialog>
+    <script>
+      function fit() {
+        const s = Math.max(
+          3,
+          Math.min(
+            12,
+            Math.floor(innerWidth / 320),
+            Math.floor((innerHeight - 64) / 180)
+          )
+        );
+        document.querySelector("#stage").style.setProperty("--s", s);
+      }
+      fit();
+      addEventListener("resize", fit);
+    </script>
+    <script src="maqueta.js?v=elizabeth-5"></script>
+    <script>
+      const form = document.querySelector("#acceso"),
+        alerta = document.querySelector(".aviso");
+      document.querySelector("#ver-personaje").onclick = () => {
+        dibujarElizabeth(document.querySelector("#pose-izquierda"), -1, false);
+        dibujarElizabeth(document.querySelector("#pose-derecha"), 1, false);
+        dibujarElizabeth(document.querySelector("#pose-clave"), 1, true);
+        document.querySelector("#personaje").showModal();
+      };
+      document.querySelector("#cerrar-personaje").onclick = () =>
+        document.querySelector("#personaje").close();
+      const error = () => {
+        form.classList.add("error");
+        alerta.hidden = false;
+        alba.enviar("ERROR");
+      };
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        error();
+      });
+      document.querySelector("#probar-error").onclick = error;
+      document.querySelector("#probar-exito").onclick = () => {
+        form.classList.remove("error");
+        alerta.hidden = true;
+        alba.enviar("EXITO");
+      };
+      document.querySelector("#mostrar").onclick = () => {
+        const field = document.querySelector("#clave"),
+          show = field.type === "password";
+        field.type = show ? "text" : "password";
+        document
+          .querySelector("#mostrar")
+          .setAttribute(
+            "aria-label",
+            show ? "Ocultar contraseña" : "Mostrar contraseña"
+          );
+        field.focus();
+      };
+      form.addEventListener("input", () => alba.enviar("ACTIVIDAD"));
+      document.querySelector("#repetir").addEventListener("click", () => {
+        location.hash = "";
+        location.reload();
+      });
+      if (new Date().getHours() >= 12)
+        document.querySelector(".saludo").textContent = "Buenas tardes, equipo";
+    </script>
+  </body>
+</html>

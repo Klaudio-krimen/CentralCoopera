@@ -1,11 +1,15 @@
 import { it, expect } from "vitest";
 import { C } from "./paleta";
 import { dibujarFondo } from "./fondo";
-import { dibujarOperaria } from "./operaria";
+import { dibujarOperaria, ELIZABETH } from "./operaria";
 import { dibujarLampara, dibujarPalanca } from "./lampara";
 import { crearPincel, type Pincel } from "./pincel";
 import { crearEstado, transicion, paso, type Fase } from "./maquina";
-const colors = new Set<string>([...Object.values(C), "#141414"]);
+const colors = new Set<string>([
+  ...Object.values(C),
+  ...Object.values(ELIZABETH),
+  "#141414",
+]);
 function pincel(): Pincel {
   return {
     rect(x, y, w, h, color) {
@@ -17,14 +21,14 @@ function pincel(): Pincel {
     },
   };
 }
-it("fondo determinista con cartel, rack y ruma del prototipo", () => {
+it("fondo determinista con disco, rack y ruma de Alba", () => {
   const a = new Uint32Array(320 * 180),
     b = new Uint32Array(a.length);
   dibujarFondo(pincel());
   dibujarFondo(crearPincel(a));
   dibujarFondo(crearPincel(b));
   expect(a).toEqual(b);
-  expect(a[80 * 320 + 260] & 0xffffff).toBe(0x4d342a);
+  expect(a[94 * 320 + 184] & 0xffffff).toBe(0x4d342a);
 });
 it.each([
   "OSCURO",
